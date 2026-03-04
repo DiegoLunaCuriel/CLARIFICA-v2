@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(powershell -Command \"Get-ChildItem -Recurse | Select-Object FullName | head -150\")",
+      "Bash(powershell -Command \"Get-ChildItem -Path ''src'' -Recurse | Where-Object {$_PSIsContainer} | Select-Object FullName\")",
+      "Bash(powershell:*)",
+      "Bash(cd:*)",
+      "Bash(ls -la \"C:\\\\Users\\\\diego\\\\Downloads\\\\Contrulink V2 Zoer hasta CSE\\\\Contrulink V2 Zoer\\\\src\\\\app\\\\next_api\"\" | grep -E \"^d \")",
+      "Bash(find:*)",
+      "Bash(npx next build:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx next dev)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(__NEW_LINE_1af7f8d1b2fb5167__ echo -e \"\\\\n\\\\n=== GET USER AFTER LOGOUT ===\")",
+      "Bash(taskkill:*)",
+      "Bash(npm run dev)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(cmd.exe:*)",
+      "Bash(timeout:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(ping:*)",
+      "Bash(findstr:*)",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:support.google.com)",
+      "WebFetch(domain:www.codestudy.net)",
+      "WebFetch(domain:developers.google.com)",
+      "WebFetch(domain:docs.cloud.google.com)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(where npm:*)",
+      "Bash(npx kill-port 3000)",
+      "Bash(.ts$ \")",
+      "Bash(netstat -ano)",
+      "Bash(cmd //c \"taskkill /F /IM node.exe\")",
+      "Bash(cmd //c \"taskkill /PID 19628 /F\")",
+      "Bash(npm install phaser@3)",
+      "Bash(xargs ls -lt)"
+    ]
+  }
+}
