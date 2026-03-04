@@ -492,13 +492,23 @@ type NailConfig = {
 };
 
 const TOOLS: ToolConfig[] = [
-  { id: "hammer", icon: "hammer", size: 150, rotate: -20 },
-  { id: "wrench", icon: "wrench", size: 140, rotate: 15 },
-  { id: "drill", icon: "drill", size: 155, rotate: -10 },
-  { id: "pliers", icon: "pliers", size: 140, rotate: 12 },
-  { id: "saw", icon: "saw", size: 150, rotate: -8 },
-  { id: "level", icon: "level", size: 145, rotate: 3 },
+  { id: "hammer", icon: "hammer", size: 180, rotate: -20 },
+  { id: "wrench", icon: "wrench", size: 170, rotate: 15 },
+  { id: "drill", icon: "drill", size: 190, rotate: -10 },
+  { id: "pliers", icon: "pliers", size: 170, rotate: 12 },
+  { id: "saw", icon: "saw", size: 185, rotate: -8 },
+  { id: "level", icon: "level", size: 175, rotate: 3 },
 ];
+
+// Image paths for realistic tool renders
+const TOOL_IMAGES: Record<string, string> = {
+  hammer: "/tools/hammer.png",
+  wrench: "/tools/wrench.png",
+  drill: "/tools/drill.png",
+  pliers: "/tools/pliers.png",
+  saw: "/tools/saw.png",
+  level: "/tools/level.png",
+};
 
 // Glow color per tool for the dark premium look
 const TOOL_GLOW: Record<string, string> = {
@@ -768,20 +778,23 @@ export function FloatingTools() {
   if (!mounted || positions.length === 0) return null;
 
   const toolIcon = (icon: string, size: number) => {
-    switch (icon) {
-      case "hammer": return <CartoonHammer size={size} />;
-      case "wrench": return <CartoonWrench size={size} />;
-      case "drill": return <CartoonDrill size={size} />;
-      case "pliers": return <CartoonPliers size={size} />;
-      case "saw": return <CartoonSaw size={size} />;
-      case "level": return <CartoonLevel size={size} />;
-      default: return null;
-    }
+    const src = TOOL_IMAGES[icon];
+    if (!src) return null;
+    return (
+      <img
+        src={src}
+        alt=""
+        width={size}
+        height={size}
+        style={{ mixBlendMode: "screen", objectFit: "contain" }}
+        draggable={false}
+      />
+    );
   };
 
   return (
     <>
-      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 1 }} aria-hidden>
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }} aria-hidden>
         {/* Floating tools */}
         {TOOLS.map((tool, i) => {
           const isHeld = isDragging === tool.id;
@@ -797,8 +810,8 @@ export function FloatingTools() {
               style={{
                 left: positions[i]?.x ?? 0,
                 top: positions[i]?.y ?? 0,
-                transform: `rotate(${tool.rotate}deg)${isHeld ? " scale(1.22)" : ""}`,
-                opacity: isHeld ? 0.85 : 0.35,
+                transform: `rotate(${tool.rotate}deg)${isHeld ? " scale(1.15)" : ""}`,
+                opacity: isHeld ? 0.5 : 0.18,
                 transition: "opacity 0.25s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1), filter 0.3s ease",
                 willChange: "left, top",
                 touchAction: "none",
@@ -806,8 +819,8 @@ export function FloatingTools() {
                   ? "none"
                   : `tool-float ${4 + i * 0.4}s ease-in-out ${floatDelay} infinite, tool-glow-pulse ${3 + i * 0.3}s ease-in-out ${glowDelay} infinite`,
                 filter: isHeld
-                  ? `drop-shadow(0 0 32px ${glow}) drop-shadow(0 0 60px ${glow}) drop-shadow(0 16px 40px rgba(0,0,0,0.6))`
-                  : `drop-shadow(0 0 18px ${glow}) drop-shadow(0 0 40px ${glow.replace(/[\d.]+\)$/, (m) => `${parseFloat(m) * 0.4})`)}) drop-shadow(0 6px 12px rgba(0,0,0,0.45))`,
+                  ? `drop-shadow(0 0 24px ${glow}) drop-shadow(0 0 48px ${glow}) drop-shadow(0 12px 32px rgba(0,0,0,0.5))`
+                  : `drop-shadow(0 0 14px ${glow}) drop-shadow(0 0 30px ${glow.replace(/[\d.]+\)$/, (m) => `${parseFloat(m) * 0.35})`)}) drop-shadow(0 4px 10px rgba(0,0,0,0.4))`,
               }}
               onPointerDown={(e) => handlePointerDown(e, i)}
               onPointerMove={handlePointerMove}
@@ -1027,8 +1040,8 @@ export function ConstructionScene() {
     <div
       className="relative w-screen select-none"
       style={{
-        height: "500px",
-        marginTop: "-80px",
+        height: "550px",
+        marginTop: "-200px",
         marginLeft: "calc(-1 * (100vw - 100%) / 2)",
         width: "100vw",
       }}
@@ -1038,7 +1051,7 @@ export function ConstructionScene() {
         className="absolute inset-0"
         style={{
           mixBlendMode: "lighten",
-          opacity: 0.35,
+          opacity: 0.2,
           maskImage: "linear-gradient(to bottom, transparent 0%, black 30%, black 75%, transparent 100%), linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
           maskComposite: "intersect",
           WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 30%, black 75%, transparent 100%), linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)",
