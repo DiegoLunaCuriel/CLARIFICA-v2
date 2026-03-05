@@ -544,12 +544,12 @@ const TOOL_IMAGES: Record<string, string> = {
 
 // Glow color per tool for the dark premium look
 const TOOL_GLOW: Record<string, string> = {
-  hammer: "rgba(168,195,224,0.65)",   // bright steel blue
-  wrench: "rgba(239,68,68,0.6)",     // vivid red handle
-  drill: "rgba(251,191,36,0.7)",     // bright amber drill
-  pliers: "rgba(239,68,68,0.55)",    // red handles
-  saw: "rgba(251,146,60,0.6)",       // vibrant orange handle
-  level: "rgba(34,197,94,0.6)",      // vivid green body
+  hammer: "rgba(168,210,240,0.85)",   // bright steel blue
+  wrench: "rgba(255,80,80,0.8)",      // vivid red
+  drill: "rgba(255,200,40,0.9)",      // bright amber
+  pliers: "rgba(255,80,80,0.75)",     // red
+  saw: "rgba(255,160,60,0.85)",       // vibrant orange
+  level: "rgba(50,220,110,0.8)",      // vivid green
 };
 
 const NAILS: NailConfig[] = [
@@ -599,7 +599,7 @@ function useBouncingPhysics(count: number, sizes: number[]) {
     for (let i = 0; i < count; i++) {
       const s = sizes[i] || 120;
       const sp = startPositions[i] || { xPct: 20 + i * 15, yPct: 10 + i * 12 };
-      const speed = 0.3 + Math.random() * 0.5;
+      const speed = 0.8 + Math.random() * 1.0;
       const angle = Math.random() * Math.PI * 2;
       initial.push({
         x: (sp.xPct / 100) * (vw - s),
@@ -627,13 +627,13 @@ function useBouncingPhysics(count: number, sizes: number[]) {
         if (b.paused) continue;
 
         // Friction â€” gradually slow down
-        b.vx *= 0.9985;
-        b.vy *= 0.9985;
+        b.vx *= 0.9995;
+        b.vy *= 0.9995;
 
         // Keep minimum drift speed so tools never fully stop
         const spd = Math.hypot(b.vx, b.vy);
-        if (spd > 0 && spd < 0.15) {
-          const scale = 0.15 / spd;
+        if (spd > 0 && spd < 0.4) {
+          const scale = 0.4 / spd;
           b.vx *= scale;
           b.vy *= scale;
         }
@@ -642,10 +642,10 @@ function useBouncingPhysics(count: number, sizes: number[]) {
         b.y += b.vy;
 
         // Bounce off walls with energy loss
-        if (b.x <= 0) { b.x = 0; b.vx = Math.abs(b.vx) * 0.85; }
-        if (b.x + b.w >= vw) { b.x = vw - b.w; b.vx = -Math.abs(b.vx) * 0.85; }
-        if (b.y <= 0) { b.y = 0; b.vy = Math.abs(b.vy) * 0.85; }
-        if (b.y + b.h >= vh) { b.y = vh - b.h; b.vy = -Math.abs(b.vy) * 0.85; }
+        if (b.x <= 0) { b.x = 0; b.vx = Math.abs(b.vx) * 0.92; }
+        if (b.x + b.w >= vw) { b.x = vw - b.w; b.vx = -Math.abs(b.vx) * 0.92; }
+        if (b.y <= 0) { b.y = 0; b.vy = Math.abs(b.vy) * 0.92; }
+        if (b.y + b.h >= vh) { b.y = vh - b.h; b.vy = -Math.abs(b.vy) * 0.92; }
       }
 
       // Always update â€” includes paused bodies moved by drag
