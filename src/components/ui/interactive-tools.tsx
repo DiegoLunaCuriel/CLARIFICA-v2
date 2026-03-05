@@ -33,19 +33,19 @@ function CartoonHammer({ size = 140 }: { size?: number }) {
       <line x1="37" y1="73" x2="43" y2="73" stroke="#333355" strokeWidth="0.5" />
       <line x1="37" y1="75" x2="43" y2="75" stroke="#333355" strokeWidth="0.5" />
       {/* Head block — small, symmetrical */}
-      <rect x="18" y="10" width="44" height="16" rx="3" fill="url(#hSteel)" stroke="#5A7A94" strokeWidth="1" />
+      <rect x="25" y="10" width="30" height="16" rx="3" fill="url(#hSteel)" stroke="#5A7A94" strokeWidth="1" />
       {/* Top sheen */}
-      <rect x="20" y="11" width="40" height="4" rx="2" fill="white" opacity="0.18" />
+      <rect x="27" y="11" width="26" height="4" rx="2" fill="white" opacity="0.18" />
       {/* Left striking face */}
-      <rect x="12" y="8" width="9" height="20" rx="3" fill="#8FAFC5" stroke="#5A7A94" strokeWidth="0.8" />
-      <rect x="13" y="9" width="2" height="18" rx="1" fill="white" opacity="0.12" />
+      <rect x="19" y="8" width="9" height="20" rx="3" fill="#8FAFC5" stroke="#5A7A94" strokeWidth="0.8" />
+      <rect x="20" y="9" width="2" height="18" rx="1" fill="white" opacity="0.12" />
       {/* Right striking face — mirror */}
-      <rect x="59" y="8" width="9" height="20" rx="3" fill="#8FAFC5" stroke="#5A7A94" strokeWidth="0.8" />
-      <rect x="65" y="9" width="2" height="18" rx="1" fill="white" opacity="0.12" />
+      <rect x="52" y="8" width="9" height="20" rx="3" fill="#8FAFC5" stroke="#5A7A94" strokeWidth="0.8" />
+      <rect x="58" y="9" width="2" height="18" rx="1" fill="white" opacity="0.12" />
       {/* Collar — centered */}
       <rect x="36" y="8" width="8" height="20" rx="2" fill="#7A96B0" stroke="#5A7A94" strokeWidth="0.5" />
       {/* Metallic reflection */}
-      <ellipse cx="40" cy="18" rx="16" ry="2.5" fill="white" opacity="0.06" />
+      <ellipse cx="40" cy="18" rx="12" ry="2.5" fill="white" opacity="0.06" />
     </svg>
   );
 }
