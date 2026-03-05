@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+﻿import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
 import { createErrorResponse } from "./create-response";
 import { AUTH_ENABLED, authConfig } from "../config/auth-config";
@@ -163,12 +163,12 @@ export async function sendVerificationEmail(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Verificación — CONTRULINK</title>
+  <title>Verificación — CLARIFICA</title>
 </head>
 <body style="margin:0;padding:0;background-color:#0c0a09;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
 
   <!-- Preheader (invisible preview text) -->
-  <span style="display:none!important;visibility:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#0c0a09;max-height:0;max-width:0;opacity:0;overflow:hidden;">Tu código de verificación para CONTRULINK: ${code}</span>
+  <span style="display:none!important;visibility:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#0c0a09;max-height:0;max-width:0;opacity:0;overflow:hidden;">Tu código de verificación para CLARIFICA: ${code}</span>
 
   <!-- Outer wrapper -->
   <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#0c0a09;min-height:100vh;">
@@ -189,7 +189,7 @@ export async function sendVerificationEmail(
               <h1 style="margin:0 0 4px 0;font-size:22px;font-weight:900;letter-spacing:2px;
                 background:linear-gradient(90deg,#fbbf24,#fb923c);
                 -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-                background-clip:text;color:#fbbf24;">CONTRULINK</h1>
+                background-clip:text;color:#fbbf24;">CLARIFICA</h1>
 
               <p style="margin:0;color:#6b7280;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;">Hub de Construcción Inteligente</p>
             </td>
@@ -229,7 +229,7 @@ export async function sendVerificationEmail(
               </table>
 
               <p style="margin:0;color:#4b5563;font-size:12px;line-height:1.6;">
-                Si no creaste una cuenta en CONTRULINK, puedes ignorar este correo.
+                Si no creaste una cuenta en CLARIFICA, puedes ignorar este correo.
               </p>
 
             </td>
@@ -246,7 +246,7 @@ export async function sendVerificationEmail(
           <tr>
             <td style="padding:20px 32px 28px;text-align:center;">
               <p style="margin:0 0 4px 0;color:#374151;font-size:11px;">
-                © 2025 CONTRULINK — Hub de Construcción Inteligente
+                © 2025 CLARIFICA — Hub de Construcción Inteligente
               </p>
               <p style="margin:0;color:#374151;font-size:11px;">
                 Este es un correo automático, por favor no respondas.
@@ -265,12 +265,12 @@ export async function sendVerificationEmail(
 </html>`;
 
   if (process.env.RESEND_KEY) {
-    const fromAddress = process.env.RESEND_FROM || "CONTRULINK <noreply@clarifica.site>";
+    const fromAddress = process.env.RESEND_FROM || "CLARIFICA <noreply@clarifica.site>";
     const resend = new Resend(process.env.RESEND_KEY);
     await resend.emails.send({
       from: fromAddress,
       to: email,
-      subject: "🪖 Tu código de verificación — CONTRULINK",
+      subject: "🪖 Tu código de verificación — CLARIFICA",
       html: htmlTemplate,
     });
     return true;
@@ -318,3 +318,4 @@ export function clearCookie(
 ): void {
   setCookie(response, name, "", { path, maxAge: 0 });
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useRouter } from "next/navigation";
@@ -455,7 +455,7 @@ export default function Home() {
           <div className="text-center mb-12">
             <div className="section-badge mb-4">
               <Star className="h-3 w-3" />
-              ¿Por qué CONTRULINK?
+              ¿Por qué CLARIFICA?
             </div>
             <h2 className="text-4xl font-bold">La diferencia</h2>
           </div>
@@ -493,3 +493,4 @@ export default function Home() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -104,7 +104,7 @@ function SidebarContent({
                 backgroundClip: "text",
               }}
             >
-              CONTRULINK
+              CLARIFICA
             </span>
             <span className="text-[9px] text-muted-foreground tracking-widest uppercase">
               Hub de Construcción
@@ -330,7 +330,7 @@ export default function AppNavbar({ collapsed, onToggleCollapse }: AppNavbarProp
               backgroundClip: "text",
             }}
           >
-            CONTRULINK
+            CLARIFICA
           </span>
         </div>
       </div>
@@ -355,3 +355,4 @@ export default function AppNavbar({ collapsed, onToggleCollapse }: AppNavbarProp
     </>
   );
 }
+

@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Aviso de Privacidad — CONTRULINK",
-    description: "Aviso de privacidad de CONTRULINK, hub de construcción inteligente.",
+    title: "Aviso de Privacidad — CLARIFICA",
+    description: "Aviso de privacidad de CLARIFICA, hub de construcción inteligente.",
 };
 
 export default function PrivacidadPage() {
@@ -24,7 +24,7 @@ export default function PrivacidadPage() {
                 <section className="space-y-3">
                     <h2 className="text-xl font-semibold text-foreground">1. Identidad del Responsable</h2>
                     <p>
-                        <strong className="text-foreground">CONTRULINK</strong> (en adelante, "la Plataforma"), con domicilio en México,
+                        <strong className="text-foreground">CLARIFICA</strong> (en adelante, "la Plataforma"), con domicilio en México,
                         es responsable del tratamiento de los datos personales que nos proporcione, de conformidad
                         con la Ley Federal de Protección de Datos Personales en Posesión de los Particulares
                         (LFPDPPP) y demás normatividad aplicable.
@@ -80,7 +80,7 @@ export default function PrivacidadPage() {
                 <section className="space-y-3">
                     <h2 className="text-xl font-semibold text-foreground">4. Uso de Inteligencia Artificial</h2>
                     <p>
-                        CONTRULINK utiliza servicios de inteligencia artificial (Google Gemini) para generar fichas
+                        CLARIFICA utiliza servicios de inteligencia artificial (Google Gemini) para generar fichas
                         técnicas, recomendaciones personalizadas y asistencia en la búsqueda de materiales. Los
                         datos proporcionados en las consultas al asistente de IA son procesados únicamente para
                         generar las respuestas solicitadas y <strong className="text-foreground">no se utilizan para entrenar modelos de IA</strong>.
@@ -140,7 +140,7 @@ export default function PrivacidadPage() {
                         Para ejercer cualquiera de estos derechos, puede enviar una solicitud al correo:
                     </p>
                     <p className="text-foreground font-medium">
-                        📧 privacidad@contrulink.com
+                        📧 privacidad@clarifica.com
                     </p>
                 </section>
 
@@ -159,7 +159,7 @@ export default function PrivacidadPage() {
                 <section className="space-y-3">
                     <h2 className="text-xl font-semibold text-foreground">8. Medidas de Seguridad</h2>
                     <p>
-                        CONTRULINK implementa medidas de seguridad técnicas, administrativas y físicas para
+                        CLARIFICA implementa medidas de seguridad técnicas, administrativas y físicas para
                         proteger sus datos personales contra daño, pérdida, alteración, destrucción o acceso
                         no autorizado, incluyendo:
                     </p>
@@ -189,15 +189,15 @@ export default function PrivacidadPage() {
                         nosotros a través de:
                     </p>
                     <ul className="list-none space-y-1">
-                        <li>📧 <span className="text-foreground">privacidad@contrulink.com</span></li>
-                        <li>🌐 <span className="text-foreground">contrulink.com</span></li>
+                        <li>📧 <span className="text-foreground">privacidad@clarifica.com</span></li>
+                        <li>🌐 <span className="text-foreground">clarifica.com</span></li>
                     </ul>
                 </section>
 
                 {/* Consent */}
                 <section className="pt-4 border-t border-border">
                     <p className="text-sm text-center">
-                        Al crear una cuenta y utilizar CONTRULINK, usted manifiesta su consentimiento para el
+                        Al crear una cuenta y utilizar CLARIFICA, usted manifiesta su consentimiento para el
                         tratamiento de sus datos personales conforme al presente aviso de privacidad.
                     </p>
                 </section>
@@ -205,3 +205,5 @@ export default function PrivacidadPage() {
         </div>
     );
 }
+
+

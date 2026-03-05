@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CONTRULINK — Hub de Construcción",
+  title: "CLARIFICA — Hub de Construcción",
   description: "Materiales de construcción, comparación de precios y asistente IA",
 };
 
@@ -45,3 +45,4 @@ export default function RootLayout({
     </html>
   );
 }
+

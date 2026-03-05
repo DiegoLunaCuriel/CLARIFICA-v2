@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -77,7 +77,7 @@ export function LoginForm({ onSuccess, onSwitchToRegister, onForgotPassword }: L
                 backgroundClip: "text",
               }}
             >
-              CONTRULINK
+              CLARIFICA
             </p>
             <p className="text-2xl font-bold text-white mt-0.5">Bienvenido de vuelta</p>
             <p className="text-sm text-muted-foreground mt-1">Inicia sesión para continuar</p>
@@ -221,3 +221,4 @@ export function LoginForm({ onSuccess, onSwitchToRegister, onForgotPassword }: L
     </div>
   );
 }
+

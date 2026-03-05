@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { googleCseSearch } from "@/lib/search/google-cse";
 import { normalizeCseItems } from "@/services/product-search/normalize";
 import { rankEvidence } from "@/services/product-search/rank";
@@ -76,7 +76,7 @@ async function isUrlActive(url: string): Promise<boolean> {
       redirect: "follow",
       signal: controller.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; Contrulink/1.0)",
+        "User-Agent": "Mozilla/5.0 (compatible; CLARIFICA/1.0)",
       },
     });
 
@@ -422,3 +422,4 @@ export async function POST(request: Request) {
     );
   }
 }
+
