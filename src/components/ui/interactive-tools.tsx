@@ -524,12 +524,12 @@ type NailConfig = {
 };
 
 const TOOLS: ToolConfig[] = [
-  { id: "hammer", icon: "hammer", size: 180, rotate: -20 },
-  { id: "wrench", icon: "wrench", size: 170, rotate: 15 },
-  { id: "drill", icon: "drill", size: 190, rotate: -10 },
-  { id: "pliers", icon: "pliers", size: 170, rotate: 12 },
-  { id: "saw", icon: "saw", size: 185, rotate: -8 },
-  { id: "level", icon: "level", size: 175, rotate: 3 },
+  { id: "hammer", icon: "hammer", size: 110, rotate: -20 },
+  { id: "wrench", icon: "wrench", size: 100, rotate: 15 },
+  { id: "drill", icon: "drill", size: 115, rotate: -10 },
+  { id: "pliers", icon: "pliers", size: 100, rotate: 12 },
+  { id: "saw", icon: "saw", size: 110, rotate: -8 },
+  { id: "level", icon: "level", size: 105, rotate: 3 },
 ];
 
 // Image paths for realistic tool renders
@@ -840,7 +840,7 @@ export function FloatingTools() {
                 left: positions[i]?.x ?? 0,
                 top: positions[i]?.y ?? 0,
                 transform: `rotate(${tool.rotate}deg)${isHeld ? " scale(1.15)" : ""}`,
-                opacity: isHeld ? 0.5 : 0.18,
+                opacity: isHeld ? 0.4 : 0.10,
                 transition: "opacity 0.25s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1), filter 0.3s ease",
                 willChange: "left, top",
                 touchAction: "none",
@@ -1070,7 +1070,7 @@ export function ConstructionScene() {
       className="relative w-screen select-none"
       style={{
         height: "550px",
-        marginTop: "-200px",
+        marginTop: "-350px",
         marginLeft: "calc(-1 * (100vw - 100%) / 2)",
         width: "100vw",
       }}
