@@ -868,7 +868,7 @@ export function FloatingTools() {
             <motion.div
               key={nail.id}
               ref={(el) => { nailRefs.current[nail.id] = el; }}
-              className="absolute pointer-events-none"
+              className="fixed pointer-events-none"
               style={{ left: `${nail.xPct}%`, top: `${nail.yPct}%`, transform: `rotate(${nail.rotate}deg)`, opacity: isFullySunk ? 0.1 : 0.35 }}
               animate={{ opacity: isFullySunk ? 0.1 : 0.35 }}
             >
