@@ -23,6 +23,7 @@ import {
   ChevronLeft,
   ChevronRight,
   HardHat,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -226,6 +227,27 @@ function SidebarContent({
             {!collapsed && <span>Iniciar sesión</span>}
           </button>
         )}
+
+        <button
+          className={cn(
+            "group flex items-center gap-3 w-full rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:text-amber-400 transition-all duration-200",
+            collapsed && "justify-center px-2"
+          )}
+          style={{ border: "1px solid transparent" }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.background = "rgba(245,158,11,0.08)";
+            (e.currentTarget as HTMLElement).style.borderColor = "rgba(245,158,11,0.15)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.background = "";
+            (e.currentTarget as HTMLElement).style.borderColor = "transparent";
+          }}
+          onClick={() => handleNav("/privacidad")}
+          title={collapsed ? "Aviso de Privacidad" : undefined}
+        >
+          <Shield className="h-4 w-4 shrink-0" />
+          {!collapsed && <span>Privacidad</span>}
+        </button>
 
         {onToggleCollapse && (
           <button
