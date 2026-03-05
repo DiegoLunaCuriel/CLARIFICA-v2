@@ -512,13 +512,13 @@
 
   0%,
   100% {
-    opacity: 0.82;
+    opacity: 0.06;
     filter: brightness(1);
   }
 
   50% {
-    opacity: 0.95;
-    filter: brightness(1.12);
+    opacity: 0.10;
+    filter: brightness(1.05);
   }
 }
 

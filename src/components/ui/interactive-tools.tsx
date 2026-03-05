@@ -524,12 +524,12 @@ type NailConfig = {
 };
 
 const TOOLS: ToolConfig[] = [
-  { id: "hammer", icon: "hammer", size: 110, rotate: -20 },
-  { id: "wrench", icon: "wrench", size: 100, rotate: 15 },
-  { id: "drill", icon: "drill", size: 115, rotate: -10 },
-  { id: "pliers", icon: "pliers", size: 100, rotate: 12 },
-  { id: "saw", icon: "saw", size: 110, rotate: -8 },
-  { id: "level", icon: "level", size: 105, rotate: 3 },
+  { id: "hammer", icon: "hammer", size: 130, rotate: -20 },
+  { id: "wrench", icon: "wrench", size: 120, rotate: 15 },
+  { id: "drill", icon: "drill", size: 135, rotate: -10 },
+  { id: "pliers", icon: "pliers", size: 120, rotate: 12 },
+  { id: "saw", icon: "saw", size: 130, rotate: -8 },
+  { id: "level", icon: "level", size: 125, rotate: 3 },
 ];
 
 // Image paths for realistic tool renders
@@ -840,7 +840,7 @@ export function FloatingTools() {
                 left: positions[i]?.x ?? 0,
                 top: positions[i]?.y ?? 0,
                 transform: `rotate(${tool.rotate}deg)${isHeld ? " scale(1.15)" : ""}`,
-                opacity: isHeld ? 0.4 : 0.10,
+                opacity: isHeld ? 0.3 : 0.06,
                 transition: "opacity 0.25s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1), filter 0.3s ease",
                 willChange: "left, top",
                 touchAction: "none",
