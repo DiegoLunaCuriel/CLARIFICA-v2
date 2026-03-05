@@ -14,6 +14,7 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
     const body = await validateRequestBody(request);
 
     const googleAccessToken = body.access_token;
+    console.log("[Google Login] Token received:", googleAccessToken ? "yes" : "no");
 
     if (!googleAccessToken) {
       return createErrorResponse({
@@ -27,7 +28,11 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
       headers: { Authorization: `Bearer ${googleAccessToken}` },
     });
 
+    console.log("[Google Login] Google API status:", googleRes.status);
+
     if (!googleRes.ok) {
+      const errorText = await googleRes.text();
+      console.error("[Google Login] Google API error:", errorText);
       return createErrorResponse({
         errorMessage: "Token de Google inválido o expirado",
         status: 401,
@@ -37,6 +42,7 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
     const googleUser = await googleRes.json();
     const email = googleUser.email;
     const name = googleUser.name || "";
+    console.log("[Google Login] Google user:", { email, name, sub: googleUser.sub });
 
     if (!email) {
       return createErrorResponse({
@@ -49,19 +55,20 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
       await authCrudOperations();
 
     const users = await usersCrud.findMany({ email });
+    console.log("[Google Login] Existing users found:", users?.length);
 
     let user = users?.[0];
 
     if (!user) {
+      console.log("[Google Login] Creating new user...");
       const userData = {
         email,
         password: "GOOGLE-OAUTH",
-        name,
       };
 
       user = await usersCrud.create(userData);
+      console.log("[Google Login] User created:", user?.id);
 
-      // Custom extension hooks after user registration.
       await userRegisterCallback(user);
     }
 
@@ -92,9 +99,12 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
     };
 
     await refreshTokensCrud.create(refreshTokenData);
+    console.log("[Google Login] Success! User:", user.email);
 
     return createAuthResponse({ accessToken, refreshToken });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("[Google Login] FULL ERROR:", error?.message, error?.stack);
+
     if (error instanceof z.ZodError) {
       return createErrorResponse({
         errorMessage: error.errors[0].message,

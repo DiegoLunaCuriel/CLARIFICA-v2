@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useRouter } from "next/navigation";
@@ -235,7 +235,7 @@ function ActionCard({
           className="rounded-xl px-3 py-2 text-white text-sm font-semibold transition-all active:scale-95 shrink-0"
           style={{
             background: topBarColor.replace("1)", "0.9)"),
-            boxShadow: `0 2px 12px ${topBarColor.replace("1)", "0.3)")}`,
+            boxShadow: "0 2px 12px " + topBarColor.replace("1)", "0.3)"),
           }}
         >
           <ArrowRight className="h-4 w-4" />
@@ -519,3 +519,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
