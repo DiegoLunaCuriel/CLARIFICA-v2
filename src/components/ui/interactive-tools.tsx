@@ -25,28 +25,27 @@ function CartoonHammer({ size = 140 }: { size?: number }) {
           <stop offset="100%" stopColor="#9A6B30" />
         </linearGradient>
       </defs>
-      {/* Handle */}
-      <rect x="36" y="36" width="8" height="40" rx="3" fill="url(#hWood)" />
-      <rect x="38.5" y="36" width="2.5" height="40" rx="1" fill="#E0B060" opacity="0.25" />
+      {/* Handle — centered */}
+      <rect x="36" y="34" width="8" height="42" rx="3" fill="url(#hWood)" />
+      <rect x="38.5" y="34" width="2.5" height="42" rx="1" fill="#E0B060" opacity="0.25" />
       {/* Rubber grip */}
       <rect x="35" y="66" width="10" height="10" rx="3" fill="#1A1A2E" stroke="#2A2A44" strokeWidth="0.5" />
       <line x1="36" y1="69" x2="44" y2="69" stroke="#333355" strokeWidth="0.5" />
       <line x1="36" y1="72" x2="44" y2="72" stroke="#333355" strokeWidth="0.5" />
-      {/* Head block */}
-      <rect x="14" y="18" width="52" height="18" rx="4" fill="url(#hSteel)" stroke="#5A7A94" strokeWidth="1" />
-      <rect x="16" y="19" width="48" height="5" rx="2.5" fill="white" opacity="0.18" />
-      {/* Striking face */}
-      <rect x="60" y="16" width="9" height="22" rx="2" fill="#8FAFC5" stroke="#5A7A94" strokeWidth="0.8" />
-      <rect x="61" y="17" width="2" height="20" rx="1" fill="white" opacity="0.12" />
-      {/* Claw prongs */}
-      <path d="M16 20 L6 7" stroke="url(#hSteel)" strokeWidth="5" strokeLinecap="round" />
-      <path d="M16 34 L6 47" stroke="url(#hSteel)" strokeWidth="5" strokeLinecap="round" />
-      <path d="M16 20 L6 7" stroke="#5A7A94" strokeWidth="0.8" fill="none" />
-      <path d="M16 34 L6 47" stroke="#5A7A94" strokeWidth="0.8" fill="none" />
-      <path d="M7 8 Q11 18 7 16 Q4 16 7 8" fill="#4A6878" opacity="0.3" />
-      {/* Collar */}
-      <rect x="33" y="16" width="14" height="22" rx="2" fill="#7A96B0" stroke="#5A7A94" strokeWidth="0.5" />
-      <ellipse cx="40" cy="27" rx="14" ry="3" fill="white" opacity="0.06" />
+      {/* Head block — symmetrical, centered on x=40 */}
+      <rect x="10" y="14" width="60" height="20" rx="4" fill="url(#hSteel)" stroke="#5A7A94" strokeWidth="1" />
+      {/* Top sheen */}
+      <rect x="12" y="15" width="56" height="6" rx="3" fill="white" opacity="0.18" />
+      {/* Left striking face */}
+      <rect x="4" y="12" width="10" height="24" rx="3" fill="#8FAFC5" stroke="#5A7A94" strokeWidth="0.8" />
+      <rect x="5" y="13" width="2.5" height="22" rx="1" fill="white" opacity="0.12" />
+      {/* Right striking face — mirror */}
+      <rect x="66" y="12" width="10" height="24" rx="3" fill="#8FAFC5" stroke="#5A7A94" strokeWidth="0.8" />
+      <rect x="72.5" y="13" width="2.5" height="22" rx="1" fill="white" opacity="0.12" />
+      {/* Collar — centered */}
+      <rect x="34" y="12" width="12" height="24" rx="2" fill="#7A96B0" stroke="#5A7A94" strokeWidth="0.5" />
+      {/* Metallic reflection */}
+      <ellipse cx="40" cy="24" rx="20" ry="3" fill="white" opacity="0.06" />
     </svg>
   );
 }
