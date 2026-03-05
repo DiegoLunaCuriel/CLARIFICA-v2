@@ -840,7 +840,7 @@ export function FloatingTools() {
                 left: positions[i]?.x ?? 0,
                 top: positions[i]?.y ?? 0,
                 transform: `rotate(${tool.rotate}deg)${isHeld ? " scale(1.15)" : ""}`,
-                opacity: isHeld ? 0.3 : 0.06,
+                opacity: isHeld ? 0.5 : 0.25,
                 transition: "opacity 0.25s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1), filter 0.3s ease",
                 willChange: "left, top",
                 touchAction: "none",
