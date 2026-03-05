@@ -12,35 +12,41 @@ import { motion } from "framer-motion";
 function CartoonHammer({ size = 140 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 80 80" fill="none">
-      {/* Handle â€” tapered wood grain */}
-      <rect x="36" y="38" width="8" height="38" rx="3" fill="#C8873A" />
-      <rect x="38" y="38" width="3" height="38" rx="1.5" fill="#E0A852" opacity="0.5" />
-      <rect x="36" y="68" width="8" height="8" rx="2" fill="#2A1A0A" />
-      <line x1="37" y1="72" x2="43" y2="72" stroke="#4A3520" strokeWidth="0.7" opacity="0.6" />
-      <line x1="37" y1="74" x2="43" y2="74" stroke="#4A3520" strokeWidth="0.7" opacity="0.6" />
-
-      {/* Hammer head block â€” solid steel */}
-      <rect x="16" y="18" width="48" height="20" rx="4" fill="#8EAAC0" stroke="#5A7A94" strokeWidth="1.5" />
-      {/* Top sheen */}
-      <rect x="18" y="19" width="44" height="7" rx="3" fill="#B8D4E8" opacity="0.45" />
-
-      {/* Striking face â€” right side, flat */}
-      <rect x="58" y="16" width="10" height="24" rx="2" fill="#7A96B0" stroke="#5A7A94" strokeWidth="1.2" />
-      <rect x="59" y="17" width="3" height="22" rx="1" fill="#A8C4D8" opacity="0.3" />
-
-      {/* Claw fork â€” left side */}
-      <path d="M18 20 L8 6" stroke="#8EAAC0" strokeWidth="5" strokeLinecap="round" />
-      <path d="M18 36 L8 48" stroke="#8EAAC0" strokeWidth="5" strokeLinecap="round" />
-      <path d="M18 20 L8 6" stroke="#5A7A94" strokeWidth="1.2" fill="none" />
-      <path d="M18 36 L8 48" stroke="#5A7A94" strokeWidth="1.2" fill="none" />
-      {/* V-notch between claws */}
-      <path d="M8 6 Q12 14 8 14 Q5 14 8 6" fill="#5A7A94" opacity="0.3" />
-
-      {/* Collar where handle meets head */}
-      <rect x="34" y="17" width="12" height="22" rx="2" fill="#6A8A9E" stroke="#5A7A94" strokeWidth="0.8" />
-
-      {/* Metallic reflection */}
-      <ellipse cx="44" cy="27" rx="12" ry="4" fill="white" opacity="0.12" />
+      <defs>
+        <linearGradient id="hSteel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#D4E2F0" />
+          <stop offset="50%" stopColor="#9BB0C4" />
+          <stop offset="100%" stopColor="#6F8CA2" />
+        </linearGradient>
+        <linearGradient id="hWood" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#9A6B30" />
+          <stop offset="35%" stopColor="#C8873A" />
+          <stop offset="65%" stopColor="#D4994A" />
+          <stop offset="100%" stopColor="#9A6B30" />
+        </linearGradient>
+      </defs>
+      {/* Handle */}
+      <rect x="36" y="36" width="8" height="40" rx="3" fill="url(#hWood)" />
+      <rect x="38.5" y="36" width="2.5" height="40" rx="1" fill="#E0B060" opacity="0.25" />
+      {/* Rubber grip */}
+      <rect x="35" y="66" width="10" height="10" rx="3" fill="#1A1A2E" stroke="#2A2A44" strokeWidth="0.5" />
+      <line x1="36" y1="69" x2="44" y2="69" stroke="#333355" strokeWidth="0.5" />
+      <line x1="36" y1="72" x2="44" y2="72" stroke="#333355" strokeWidth="0.5" />
+      {/* Head block */}
+      <rect x="14" y="18" width="52" height="18" rx="4" fill="url(#hSteel)" stroke="#5A7A94" strokeWidth="1" />
+      <rect x="16" y="19" width="48" height="5" rx="2.5" fill="white" opacity="0.18" />
+      {/* Striking face */}
+      <rect x="60" y="16" width="9" height="22" rx="2" fill="#8FAFC5" stroke="#5A7A94" strokeWidth="0.8" />
+      <rect x="61" y="17" width="2" height="20" rx="1" fill="white" opacity="0.12" />
+      {/* Claw prongs */}
+      <path d="M16 20 L6 7" stroke="url(#hSteel)" strokeWidth="5" strokeLinecap="round" />
+      <path d="M16 34 L6 47" stroke="url(#hSteel)" strokeWidth="5" strokeLinecap="round" />
+      <path d="M16 20 L6 7" stroke="#5A7A94" strokeWidth="0.8" fill="none" />
+      <path d="M16 34 L6 47" stroke="#5A7A94" strokeWidth="0.8" fill="none" />
+      <path d="M7 8 Q11 18 7 16 Q4 16 7 8" fill="#4A6878" opacity="0.3" />
+      {/* Collar */}
+      <rect x="33" y="16" width="14" height="22" rx="2" fill="#7A96B0" stroke="#5A7A94" strokeWidth="0.5" />
+      <ellipse cx="40" cy="27" rx="14" ry="3" fill="white" opacity="0.06" />
     </svg>
   );
 }
@@ -48,36 +54,44 @@ function CartoonHammer({ size = 140 }: { size?: number }) {
 function CartoonWrench({ size = 140 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 80 80" fill="none">
-      {/* Fixed jaw â€” thick, wider */}
-      <path d="M14 4 L26 4 L26 20 L14 20 Z" fill="#B8C8D6" stroke="#6A8090" strokeWidth="1.2" />
+      <defs>
+        <linearGradient id="wMetal" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#A8B8C8" />
+          <stop offset="50%" stopColor="#C8D8E8" />
+          <stop offset="100%" stopColor="#98A8B8" />
+        </linearGradient>
+        <linearGradient id="wGrip" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#EF4444" />
+          <stop offset="100%" stopColor="#B91C1C" />
+        </linearGradient>
+      </defs>
+      {/* Fixed jaw */}
+      <path d="M14 3 L28 3 L28 20 L14 20 Z" fill="url(#wMetal)" stroke="#6A8090" strokeWidth="1" />
       {/* Movable jaw */}
-      <path d="M8 4 L14 4 L14 20 L8 20 Z" fill="#A0B0C0" stroke="#6A8090" strokeWidth="1.2" />
+      <path d="M7 3 L14 3 L14 20 L7 20 Z" fill="#95A5B5" stroke="#6A8090" strokeWidth="1" />
       {/* Jaw opening */}
-      <rect x="14" y="8" width="0" height="8" fill="#0A1520" />
-      {/* Jaw teeth texture */}
-      <line x1="9" y1="7" x2="13" y2="7" stroke="#7A8A9A" strokeWidth="0.8" />
-      <line x1="9" y1="10" x2="13" y2="10" stroke="#7A8A9A" strokeWidth="0.8" />
-      <line x1="9" y1="13" x2="13" y2="13" stroke="#7A8A9A" strokeWidth="0.8" />
+      <rect x="13.5" y="7" width="1" height="9" fill="#0A1520" opacity="0.8" />
+      {/* Teeth */}
+      <line x1="8" y1="7" x2="13" y2="7" stroke="#6A7A8A" strokeWidth="0.6" />
+      <line x1="8" y1="10" x2="13" y2="10" stroke="#6A7A8A" strokeWidth="0.6" />
+      <line x1="8" y1="13" x2="13" y2="13" stroke="#6A7A8A" strokeWidth="0.6" />
       {/* Adjustment wheel */}
-      <circle cx="20" cy="22" r="5" fill="#8A9AAC" stroke="#6A8090" strokeWidth="1" />
-      <circle cx="20" cy="22" r="2.5" fill="#6A7A88" />
-      <line x1="20" y1="17" x2="20" y2="19" stroke="#5A6A78" strokeWidth="0.8" />
-      <line x1="20" y1="25" x2="20" y2="27" stroke="#5A6A78" strokeWidth="0.8" />
+      <circle cx="21" cy="22" r="5" fill="#7A8A9C" stroke="#5A6A7C" strokeWidth="0.8" />
+      <circle cx="21" cy="22" r="2.5" fill="#5A6A78" />
+      <line x1="21" y1="17.5" x2="21" y2="19" stroke="#4A5A68" strokeWidth="0.6" />
+      <line x1="21" y1="25" x2="21" y2="26.5" stroke="#4A5A68" strokeWidth="0.6" />
       {/* Jaw highlight */}
-      <rect x="15" y="5" width="3" height="14" rx="1" fill="#D0E0F0" opacity="0.35" />
-
-      {/* Shaft â€” straight, metallic */}
-      <rect x="16" y="26" width="8" height="30" rx="3" fill="#B0C0CC" />
-      <rect x="18" y="26" width="3" height="30" rx="1.5" fill="#D0E0F0" opacity="0.4" />
-
-      {/* Rubber grip handle */}
-      <rect x="13" y="54" width="14" height="22" rx="6" fill="#E53E3E" />
-      <rect x="16" y="54" width="4" height="22" rx="2" fill="#FC8181" opacity="0.35" />
-      {/* Grip texture */}
-      <line x1="14" y1="60" x2="26" y2="60" stroke="#C53030" strokeWidth="0.9" opacity="0.5" />
-      <line x1="14" y1="64" x2="26" y2="64" stroke="#C53030" strokeWidth="0.9" opacity="0.5" />
-      <line x1="14" y1="68" x2="26" y2="68" stroke="#C53030" strokeWidth="0.9" opacity="0.5" />
-      <line x1="14" y1="72" x2="26" y2="72" stroke="#C53030" strokeWidth="0.9" opacity="0.5" />
+      <rect x="16" y="4" width="2.5" height="15" rx="1" fill="white" opacity="0.2" />
+      {/* Shaft */}
+      <rect x="17" y="26" width="8" height="28" rx="3" fill="url(#wMetal)" />
+      <rect x="19" y="26" width="2.5" height="28" rx="1" fill="white" opacity="0.15" />
+      {/* Grip */}
+      <rect x="14" y="52" width="14" height="24" rx="6" fill="url(#wGrip)" />
+      <rect x="17" y="52" width="3.5" height="24" rx="1.5" fill="#FC8181" opacity="0.2" />
+      <line x1="15" y1="58" x2="27" y2="58" stroke="#991B1B" strokeWidth="0.7" opacity="0.4" />
+      <line x1="15" y1="62" x2="27" y2="62" stroke="#991B1B" strokeWidth="0.7" opacity="0.4" />
+      <line x1="15" y1="66" x2="27" y2="66" stroke="#991B1B" strokeWidth="0.7" opacity="0.4" />
+      <line x1="15" y1="70" x2="27" y2="70" stroke="#991B1B" strokeWidth="0.7" opacity="0.4" />
     </svg>
   );
 }
@@ -85,53 +99,53 @@ function CartoonWrench({ size = 140 }: { size?: number }) {
 function CartoonDrill({ size = 150 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 80 80" fill="none">
-      {/* Main body â€” pistol shape */}
+      <defs>
+        <linearGradient id="dBody" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FDE68A" />
+          <stop offset="40%" stopColor="#FBBF24" />
+          <stop offset="100%" stopColor="#D4960C" />
+        </linearGradient>
+        <linearGradient id="dBit" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#A0B0C0" />
+          <stop offset="50%" stopColor="#D0DCE8" />
+          <stop offset="100%" stopColor="#8898A8" />
+        </linearGradient>
+      </defs>
+      {/* Main body */}
       <path d="M12 18 Q10 18 10 22 L10 40 Q10 44 14 44 L48 44 Q52 44 52 40 L52 22 Q52 18 48 18 Z"
-        fill="#FBBF24" stroke="#D4960C" strokeWidth="1.2" />
-      {/* Body top highlight */}
-      <path d="M14 19 L48 19 Q50 19 50 22 L50 28 L12 28 L12 22 Q12 19 14 19 Z"
-        fill="#FDE68A" opacity="0.5" />
-
-      {/* Grip / pistol handle */}
+        fill="url(#dBody)" stroke="#B8860B" strokeWidth="0.8" />
+      <path d="M14 19 L48 19 Q50 19 50 22 L50 27 L12 27 L12 22 Q12 19 14 19 Z"
+        fill="white" opacity="0.2" />
+      {/* Pistol grip */}
       <path d="M20 44 L18 48 L16 66 Q15 72 20 72 L38 72 Q43 72 42 66 L40 48 L38 44 Z"
-        fill="#1E293B" stroke="#0F172A" strokeWidth="1" />
-      <path d="M22 46 L21 60" stroke="#334155" strokeWidth="2.5" strokeLinecap="round" opacity="0.4" />
-
-      {/* Battery pack â€” bottom */}
-      <rect x="16" y="66" width="26" height="10" rx="3" fill="#334155" stroke="#1E293B" strokeWidth="1" />
-      <rect x="18" y="68" width="8" height="3" rx="1" fill="#475569" opacity="0.4" />
-
+        fill="#1E293B" stroke="#0F172A" strokeWidth="0.8" />
+      <path d="M22 46 L21 62" stroke="#334155" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
+      {/* Battery */}
+      <rect x="16" y="66" width="26" height="10" rx="3" fill="#2D3A4A" stroke="#1E293B" strokeWidth="0.8" />
+      <rect x="18" y="68" width="7" height="2.5" rx="1" fill="#475569" opacity="0.35" />
       {/* Trigger */}
-      <path d="M28 46 Q30 52 34 50 Q36 48 34 44" fill="#475569" stroke="#334155" strokeWidth="0.8" />
-
-      {/* Chuck â€” cylindrical */}
-      <rect x="52" y="26" width="10" height="12" rx="4" fill="#8A9AAC" stroke="#6A7A8C" strokeWidth="1" />
-      {/* Chuck collet lines */}
-      <line x1="54" y1="27" x2="54" y2="37" stroke="#6A7A8C" strokeWidth="0.6" />
-      <line x1="57" y1="27" x2="57" y2="37" stroke="#6A7A8C" strokeWidth="0.6" />
-      <line x1="60" y1="27" x2="60" y2="37" stroke="#6A7A8C" strokeWidth="0.6" />
-
-      {/* Drill bit â€” twist with helical grooves */}
-      <rect x="62" y="30" width="16" height="4" rx="1.5" fill="#B8C8D8" />
-      <path d="M78 30 L80 32 L78 34" fill="#A0B0C0" />
-      {/* Helical grooves */}
-      <line x1="65" y1="30" x2="67" y2="34" stroke="#90A0B0" strokeWidth="0.8" />
-      <line x1="69" y1="30" x2="71" y2="34" stroke="#90A0B0" strokeWidth="0.8" />
-      <line x1="73" y1="30" x2="75" y2="34" stroke="#90A0B0" strokeWidth="0.8" />
-
+      <path d="M28 46 Q30 52 34 50 Q36 48 34 44" fill="#3D4D5D" stroke="#2D3D4D" strokeWidth="0.6" />
+      {/* Chuck */}
+      <rect x="52" y="26" width="10" height="12" rx="4" fill="#8A9AAC" stroke="#6A7A8C" strokeWidth="0.8" />
+      <line x1="54" y1="27" x2="54" y2="37" stroke="#5A6A7C" strokeWidth="0.5" />
+      <line x1="57" y1="27" x2="57" y2="37" stroke="#5A6A7C" strokeWidth="0.5" />
+      <line x1="60" y1="27" x2="60" y2="37" stroke="#5A6A7C" strokeWidth="0.5" />
+      {/* Drill bit */}
+      <rect x="62" y="30" width="16" height="4" rx="1.5" fill="url(#dBit)" />
+      <path d="M78 30 L80 32 L78 34" fill="#90A0B0" />
+      <line x1="65" y1="30" x2="67" y2="34" stroke="#7888A0" strokeWidth="0.6" />
+      <line x1="69" y1="30" x2="71" y2="34" stroke="#7888A0" strokeWidth="0.6" />
+      <line x1="73" y1="30" x2="75" y2="34" stroke="#7888A0" strokeWidth="0.6" />
       {/* Direction switch */}
       <rect x="22" y="22" width="6" height="4" rx="1.5" fill="#EF4444" />
-
-      {/* Ventilation slots */}
-      <rect x="34" y="24" width="8" height="1.5" rx="0.75" fill="#D4960C" opacity="0.5" />
-      <rect x="34" y="28" width="8" height="1.5" rx="0.75" fill="#D4960C" opacity="0.5" />
-      <rect x="34" y="32" width="8" height="1.5" rx="0.75" fill="#D4960C" opacity="0.5" />
-
-      {/* LED light */}
-      <circle cx="50" cy="26" r="1.5" fill="#4ADE80" opacity="0.8" />
-
-      {/* Body sheen */}
-      <rect x="14" y="20" width="34" height="3" rx="2" fill="white" opacity="0.15" />
+      {/* Vents */}
+      <rect x="34" y="24" width="8" height="1.2" rx="0.6" fill="#B8860B" opacity="0.4" />
+      <rect x="34" y="28" width="8" height="1.2" rx="0.6" fill="#B8860B" opacity="0.4" />
+      <rect x="34" y="32" width="8" height="1.2" rx="0.6" fill="#B8860B" opacity="0.4" />
+      {/* LED */}
+      <circle cx="50" cy="26" r="1.5" fill="#4ADE80" opacity="0.7" />
+      {/* Sheen */}
+      <rect x="14" y="20" width="34" height="2.5" rx="1.5" fill="white" opacity="0.12" />
     </svg>
   );
 }
@@ -139,42 +153,50 @@ function CartoonDrill({ size = 150 }: { size?: number }) {
 function CartoonPliers({ size = 140 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 80 80" fill="none">
-      {/* Left jaw â€” curved taper */}
-      <path d="M30 6 Q24 10 25 20 L36 22 L36 12 Z" fill="#8A9AAA" stroke="#4A5A6A" strokeWidth="1.2" strokeLinejoin="round" />
-      {/* Right jaw â€” curved taper */}
-      <path d="M44 6 Q50 10 49 20 L38 22 L38 12 Z" fill="#8A9AAA" stroke="#4A5A6A" strokeWidth="1.2" strokeLinejoin="round" />
-      {/* Jaw tips â€” pointed */}
-      <path d="M30 6 L33 2 L36 6" fill="#7A8A9A" stroke="#4A5A6A" strokeWidth="0.8" />
-      <path d="M38 6 L41 2 L44 6" fill="#7A8A9A" stroke="#4A5A6A" strokeWidth="0.8" />
-      {/* Serrated teeth inside */}
-      <path d="M31 14 L32 12 L33 14 L34 12 L35 14" stroke="#4A5A6A" strokeWidth="0.7" fill="none" />
-      <path d="M39 14 L40 12 L41 14 L42 12 L43 14" stroke="#4A5A6A" strokeWidth="0.7" fill="none" />
-      {/* Wire-cutter notch */}
-      <path d="M35 18 Q37 16 39 18" fill="#3A4A5A" />
+      <defs>
+        <linearGradient id="pJaw" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#B0BCC8" />
+          <stop offset="50%" stopColor="#8A9AAA" />
+          <stop offset="100%" stopColor="#6A7A8A" />
+        </linearGradient>
+        <linearGradient id="pGrip" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#EF4444" />
+          <stop offset="50%" stopColor="#DC2626" />
+          <stop offset="100%" stopColor="#991B1B" />
+        </linearGradient>
+      </defs>
+      {/* Left jaw */}
+      <path d="M30 6 Q24 10 25 20 L36 22 L36 12 Z" fill="url(#pJaw)" stroke="#4A5A6A" strokeWidth="1" strokeLinejoin="round" />
+      {/* Right jaw */}
+      <path d="M44 6 Q50 10 49 20 L38 22 L38 12 Z" fill="url(#pJaw)" stroke="#4A5A6A" strokeWidth="1" strokeLinejoin="round" />
+      {/* Jaw tips */}
+      <path d="M30 6 L33 2 L36 6" fill="#7A8A9A" stroke="#4A5A6A" strokeWidth="0.6" />
+      <path d="M38 6 L41 2 L44 6" fill="#7A8A9A" stroke="#4A5A6A" strokeWidth="0.6" />
+      {/* Teeth */}
+      <path d="M31 14 L32 12 L33 14 L34 12 L35 14" stroke="#3A4A5A" strokeWidth="0.6" fill="none" />
+      <path d="M39 14 L40 12 L41 14 L42 12 L43 14" stroke="#3A4A5A" strokeWidth="0.6" fill="none" />
+      {/* Wire-cutter */}
+      <path d="M35 18 Q37 16 39 18" fill="#2A3A4A" />
       {/* Jaw highlights */}
-      <path d="M31 8 L34 14" stroke="#B0BCC8" strokeWidth="1" opacity="0.3" strokeLinecap="round" />
-      <path d="M43 8 L40 14" stroke="#B0BCC8" strokeWidth="1" opacity="0.3" strokeLinecap="round" />
-
+      <path d="M31 8 L34 14" stroke="#C0CCD8" strokeWidth="0.8" opacity="0.25" strokeLinecap="round" />
+      <path d="M43 8 L40 14" stroke="#C0CCD8" strokeWidth="0.8" opacity="0.25" strokeLinecap="round" />
       {/* Pivot bolt */}
-      <circle cx="37" cy="25" r="5" fill="#4A5A6A" />
-      <circle cx="37" cy="25" r="3" fill="#6E7F8E" />
-      <circle cx="37" cy="25" r="1.2" fill="#4A5A6A" />
-
-      {/* Left handle â€” curved organic shape */}
-      <path d="M27 28 Q24 32 22 42 L18 66 Q17 72 20 74 Q24 76 26 72 L32 44 Q33 36 32 30 Z" fill="#DC2626" stroke="#991B1B" strokeWidth="1.2" />
-      <path d="M28 30 Q25 36 23 44 L20 64" fill="none" stroke="#EF4444" strokeWidth="2" opacity="0.3" strokeLinecap="round" />
-      {/* Left grip bumps */}
-      <line x1="20" y1="58" x2="26" y2="54" stroke="#B91C1C" strokeWidth="0.8" opacity="0.5" />
-      <line x1="19.5" y1="62" x2="25.5" y2="58" stroke="#B91C1C" strokeWidth="0.8" opacity="0.5" />
-      <line x1="19" y1="66" x2="25" y2="62" stroke="#B91C1C" strokeWidth="0.8" opacity="0.5" />
-
-      {/* Right handle â€” curved organic shape */}
-      <path d="M47 28 Q50 32 52 42 L56 66 Q57 72 54 74 Q50 76 48 72 L42 44 Q41 36 42 30 Z" fill="#DC2626" stroke="#991B1B" strokeWidth="1.2" />
-      <path d="M46 30 Q49 36 51 44 L54 64" fill="none" stroke="#EF4444" strokeWidth="2" opacity="0.3" strokeLinecap="round" />
-      {/* Right grip bumps */}
-      <line x1="48" y1="54" x2="54" y2="58" stroke="#B91C1C" strokeWidth="0.8" opacity="0.5" />
-      <line x1="48.5" y1="58" x2="54.5" y2="62" stroke="#B91C1C" strokeWidth="0.8" opacity="0.5" />
-      <line x1="49" y1="62" x2="55" y2="66" stroke="#B91C1C" strokeWidth="0.8" opacity="0.5" />
+      <circle cx="37" cy="25" r="5" fill="#3A4A5A" />
+      <circle cx="37" cy="25" r="3" fill="#5A6A7A" />
+      <circle cx="37" cy="25" r="1" fill="#3A4A5A" />
+      <circle cx="36" cy="24" r="0.6" fill="white" opacity="0.2" />
+      {/* Left handle */}
+      <path d="M27 28 Q24 32 22 42 L18 66 Q17 72 20 74 Q24 76 26 72 L32 44 Q33 36 32 30 Z" fill="url(#pGrip)" stroke="#7F1D1D" strokeWidth="0.8" />
+      <path d="M28 30 Q25 36 23 44 L20 64" fill="none" stroke="#F87171" strokeWidth="1.5" opacity="0.2" strokeLinecap="round" />
+      <line x1="20" y1="58" x2="26" y2="54" stroke="#7F1D1D" strokeWidth="0.6" opacity="0.4" />
+      <line x1="19.5" y1="62" x2="25.5" y2="58" stroke="#7F1D1D" strokeWidth="0.6" opacity="0.4" />
+      <line x1="19" y1="66" x2="25" y2="62" stroke="#7F1D1D" strokeWidth="0.6" opacity="0.4" />
+      {/* Right handle */}
+      <path d="M47 28 Q50 32 52 42 L56 66 Q57 72 54 74 Q50 76 48 72 L42 44 Q41 36 42 30 Z" fill="url(#pGrip)" stroke="#7F1D1D" strokeWidth="0.8" />
+      <path d="M46 30 Q49 36 51 44 L54 64" fill="none" stroke="#F87171" strokeWidth="1.5" opacity="0.2" strokeLinecap="round" />
+      <line x1="48" y1="54" x2="54" y2="58" stroke="#7F1D1D" strokeWidth="0.6" opacity="0.4" />
+      <line x1="48.5" y1="58" x2="54.5" y2="62" stroke="#7F1D1D" strokeWidth="0.6" opacity="0.4" />
+      <line x1="49" y1="62" x2="55" y2="66" stroke="#7F1D1D" strokeWidth="0.6" opacity="0.4" />
     </svg>
   );
 }
@@ -182,31 +204,37 @@ function CartoonPliers({ size = 140 }: { size?: number }) {
 function CartoonSaw({ size = 150 }: { size?: number }) {
   return (
     <svg width={size} height={size * 0.6} viewBox="0 0 100 60" fill="none">
-      {/* Blade â€” tapers from handle to tip */}
-      <path d="M30 16 L94 12 L96 22 L30 32 Z" fill="#D0D8E0" />
-      {/* Blade highlight â€” top edge lighter */}
-      <path d="M30 16 L94 12 L94 16 L30 22 Z" fill="#E8EEF4" opacity="0.6" />
-      {/* Blade spine â€” darker edge along top */}
-      <path d="M30 16 L94 12 L94 13.5 L30 17.5 Z" fill="#A0AAB4" opacity="0.5" />
-
-      {/* Teeth â€” triangular along bottom */}
+      <defs>
+        <linearGradient id="sBlade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#E0E8F0" />
+          <stop offset="40%" stopColor="#C0CCD8" />
+          <stop offset="100%" stopColor="#95A5B5" />
+        </linearGradient>
+        <linearGradient id="sHandle" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FB923C" />
+          <stop offset="50%" stopColor="#F97316" />
+          <stop offset="100%" stopColor="#C2410C" />
+        </linearGradient>
+      </defs>
+      {/* Blade */}
+      <path d="M30 16 L94 12 L96 22 L30 32 Z" fill="url(#sBlade)" />
+      <path d="M30 16 L94 12 L94 15 L30 21 Z" fill="white" opacity="0.15" />
+      <path d="M30 16 L94 12 L94 13.5 L30 17.5 Z" fill="#8898A8" opacity="0.4" />
+      {/* Teeth */}
       <path d="M32 32 L34 37 L36 32 L38 37 L40 32 L42 37 L44 32 L46 37 L48 32 L50 37 L52 32 L54 37 L56 32 L58 37 L60 32 L62 37 L64 32 L66 36 L68 32 L70 36 L72 31 L74 35 L76 31 L78 35 L80 30 L82 34 L84 30 L86 33 L88 29 L90 32 L92 28 L94 30 L96 22 L30 32 Z"
-        fill="#A0AAB8" />
-
-      {/* D-Handle with grip hole */}
+        fill="#8898A8" />
+      {/* D-Handle */}
       <path d="M4 10 Q2 10 2 14 L2 38 Q2 42 6 42 L30 42 Q34 42 34 38 L34 14 Q34 10 30 10 Z"
-        fill="#F97316" stroke="#C2410C" strokeWidth="1.2" />
-      {/* Handle top highlight */}
-      <path d="M6 11 L28 11 Q32 11 32 14 L32 18 L4 18 L4 14 Q4 11 6 11 Z"
-        fill="#FDBA74" opacity="0.5" />
-      {/* Handle grip hole (D-handle opening) */}
-      <rect x="10" y="20" width="16" height="14" rx="5" fill="#C2410C" />
-      <rect x="12" y="22" width="12" height="10" rx="3" fill="#9A3400" opacity="0.6" />
-
-      {/* Connection bolt â€” where handle meets blade */}
-      <circle cx="30" cy="22" r="3" fill="#C2410C" />
+        fill="url(#sHandle)" stroke="#9A3412" strokeWidth="0.8" />
+      <path d="M6 11 L28 11 Q32 11 32 14 L32 17 L4 17 L4 14 Q4 11 6 11 Z"
+        fill="white" opacity="0.2" />
+      {/* Grip hole */}
+      <rect x="10" y="20" width="16" height="14" rx="5" fill="#B45309" />
+      <rect x="12" y="22" width="12" height="10" rx="3" fill="#7C2D12" opacity="0.5" />
+      {/* Connection bolts */}
+      <circle cx="30" cy="22" r="3" fill="#B45309" />
       <circle cx="30" cy="22" r="1.5" fill="#EA580C" />
-      <circle cx="30" cy="34" r="2.5" fill="#C2410C" />
+      <circle cx="30" cy="34" r="2.5" fill="#B45309" />
       <circle cx="30" cy="34" r="1.3" fill="#EA580C" />
     </svg>
   );
@@ -215,28 +243,33 @@ function CartoonSaw({ size = 150 }: { size?: number }) {
 function CartoonLevel({ size = 140 }: { size?: number }) {
   return (
     <svg width={size} height={size * 0.35} viewBox="0 0 100 35" fill="none">
-      {/* Body â€” vivid green */}
-      <rect x="2" y="6" width="96" height="22" rx="5" fill="#22C55E" />
-      <rect x="2" y="6" width="96" height="10" rx="4" fill="#86EFAC" opacity="0.45" />
+      <defs>
+        <linearGradient id="lBody" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#4ADE80" />
+          <stop offset="40%" stopColor="#22C55E" />
+          <stop offset="100%" stopColor="#16A34A" />
+        </linearGradient>
+      </defs>
+      {/* Body */}
+      <rect x="2" y="6" width="96" height="22" rx="5" fill="url(#lBody)" />
+      <rect x="2" y="6" width="96" height="8" rx="4" fill="white" opacity="0.18" />
       {/* Center bubble window */}
-      <rect x="36" y="10" width="28" height="14" rx="7" fill="#0F172A" />
+      <rect x="36" y="10" width="28" height="14" rx="7" fill="#0F172A" stroke="#1A2634" strokeWidth="0.5" />
       <rect x="38" y="12" width="24" height="10" rx="5" fill="#07111E" />
-      {/* Bubble â€” bright yellow */}
-      <ellipse cx="50" cy="17" rx="5" ry="3.5" fill="#FDE047" opacity="0.95" />
-      <ellipse cx="49" cy="16" rx="2" ry="1.5" fill="#FEFCE8" opacity="0.8" />
-      {/* Level lines */}
-      <line x1="42" y1="17" x2="44" y2="17" stroke="#374151" strokeWidth="1" />
-      <line x1="56" y1="17" x2="58" y2="17" stroke="#374151" strokeWidth="1" />
+      <ellipse cx="50" cy="17" rx="5" ry="3.5" fill="#FDE047" opacity="0.9" />
+      <ellipse cx="49" cy="16" rx="2" ry="1.5" fill="#FEFCE8" opacity="0.7" />
+      <line x1="42" y1="17" x2="44" y2="17" stroke="#2A3A4A" strokeWidth="0.8" />
+      <line x1="56" y1="17" x2="58" y2="17" stroke="#2A3A4A" strokeWidth="0.8" />
       {/* Side bubbles */}
       <rect x="10" y="12" width="14" height="10" rx="5" fill="#0F172A" />
-      <ellipse cx="17" cy="17" rx="3" ry="2.5" fill="#FDE047" opacity="0.8" />
+      <ellipse cx="17" cy="17" rx="3" ry="2.5" fill="#FDE047" opacity="0.75" />
       <rect x="76" y="12" width="14" height="10" rx="5" fill="#0F172A" />
-      <ellipse cx="83" cy="17" rx="3" ry="2.5" fill="#FDE047" opacity="0.8" />
+      <ellipse cx="83" cy="17" rx="3" ry="2.5" fill="#FDE047" opacity="0.75" />
       {/* End caps */}
-      <rect x="0" y="8" width="6" height="18" rx="3" fill="#16A34A" />
-      <rect x="94" y="8" width="6" height="18" rx="3" fill="#16A34A" />
+      <rect x="0" y="8" width="6" height="18" rx="3" fill="#15803D" />
+      <rect x="94" y="8" width="6" height="18" rx="3" fill="#15803D" />
       {/* Body sheen */}
-      <rect x="4" y="8" width="92" height="4" rx="3" fill="white" opacity="0.15" />
+      <rect x="4" y="8" width="92" height="3" rx="2" fill="white" opacity="0.1" />
     </svg>
   );
 }
@@ -778,18 +811,15 @@ export function FloatingTools() {
   if (!mounted || positions.length === 0) return null;
 
   const toolIcon = (icon: string, size: number) => {
-    const src = TOOL_IMAGES[icon];
-    if (!src) return null;
-    return (
-      <img
-        src={src}
-        alt=""
-        width={size}
-        height={size}
-        style={{ mixBlendMode: "screen", objectFit: "contain" }}
-        draggable={false}
-      />
-    );
+    switch (icon) {
+      case "hammer": return <CartoonHammer size={size} />;
+      case "wrench": return <CartoonWrench size={size} />;
+      case "drill": return <CartoonDrill size={size} />;
+      case "pliers": return <CartoonPliers size={size} />;
+      case "saw": return <CartoonSaw size={size} />;
+      case "level": return <CartoonLevel size={size} />;
+      default: return null;
+    }
   };
 
   return (
