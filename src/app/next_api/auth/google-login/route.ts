@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
-import { requestMiddleware, responseRedirect, getRequestIp, validateRequestBody } from "@/lib/api-utils";
+import { requestMiddleware, getRequestIp, validateRequestBody } from "@/lib/api-utils";
 import { createErrorResponse, createAuthResponse } from "@/lib/create-response";
-import { generateToken, authCrudOperations, verifyToken } from "@/lib/auth";
+import { generateToken, authCrudOperations } from "@/lib/auth";
 import { generateRandomString, pbkdf2Hash } from "@/lib/server-utils";
 import { REFRESH_TOKEN_EXPIRE_TIME } from "@/constants/auth";
 import { z } from "zod";
@@ -9,44 +9,60 @@ import { userRegisterCallback } from "@/lib/user-register";
 
 export const POST = requestMiddleware(async (request: NextRequest) => {
   try {
-
     const ip = getRequestIp(request);
-
     const userAgent = request.headers.get("user-agent") || "unknown";
-
     const body = await validateRequestBody(request);
 
     const googleAccessToken = body.access_token;
-    const callbackUrl = body.callback_url;
-    const loginUrl = new URL('/login', callbackUrl).href;
 
-    if(!googleAccessToken) {
-      return responseRedirect(loginUrl, callbackUrl);
+    if (!googleAccessToken) {
+      return createErrorResponse({
+        errorMessage: "No se proporcionó token de Google",
+        status: 400,
+      });
+    }
+
+    // Use Google's userinfo endpoint to get user data from the access token
+    const googleRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: { Authorization: `Bearer ${googleAccessToken}` },
+    });
+
+    if (!googleRes.ok) {
+      return createErrorResponse({
+        errorMessage: "Token de Google inválido o expirado",
+        status: 401,
+      });
+    }
+
+    const googleUser = await googleRes.json();
+    const email = googleUser.email;
+    const name = googleUser.name || "";
+
+    if (!email) {
+      return createErrorResponse({
+        errorMessage: "No se pudo obtener el email de la cuenta de Google",
+        status: 400,
+      });
     }
 
     const { usersCrud, sessionsCrud, refreshTokensCrud } =
       await authCrudOperations();
 
-    const { valid, payload } = await verifyToken(googleAccessToken);
-
-    if(!valid || !payload?.sub) {
-      return responseRedirect(loginUrl, callbackUrl);
-    }
-
-    const users = await usersCrud.findMany({ email: payload.sub });
+    const users = await usersCrud.findMany({ email });
 
     let user = users?.[0];
 
     if (!user) {
       const userData = {
-        email: payload.sub,
-        password: 'NOT-SET',
+        email,
+        password: "GOOGLE-OAUTH",
+        name,
       };
-  
+
       user = await usersCrud.create(userData);
-      
-      // Custom extension hooks after user registration. 
-      await userRegisterCallback(user)
+
+      // Custom extension hooks after user registration.
+      await userRegisterCallback(user);
     }
 
     const accessToken = await generateToken({
@@ -56,7 +72,6 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
     });
 
     const refreshToken = await generateRandomString();
-
     const hashedRefreshToken = await pbkdf2Hash(refreshToken);
 
     const sessionData = {
