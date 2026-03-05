@@ -823,7 +823,7 @@ export function FloatingTools() {
 
   return (
     <>
-      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }} aria-hidden>
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 5 }} aria-hidden>
         {/* Floating tools */}
         {TOOLS.map((tool, i) => {
           const isHeld = isDragging === tool.id;
