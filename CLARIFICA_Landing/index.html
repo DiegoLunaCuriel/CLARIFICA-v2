@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLARIFICA | Construcción y Cimentación a Bajo Nivel</title>
+    <meta name="description" content="Especialistas en construcción a bajo nivel. Cimentaciones profundas, estructuras subterráneas y topografía avanzada.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Cursor Glow -->
+    <div id="cursor-glow"></div>
+
+    <!-- Background Particle System Container -->
+    <div id="particles-container"></div>
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo-container">
+                <img src="images/logo.png" alt="CLARIFICA Logo" class="logo-img">
+                <span class="logo-text glow-text">CLARIFICA</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="#servicios" class="nav-link">Capacidades</a>
+                <a href="#proyectos" class="nav-link">Infraestructura</a>
+                <a href="#metricas" class="nav-link">Métricas</a>
+                <a href="#contacto" class="btn-primary nav-btn">Contactar</a>
+            </div>
+
+            <button class="mobile-menu-toggle" id="mobile-menu-btn" aria-label="Abrir menú">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Dropdown -->
+        <div class="mobile-dropdown" id="mobile-dropdown">
+            <a href="#servicios" class="mobile-link">Capacidades</a>
+            <a href="#proyectos" class="mobile-link">Infraestructura</a>
+            <a href="#metricas" class="mobile-link">Métricas</a>
+            <a href="#contacto" class="mobile-link primary-mobile-link">Contactar</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="inicio">
+            <div class="hero-bg-gradient"></div>
+            
+            <div class="hero-content">
+                <div class="hero-text-container">
+                    <div class="hero-label fade-in-up">
+                        <span class="label-badge">🚧 Cimentando el Futuro de la Ingeniería</span>
+                    </div>
+                    
+                    <h1 class="hero-title fade-in-up delay-1">
+                        Construcción y Soporte<br>
+                        <span class="text-gradient">A Bajo Nivel</span>
+                    </h1>
+                    
+                    <p class="hero-subtitle fade-in-up delay-2">
+                        Soluciones especializadas en cimentación profunda, refuerzo estructural y desarrollo de infraestructura subterránea con la máxima precisión y tecnología avanzada.
+                    </p>
+                    
+                    <div class="hero-ctas fade-in-up delay-3">
+                        <a href="#servicios" class="btn-primary glow-primary">Explorar Capacidades</a>
+                        <a href="#contacto" class="btn-outline">Solicitar Evaluación</a>
+                    </div>
+                </div>
+
+                <div class="hero-visual-container fade-in-rotate delay-2">
+                    <div class="sphere">
+                        <div class="sphere-inner"></div>
+                        <img src="images/hero_visual.png" alt="Maquinaria y Estructura 3D" class="hero-image icon-3d">
+                        <div class="orbital-ring ring-1"></div>
+                        <div class="orbital-ring ring-2"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-scroll-indicator">
+                <span class="scroll-text">Descubrir más</span>
+                <div class="scroll-mouse">
+                    <div class="scroll-wheel"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Proof / Certificaciones -->
+        <section class="social-proof reveal">
+            <div class="proof-container">
+                <p class="proof-title">CERTIFICACIONES Y NORMAS DE CALIDAD</p>
+                <div class="proof-logos">
+                    <!-- Placeholder text/badges for industrial context -->
+                    <div class="proof-item hover-color">ISO 9001:2015</div>
+                    <div class="proof-item hover-color">ISO 14001</div>
+                    <div class="proof-item hover-color">ISO 45001</div>
+                    <div class="proof-item hover-color">AISC Certified</div>
+                    <div class="proof-item hover-color">OSHA Standard</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Servicios / Capacidades -->
+        <section class="services section-padding" id="servicios">
+            <div class="section-header reveal">
+                <h2 class="section-title">Infraestructura <span class="text-gradient">Crítica</span></h2>
+                <p class="section-desc">Desarrollamos las bases más sólidas para proyectos industriales de alta complejidad geométrica y estructural.</p>
+            </div>
+
+            <div class="services-grid container">
+                
+                <!-- Service 1 -->
+                <div class="service-card-flip reveal">
+                    <div class="service-card-inner">
+                        <div class="service-card-front">
+                            <img src="images/service_1.png" alt="Cimentación Profunda" class="service-image">
+                            <div class="service-overlay">
+                                <h3 class="service-title-front">Cimentación Profunda</h3>
+                            </div>
+                        </div>
+                        <div class="service-card-back glass-card">
+                            <h3 class="service-title-back">Cimentación Profunda</h3>
+                            <p class="service-description">Perforación e hincado de pilotes de gran diámetro para transferencia de cargas masivas en suelos de baja capacidad.</p>
+                            <div class="service-features">
+                                <span class="feature-tag">Pilotes</span>
+                                <span class="feature-tag">Micropilotes</span>
+                                <span class="feature-tag">Anclajes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="service-card-flip reveal delay-1">
+                    <div class="service-card-inner">
+                        <div class="service-card-front">
+                            <img src="images/service_2.png" alt="Topografía Avanzada" class="service-image">
+                            <div class="service-overlay">
+                                <h3 class="service-title-front">Topografía Avanzada</h3>
+                            </div>
+                        </div>
+                        <div class="service-card-back glass-card">
+                            <h3 class="service-title-back">Topografía 3D</h3>
+                            <p class="service-description">Mapeo del subsuelo mediante escáneres láser y tomografía de resistividad eléctrica para planeación milimétrica.</p>
+                            <div class="service-features">
+                                <span class="feature-tag">Láser Scanner 3D</span>
+                                <span class="feature-tag">GPR</span>
+                                <span class="feature-tag">Fotogrametría</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="service-card-flip reveal delay-2">
+                    <div class="service-card-inner">
+                        <div class="service-card-front">
+                            <img src="images/service_3.png" alt="Estructuras Subterráneas" class="service-image">
+                            <div class="service-overlay">
+                                <h3 class="service-title-front">Estructuras Subterráneas</h3>
+                            </div>
+                        </div>
+                        <div class="service-card-back glass-card">
+                            <h3 class="service-title-back">Estructuras Subterráneas</h3>
+                            <p class="service-description">Construcción de bóvedas, sótanos de alta profundidad y galerías reforzadas contra presiones hidrostáticas.</p>
+                            <div class="service-features">
+                                <span class="feature-tag">Muros Milán</span>
+                                <span class="feature-tag">Concreto Lanzado</span>
+                                <span class="feature-tag">Ataguías</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="service-card-flip reveal">
+                    <div class="service-card-inner">
+                        <div class="service-card-front">
+                            <img src="images/service_4.png" alt="Refuerzo Estructural" class="service-image">
+                            <div class="service-overlay">
+                                <h3 class="service-title-front">Refuerzo Estructural</h3>
+                            </div>
+                        </div>
+                        <div class="service-card-back glass-card">
+                            <h3 class="service-title-back">Refuerzo de Acero</h3>
+                            <p class="service-description">Armado de acero pesado y soldadura de precisión para elementos de infraestructura sometidos a tensiones extremas.</p>
+                            <div class="service-features">
+                                <span class="feature-tag">Acero A-36</span>
+                                <span class="feature-tag">Soldadura API</span>
+                                <span class="feature-tag">Encofrado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="service-card-flip reveal delay-1">
+                    <div class="service-card-inner">
+                        <div class="service-card-front">
+                            <img src="images/service_5.png" alt="Infraestructura Hidráulica" class="service-image">
+                            <div class="service-overlay">
+                                <h3 class="service-title-front">Redes de Drenaje</h3>
+                            </div>
+                        </div>
+                        <div class="service-card-back glass-card">
+                            <h3 class="service-title-back">Infraestructura Hídrica</h3>
+                            <p class="service-description">Instalación de tuberías industriales y canales de alivio pluvial bajo altos estándares de hermeticidad.</p>
+                            <div class="service-features">
+                                <span class="feature-tag">Cárcamos</span>
+                                <span class="feature-tag">Colectores</span>
+                                <span class="feature-tag">Termofusión</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 6 -->
+                <div class="service-card-flip reveal delay-2">
+                    <div class="service-card-inner">
+                        <div class="service-card-front">
+                            <img src="images/service_6.png" alt="Excavación Masiva" class="service-image">
+                            <div class="service-overlay">
+                                <h3 class="service-title-front">Excavación Masiva</h3>
+                            </div>
+                        </div>
+                        <div class="service-card-back glass-card">
+                            <h3 class="service-title-back">Excavación de Precisión</h3>
+                            <p class="service-description">Remoción controlada de grandes volúmenes de tierra y roca utilizando maquinaria inteligente y voladuras controladas.</p>
+                            <div class="service-features">
+                                <span class="feature-tag">Terracerías</span>
+                                <span class="feature-tag">Despalme</span>
+                                <span class="feature-tag">Voladuras</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Stats / Métricas Section -->
+        <section class="stats-section section-padding" id="metricas">
+            <div class="container stats-grid">
+                <div class="stat-card glass-card reveal">
+                    <div class="stat-number glow-text"><span class="counter" data-target="150">0</span>+</div>
+                    <div class="stat-label">Proyectos Industriales</div>
+                </div>
+                <div class="stat-card glass-card reveal delay-1">
+                    <div class="stat-number glow-text"><span class="counter" data-target="3500">0</span>ft</div>
+                    <div class="stat-label">Profundidad Máxima</div>
+                </div>
+                <div class="stat-card glass-card reveal delay-2">
+                    <div class="stat-number glow-text"><span class="counter" data-target="45">0</span></div>
+                    <div class="stat-label">Equipos de Maquinaria Pesada</div>
+                </div>
+                <div class="stat-card glass-card reveal delay-3">
+                    <div class="stat-number glow-text"><span class="counter" data-target="100">0</span>%</div>
+                    <div class="stat-label">Precisión Topográfica</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Final -->
+        <section class="cta-section section-padding" id="contacto">
+            <div class="cta-container glass-card reveal">
+                <div class="cta-bg-glow"></div>
+                <h2 class="cta-title">¿Listo para estructurar la base de tu proyecto?</h2>
+                <p class="cta-desc">Cuéntanos sobre tu necesidad industrial. Nuestro equipo de ingeniería civil evaluará el terreno y la viabilidad técnica.</p>
+                <div class="cta-actions">
+                    <button class="btn-primary glow-primary btn-large">Solicitar Presupuesto Técnico</button>
+                    <button class="btn-outline btn-large">Descargar Catálogo</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="logo-container">
+                    <img src="images/logo.png" alt="CLARIFICA Logo" class="logo-img">
+                    <span class="logo-text">CLARIFICA</span>
+                </a>
+                <p class="footer-bio">Especialistas en la fase cero. Cimientos sólidos, infraestructura indestructible y precisión a bajo nivel para la gran industria.</p>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Capacidades</h4>
+                <ul>
+                    <li><a href="#">Cimentación Profunda</a></li>
+                    <li><a href="#">Estructuras Subterráneas</a></li>
+                    <li><a href="#">Topografía Avanzada</a></li>
+                    <li><a href="#">Excavación</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Empresa</h4>
+                <ul>
+                    <li><a href="#">Certificaciones</a></li>
+                    <li><a href="#">Proyectos</a></li>
+                    <li><a href="#">Maquinaria</a></li>
+                    <li><a href="#">Contacto B2B</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom container">
+            <p>&copy; 2026 CLARIFICA Infraestructura. Todos los derechos reservados.</p>
+            <div class="social-links">
+                <a href="#" aria-label="LinkedIn">IN</a>
+                <a href="#" aria-label="YouTube">YT</a>
+                <a href="#" aria-label="X">X</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
