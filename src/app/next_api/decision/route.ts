@@ -99,19 +99,14 @@ async function filterActiveUrls<T extends { url: string }>(
 ): Promise<T[]> {
   if (items.length === 0) return [];
 
-  console.log(`[decision] Verifying ${items.length} URLs...`);
-
   const checks = await Promise.all(
     items.map(async (item) => {
       const active = await isUrlActive(item.url);
-      if (!active) console.log(`[decision]   DEAD URL: ${item.url}`);
       return { item, active };
     })
   );
 
-  const active = checks.filter(({ active }) => active).map(({ item }) => item);
-  console.log(`[decision] Active URLs: ${active.length}/${items.length}`);
-  return active;
+  return checks.filter(({ active }) => active).map(({ item }) => item);
 }
 
 /* ── Gemini analysis ── */
@@ -233,18 +228,11 @@ export async function POST(request: Request) {
       const answers: Record<string, string> = body?.answers || {};
       const searchQuery = buildSearchQuery(query, answers);
       const fallbackQuery = buildFallbackQuery(query);
-      console.log("[decision] enriched search query:", searchQuery);
-      console.log("[decision] fallback query:", fallbackQuery);
 
       // 2a. Search in parallel across Mexican stores
       const searchAcrossStores = async (q: string) => {
         const storePromises = MX_STORES.map((site) =>
-          googleCseSearch(q, { num: 10, siteSearch: site }).catch(
-            (err) => {
-              console.warn(`[decision] Search failed for ${site}:`, err?.message);
-              return [];
-            }
-          )
+          googleCseSearch(q, { num: 10, siteSearch: site }).catch(() => [])
         );
         return Promise.all(storePromises);
       };
@@ -268,27 +256,17 @@ export async function POST(request: Request) {
       };
 
       mergeResults(storeResults);
-      console.log(`[decision] Results from enriched query: ${allRaw.length}`);
 
       // 2a-bis. If too few results, try again with the simpler fallback query
       if (allRaw.length < 6 && fallbackQuery !== searchQuery) {
-        console.log("[decision] Too few results, trying fallback query...");
         const fallbackResults = await searchAcrossStores(fallbackQuery);
         mergeResults(fallbackResults);
-        console.log(`[decision] Total after fallback: ${allRaw.length}`);
-      }
-
-      const withImages = allRaw.filter((p) => p.image);
-      console.log(`[decision] Results with images: ${withImages.length}/${allRaw.length}`);
-      for (const p of allRaw.slice(0, 5)) {
-        console.log(`[decision]   - "${p.title.slice(0, 60)}" img=${p.image ? "YES" : "NO"} url=${p.url.slice(0, 80)}`);
       }
 
       // 2b. Remove ONLY definite listing/search pages (relaxed filter)
       const filtered = allRaw.filter(
         (p) => !isDefinitelyListing(p.url, p.title)
       );
-      console.log(`[decision] After removing listings: ${filtered.length}`);
 
       // 2c. Rank by relevance
       const ranked = rankEvidence(filtered, searchQuery);
@@ -300,7 +278,6 @@ export async function POST(request: Request) {
 
       // Take top 10 active results — give Gemini more options to pick from
       const topResults = activeResults.slice(0, 10);
-      console.log(`[decision] Active results for analysis: ${topResults.length}`);
 
       // 2e. Send to Gemini for analysis
       let analysis: GeminiAnalysis | null = null;
@@ -313,7 +290,6 @@ export async function POST(request: Request) {
             temperature: 0.4,
             thinkingBudget: 1024,
           });
-          console.log("[decision] Gemini analysis done, products:", analysis?.products?.length || 0);
         } catch (err) {
           console.error("[decision] Gemini analysis failed:", err);
         }
@@ -345,8 +321,6 @@ export async function POST(request: Request) {
           .filter(Boolean)
           .sort((a, b) => (b!.relevance || 0) - (a!.relevance || 0));
 
-        console.log(`[decision] Gemini selected ${analyzedResults.length} relevant products`);
-
         // If Gemini found relevant products, return them
         if (analyzedResults.length > 0) {
           return NextResponse.json({
@@ -358,8 +332,7 @@ export async function POST(request: Request) {
           });
         }
 
-        // Gemini found NO relevant products — use topResults as fallback
-        console.log("[decision] Gemini found 0 relevant products — falling back to raw results");
+        // Gemini found NO relevant products — use topResults as fallback;
         if (topResults.length > 0) {
           return NextResponse.json({
             action: "search",

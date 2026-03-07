@@ -36,55 +36,47 @@ export const POST = requestMiddleware(
       }
 
       // ── Verify passcode ──
-      // In dev mode, "000000" bypasses email verification
-      const isDev = process.env.NODE_ENV !== "production";
-      const devBypass = isDev && passcode === "000000";
-
-      if (!devBypass) {
-        if (!passcode) {
-          return createErrorResponse({
-            errorMessage: "Código de verificación requerido",
-            status: 400,
-          });
-        }
-
-        const passcodes = await userPasscodeCrud.findMany({
-          pass_object: email,
-          revoked: false,
+      if (!passcode) {
+        return createErrorResponse({
+          errorMessage: "Código de verificación requerido",
+          status: 400,
         });
-
-        if (!passcodes || passcodes.length === 0) {
-          return createErrorResponse({
-            errorMessage: "Código de verificación inválido o expirado",
-            status: 400,
-          });
-        }
-
-        // The passcode stored in DB is hashed with bcrypt — compare properly
-        let validPasscode = null;
-        for (const p of passcodes) {
-          const isMatch = await verifyHashString(passcode, p.passcode);
-          const notExpired = !p.valid_until || new Date(p.valid_until) > new Date();
-          const notRevoked = !p.revoked;
-
-          if (isMatch && notExpired && notRevoked) {
-            validPasscode = p;
-            break;
-          }
-        }
-
-        if (!validPasscode) {
-          return createErrorResponse({
-            errorMessage: "Código de verificación inválido o expirado",
-            status: 400,
-          });
-        }
-
-        // Revoke used passcode
-        await userPasscodeCrud.update(validPasscode.id, { revoked: true });
-      } else {
-        console.log("[DEV] Bypassing email verification for:", email);
       }
+
+      const passcodes = await userPasscodeCrud.findMany({
+        pass_object: email,
+        revoked: false,
+      });
+
+      if (!passcodes || passcodes.length === 0) {
+        return createErrorResponse({
+          errorMessage: "Código de verificación inválido o expirado",
+          status: 400,
+        });
+      }
+
+      // The passcode stored in DB is hashed with bcrypt — compare properly
+      let validPasscode = null;
+      for (const p of passcodes) {
+        const isMatch = await verifyHashString(passcode, p.passcode);
+        const notExpired = !p.valid_until || new Date(p.valid_until) > new Date();
+        const notRevoked = !p.revoked;
+
+        if (isMatch && notExpired && notRevoked) {
+          validPasscode = p;
+          break;
+        }
+      }
+
+      if (!validPasscode) {
+        return createErrorResponse({
+          errorMessage: "Código de verificación inválido o expirado",
+          status: 400,
+        });
+      }
+
+      // Revoke used passcode
+      await userPasscodeCrud.update(validPasscode.id, { revoked: true });
 
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);

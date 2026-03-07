@@ -103,7 +103,6 @@ export function RegisterForm({
     // Try to send verification email (may fail if Resend not configured)
     const success = await sendVerificationCode(data.email);
 
-    // Always go to step 2 — clear any send error so user can try "000000" in dev
     setError(null);
     setCurrentStep(2);
 
@@ -315,13 +314,6 @@ export function RegisterForm({
               Enviamos un código de verificación a{" "}
               <span className="font-medium">{userEmail}</span>
             </div>
-
-            {/* Dev mode hint */}
-            {process.env.NODE_ENV !== "production" && (
-              <div className="text-center text-xs text-amber-500 bg-amber-500/10 rounded-md px-3 py-2 mb-2">
-                Modo desarrollo: usa <strong>000000</strong> como código
-              </div>
-            )}
 
             <form
               onSubmit={verificationForm.handleSubmit(handleVerificationSubmit)}

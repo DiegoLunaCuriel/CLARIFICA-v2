@@ -277,16 +277,7 @@ export async function sendVerificationEmail(
 
   }
 
-  // En desarrollo sin RESEND_KEY no bloqueamos el flujo
-  if (process.env.NODE_ENV !== "production") {
-    console.warn(
-      "[DEV] RESEND_KEY no configurada. Email de verificacion NO enviado.",
-      { email, code }
-    );
-    return true;
-  }
-
-  throw new Error("RESEND_KEY es requerida en produccion para enviar verificacion.");
+  throw new Error("RESEND_KEY es requerida para enviar verificacion.");
 }
 
 export function setCookie(

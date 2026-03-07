@@ -38,7 +38,6 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
     }
 
     const code = generateVerificationCode();
-    console.log(`[auth] Verification code for ${validatedData.email}: ${code}`);
 
     const hashedCode = await hashString(code);
 
@@ -58,16 +57,12 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
       });
     }
 
-    try {
-      const emailSent = await sendVerificationEmail(validatedData.email, code);
-      if (!emailSent) {
-        console.warn('[auth] Email not sent (sendVerificationEmail returned false)');
-        return createSuccessResponse({ data: true });
-      }
-    } catch (emailError: any) {
-      console.warn('[auth] Email send failed:', emailError?.message || emailError);
-      // In dev mode: the code is logged in console, user can use "000000" bypass
-      return createSuccessResponse({ data: true });
+    const emailSent = await sendVerificationEmail(validatedData.email, code);
+    if (!emailSent) {
+      return createErrorResponse({
+        errorMessage: 'No se pudo enviar el correo de verificación. Intenta de nuevo.',
+        status: 500,
+      });
     }
 
     return createSuccessResponse({ data: true });
