@@ -229,7 +229,7 @@ export default function Home() {
               }}
             >
               <HardHat className="h-3.5 w-3.5" />
-              Hub de Construcción Inteligente
+              Tu Hub de Construcción
             </div>
           </AnimateOnScroll>
 
@@ -250,13 +250,12 @@ export default function Home() {
                   display: "block",
                 }}
               >
-                Tu Hub de
+                CLARIFICA
               </span>
               <span
                 className="text-foreground"
                 style={{ display: "block", opacity: 0.93 }}
               >
-                Construcción
               </span>
             </h1>
           </AnimateOnScroll>

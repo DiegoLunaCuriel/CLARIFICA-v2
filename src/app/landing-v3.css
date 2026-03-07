@@ -1,0 +1,161 @@
+.premium-root {
+    background-color: #020617;
+    /* Slate 950 */
+    color: #f8fafc;
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    cursor: none;
+    /* Custom cursor */
+}
+
+/* Custom Cursor */
+.custom-cursor {
+    position: fixed;
+    width: 24px;
+    height: 24px;
+    background: rgba(249, 115, 22, 0.5);
+    /* Glowing Neon Orange */
+    border: 1px solid rgba(249, 115, 22, 0.8);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
+}
+
+.custom-cursor.active {
+    width: 60px;
+    height: 60px;
+    background: rgba(14, 165, 233, 0.1);
+    /* Sky blue shift on hover */
+    border-color: rgba(14, 165, 233, 0.8);
+    box-shadow: 0 0 30px rgba(14, 165, 233, 0.3);
+}
+
+/* Abstract Background Glows */
+.bg-glow-orange {
+    position: absolute;
+    width: 90vw;
+    height: 90vh;
+    background: radial-gradient(circle at center, rgba(249, 115, 22, 0.08) 0%, transparent 60%);
+    top: -30%;
+    left: -20%;
+    animation: float-glow 20s ease-in-out infinite alternate;
+}
+
+.bg-glow-blue {
+    position: absolute;
+    width: 80vw;
+    height: 80vh;
+    background: radial-gradient(circle at center, rgba(14, 165, 233, 0.07) 0%, transparent 60%);
+    bottom: -20%;
+    right: -10%;
+    animation: float-glow 25s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes float-glow {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(10%, 10%);
+    }
+}
+
+.bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* Typography */
+.text-gradient-orange {
+    background: linear-gradient(135deg, #fed7aa 0%, #f97316 50%, #c2410c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Glassmorphism Cards */
+.module-card {
+    position: relative;
+    background: rgba(15, 23, 42, 0.4);
+    /* Slate 900 base */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 40px;
+    overflow: hidden;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.module-card:hover {
+    border-color: rgba(249, 115, 22, 0.4);
+    transform: translateY(-8px);
+    box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.8), 0 0 40px -10px rgba(249, 115, 22, 0.2);
+}
+
+/* Spotlight Effect */
+.spotlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(800px circle at var(--mouse-x, -1000px) var(--mouse-y, -1000px), rgba(255, 255, 255, 0.08), transparent 40%);
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.module-card:hover .spotlight {
+    opacity: 1;
+}
+
+/* Navbar Blur */
+.nav-blur {
+    background: rgba(2, 6, 23, 0.6);
+    /* Transparent Slate 950 */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Sub-icons specific colors */
+.icon-orange {
+    color: #f97316;
+}
+
+.icon-blue {
+    color: #0ea5e9;
+}
+
+.icon-emerald {
+    color: #10b981;
+}
+
+.icon-purple {
+    color: #8b5cf6;
+}
+
+/* Custom Buttons */
+.btn-neon {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-neon:hover {
+    box-shadow: 0 0 30px rgba(249, 115, 22, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}

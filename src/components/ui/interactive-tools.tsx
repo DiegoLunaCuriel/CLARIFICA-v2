@@ -642,10 +642,13 @@ function useBouncingPhysics(count: number, sizes: number[]) {
         b.y += b.vy;
 
         // Bounce off walls with energy loss
-        if (b.x <= 0) { b.x = 0; b.vx = Math.abs(b.vx) * 0.92; }
-        if (b.x + b.w >= vw) { b.x = vw - b.w; b.vx = -Math.abs(b.vx) * 0.92; }
-        if (b.y <= 0) { b.y = 0; b.vy = Math.abs(b.vy) * 0.92; }
-        if (b.y + b.h >= vh) { b.y = vh - b.h; b.vy = -Math.abs(b.vy) * 0.92; }
+        // Added padding to prevent the drop shadows and rotations getting cut off by viewport
+        const pad = 30;
+        const padBottom = 70;
+        if (b.x <= pad) { b.x = pad; b.vx = Math.abs(b.vx) * 0.92; }
+        if (b.x + b.w >= vw - pad) { b.x = vw - b.w - pad; b.vx = -Math.abs(b.vx) * 0.92; }
+        if (b.y <= pad) { b.y = pad; b.vy = Math.abs(b.vy) * 0.92; }
+        if (b.y + b.h >= vh - padBottom) { b.y = vh - b.h - padBottom; b.vy = -Math.abs(b.vy) * 0.92; }
       }
 
       // Always update â€” includes paused bodies moved by drag
@@ -678,11 +681,13 @@ function useBouncingPhysics(count: number, sizes: number[]) {
   const resumeBody = useCallback((index: number, vx?: number, vy?: number) => {
     const b = bodies.current[index];
     if (!b) return;
-    // Clamp position to viewport
+    // Clamp position to viewport with padding
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    b.x = Math.max(0, Math.min(vw - b.w, b.x));
-    b.y = Math.max(0, Math.min(vh - b.h, b.y));
+    const pad = 30;
+    const padBottom = 70;
+    b.x = Math.max(pad, Math.min(vw - b.w - pad, b.x));
+    b.y = Math.max(pad, Math.min(vh - b.h - padBottom, b.y));
 
     if (vx !== undefined && vy !== undefined) {
       const maxV = 8;
@@ -823,7 +828,7 @@ export function FloatingTools() {
 
   return (
     <>
-      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 5 }} aria-hidden>
+      <div className="absolute top-0 left-0 w-full h-[100vh] overflow-hidden pointer-events-none" style={{ zIndex: 5 }} aria-hidden>
         {/* Floating tools */}
         {TOOLS.map((tool, i) => {
           const isHeld = isDragging === tool.id;
@@ -868,7 +873,7 @@ export function FloatingTools() {
             <motion.div
               key={nail.id}
               ref={(el) => { nailRefs.current[nail.id] = el; }}
-              className="fixed pointer-events-none"
+              className="absolute pointer-events-none"
               style={{ left: `${nail.xPct}%`, top: `${nail.yPct}%`, transform: `rotate(${nail.rotate}deg)`, opacity: isFullySunk ? 0.1 : 0.35 }}
               animate={{ opacity: isFullySunk ? 0.1 : 0.35 }}
             >

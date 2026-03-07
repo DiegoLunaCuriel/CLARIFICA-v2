@@ -37,7 +37,11 @@
       "Bash(cmd //c \"taskkill /F /IM node.exe\")",
       "Bash(cmd //c \"taskkill /PID 19628 /F\")",
       "Bash(npm install phaser@3)",
-      "Bash(xargs ls -lt)"
+      "Bash(xargs ls -lt)",
+      "Bash(wc -l src/**/*.ts src/**/*.tsx)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\diego\\\\Downloads\\\\Contrulink V2 Zoer hasta CSE\\\\Contrulink V2 Zoer\\\\src\\\\app\\\\decision\" -Recurse)",
+      "Bash(Select-Object FullName)",
+      "Bash(npm install animejs)"
     ]
   }
 }

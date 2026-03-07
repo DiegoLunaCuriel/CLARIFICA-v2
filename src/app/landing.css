@@ -30,19 +30,19 @@
 }
 
 /* RESETS & FONTS */
-* {
+.landing-root * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-html {
+.landing-root {
     scroll-behavior: smooth;
     font-size: 16px;
     background-color: var(--bg-primary);
 }
 
-body {
+.landing-root {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-secondary);
@@ -52,21 +52,21 @@ body {
     cursor: none; /* Custom cursor */
 }
 
-h1, h2, h3, h4, h5, h6 {
+.landing-root h1, .landing-root h2, .landing-root h3, .landing-root h4, .landing-root h5, .landing-root h6 {
     font-family: 'Plus Jakarta Sans', sans-serif;
     color: var(--text-primary);
 }
 
-a {
+.landing-root a {
     text-decoration: none;
     color: inherit;
 }
 
-ul {
+.landing-root ul {
     list-style: none;
 }
 
-img {
+.landing-root img {
     max-width: 100%;
     display: block;
 }
@@ -1038,3 +1038,4 @@ p { font-size: 1.125rem; font-weight: 400; line-height: 1.7; color: var(--text-t
     body { cursor: auto; }
     .btn-primary, .btn-outline, a, .service-card-flip { cursor: pointer; }
 }
+

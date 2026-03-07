@@ -1,0 +1,15 @@
+﻿A	CLARIFICA_Landing/README.md
+A	CLARIFICA_Landing/images/hero_visual.png
+A	CLARIFICA_Landing/images/logo.png
+A	CLARIFICA_Landing/images/service_1.png
+A	CLARIFICA_Landing/images/service_2.png
+A	CLARIFICA_Landing/images/service_3.png
+A	CLARIFICA_Landing/images/service_4.png
+A	CLARIFICA_Landing/images/service_5.png
+A	CLARIFICA_Landing/images/service_6.png
+A	CLARIFICA_Landing/index.html
+A	CLARIFICA_Landing/script.js
+A	CLARIFICA_Landing/styles.css
+M	src/app/page.tsx
+M	src/components/AppNavbar.tsx
+M	src/components/ui/interactive-tools.tsx
