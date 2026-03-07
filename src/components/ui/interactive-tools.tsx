@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
+import anime from "animejs";
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    PART A â€” CARTOON SVG COMPONENTS (redesigned, detailed, chunky)
@@ -716,7 +717,53 @@ export function FloatingTools() {
   const { positions, pauseBody, resumeBody, setBodyPosition, getPosition } =
     useBouncingPhysics(TOOLS.length, toolSizes);
 
+  const innerToolRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const animeInstances = useRef<anime.AnimeInstance[]>([]);
+
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    if (!mounted || positions.length === 0) return;
+
+    // Clear previous instances if remounting
+    animeInstances.current.forEach(instance => instance && instance.pause());
+
+    // Premium Entry Animation with Anime.js
+    anime({
+      targets: innerToolRefs.current.filter(Boolean),
+      scale: [0, 1],
+      opacity: [0, 1],
+      translateY: [30, 0],
+      rotate: () => anime.random(-25, 25),
+      delay: anime.stagger(150, { start: 100 }),
+      easing: "spring(1, 80, 10, 0)",
+      complete: () => {
+        // Continuous fluid idle animation for each tool
+        innerToolRefs.current.forEach((el, i) => {
+          if (!el) return;
+          const instance = anime({
+            targets: el,
+            translateY: [
+              { value: anime.random(-8, -16), duration: anime.random(2500, 3500), easing: "easeInOutSine" },
+              { value: anime.random(8, 16), duration: anime.random(2500, 3500), easing: "easeInOutSine" },
+              { value: 0, duration: anime.random(2500, 3500), easing: "easeInOutSine" },
+            ],
+            rotate: [
+              { value: `+=${anime.random(-8, 8)}`, duration: anime.random(3000, 4500), easing: "easeInOutSine" },
+              { value: `-=${anime.random(-8, 8)}`, duration: anime.random(3000, 4500), easing: "easeInOutSine" },
+            ],
+            loop: true,
+            direction: "alternate",
+          });
+          animeInstances.current[i] = instance;
+        });
+      }
+    });
+
+    return () => {
+      animeInstances.current.forEach(instance => instance && instance.pause());
+    };
+  }, [mounted, positions.length]);
 
   /* â”€â”€ Drag tracking via pointer events â”€â”€ */
   const dragRef = useRef<{
@@ -739,13 +786,16 @@ export function FloatingTools() {
     e.preventDefault();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     pauseBody(index);
+    if (animeInstances.current[index]) {
+      animeInstances.current[index].pause();
+    }
     const pos = getPosition(index);
     if (!pos) return;
     dragRef.current = {
       index,
       offsetX: e.clientX - pos.x,
       offsetY: e.clientY - pos.y,
-      trail: [{ x: e.clientX, y: e.clientY, t: performance.now() }],
+      trail: [{ x: e.clientX, y: e.clientX, t: performance.now() }],
     };
     setIsDragging(TOOLS[index].id);
   }, [pauseBody, getPosition]);
@@ -808,6 +858,10 @@ export function FloatingTools() {
     }
 
     resumeBody(drag.index, vx, vy);
+    if (animeInstances.current[drag.index]) {
+      animeInstances.current[drag.index].play();
+    }
+
     dragRef.current = null;
     setIsDragging(null);
   }, [checkCollision, nailSunk, resumeBody]);
@@ -851,7 +905,7 @@ export function FloatingTools() {
                 touchAction: "none",
                 animation: isHeld
                   ? "none"
-                  : `tool-float ${4 + i * 0.4}s ease-in-out ${floatDelay} infinite, tool-glow-pulse ${3 + i * 0.3}s ease-in-out ${glowDelay} infinite`,
+                  : `tool-glow-pulse ${3 + i * 0.3}s ease-in-out ${glowDelay} infinite`,
                 filter: isHeld
                   ? `drop-shadow(0 0 24px ${glow}) drop-shadow(0 0 48px ${glow}) drop-shadow(0 12px 32px rgba(0,0,0,0.5))`
                   : `drop-shadow(0 0 14px ${glow}) drop-shadow(0 0 30px ${glow.replace(/[\d.]+\)$/, (m) => `${parseFloat(m) * 0.35})`)}) drop-shadow(0 4px 10px rgba(0,0,0,0.4))`,
@@ -859,8 +913,11 @@ export function FloatingTools() {
               onPointerDown={(e) => handlePointerDown(e, i)}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
             >
-              {toolIcon(tool.icon, tool.size)}
+              <div ref={(el) => { innerToolRefs.current[i] = el; }}>
+                {toolIcon(tool.icon, tool.size)}
+              </div>
             </div>
           );
         })}
