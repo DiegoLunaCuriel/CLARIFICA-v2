@@ -92,7 +92,6 @@ function AuthContent() {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <ResetPasswordForm
               onSuccess={() => setMode("login")}
-              onSwitchToLogin={() => setMode("login")}
             />
           </div>
         )}
