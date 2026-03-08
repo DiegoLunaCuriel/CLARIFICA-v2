@@ -375,9 +375,9 @@ export default function Home() {
           {FEATURES.map((f, i) => {
             const Icon = f.icon;
             return (
-              <AnimateOnScroll key={f.href} delay={i * 0.1}>
+              <AnimateOnScroll key={f.href} delay={i * 0.1} className="h-full">
                 <button
-                  className="group relative text-left w-full rounded-2xl p-6 transition-all duration-300 overflow-hidden"
+                  className="group relative text-left w-full h-full rounded-2xl p-6 transition-all duration-300 overflow-hidden flex flex-col"
                   style={{
                     background: "var(--glass-bg)",
                     border: "1px solid var(--glass-border)",
@@ -420,7 +420,7 @@ export default function Home() {
                   </div>
 
                   <h3 className="text-lg font-bold mb-2">{f.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">{f.description}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{f.description}</p>
 
                   <div
                     className="inline-flex items-center gap-1.5 text-sm font-semibold"
