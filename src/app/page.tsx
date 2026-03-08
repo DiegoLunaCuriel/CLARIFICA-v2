@@ -239,17 +239,7 @@ export default function Home() {
               className="text-6xl md:text-8xl font-black mb-6 leading-[0.9] tracking-tight"
               style={{ animationFillMode: "both" }}
             >
-              <span
-                style={{
-                  background: "linear-gradient(90deg, #fbbf24 0%, #fef3c7 35%, #fb923c 65%, #fbbf24 100%)",
-                  backgroundSize: "300% auto",
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  animation: "gradient-shift 6s ease infinite",
-                  display: "block",
-                }}
-              >
+              <span className="text-gradient-animated block">
                 CLARIFICA
               </span>
               <span
@@ -313,8 +303,8 @@ export default function Home() {
                 onClick={() => go("/decision")}
                 className="group inline-flex items-center gap-2.5 rounded-2xl px-7 py-3.5 text-sm font-semibold text-foreground/90 transition-all duration-300 active:scale-95"
                 style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "var(--ghost-btn-bg)",
+                  border: "1px solid var(--ghost-btn-border)",
                   backdropFilter: "blur(8px)",
                 }}
                 onMouseEnter={(e) => {
@@ -323,8 +313,8 @@ export default function Home() {
                   (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)";
-                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.1)";
+                  (e.currentTarget as HTMLElement).style.background = "var(--ghost-btn-bg)";
+                  (e.currentTarget as HTMLElement).style.borderColor = "var(--ghost-btn-border)";
                   (e.currentTarget as HTMLElement).style.transform = "";
                 }}
               >
@@ -349,8 +339,8 @@ export default function Home() {
                 key={stat.label}
                 className="rounded-2xl p-4 text-center"
                 style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.07)",
+                  background: "var(--glass-bg)",
+                  border: "1px solid var(--glass-border)",
                   backdropFilter: "blur(8px)",
                   animationDelay: `${i * 0.06}s`,
                 }}
@@ -389,8 +379,8 @@ export default function Home() {
                 <button
                   className="group relative text-left w-full rounded-2xl p-6 transition-all duration-300 overflow-hidden"
                   style={{
-                    background: "rgba(255,255,255,0.025)",
-                    border: `1px solid rgba(255,255,255,0.07)`,
+                    background: "var(--glass-bg)",
+                    border: "1px solid var(--glass-border)",
                     backdropFilter: "blur(8px)",
                   }}
                   onMouseEnter={(e) => {
@@ -402,8 +392,8 @@ export default function Home() {
                   }}
                   onMouseLeave={(e) => {
                     const el = e.currentTarget as HTMLElement;
-                    el.style.background = "rgba(255,255,255,0.025)";
-                    el.style.borderColor = "rgba(255,255,255,0.07)";
+                    el.style.background = "var(--glass-bg)";
+                    el.style.borderColor = "var(--glass-border)";
                     el.style.boxShadow = "";
                     el.style.transform = "";
                   }}
@@ -468,8 +458,8 @@ export default function Home() {
                 <div
                   className="rounded-2xl p-6"
                   style={{
-                    background: "rgba(255,255,255,0.025)",
-                    border: "1px solid rgba(255,255,255,0.07)",
+                    background: "var(--glass-bg)",
+                    border: "1px solid var(--glass-border)",
                   }}
                 >
                   <div
