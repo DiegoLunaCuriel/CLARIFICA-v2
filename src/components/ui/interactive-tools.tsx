@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 import anime from "animejs";
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   PART A â€” CARTOON SVG COMPONENTS (redesigned, detailed, chunky)
+   PART A â€" CARTOON SVG COMPONENTS (redesigned, detailed, chunky)
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* â”€â”€ FLOATING TOOL SVGS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* â"€â"€ FLOATING TOOL SVGS â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */
 
 function CartoonHammer({ size = 140 }: { size?: number }) {
   return (
@@ -274,13 +274,13 @@ function CartoonLevel({ size = 140 }: { size?: number }) {
   );
 }
 
-/* â”€â”€ NAIL SVG (redesigned, bigger) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* â"€â"€ NAIL SVG (redesigned, bigger) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */
 
 function CartoonNail({ size = 55, sunk = 0 }: { size?: number; sunk: number }) {
   return (
     <svg width={size * 0.45} height={size} viewBox="0 0 18 50" fill="none">
       <g style={{ transform: `translateY(${sunk * 6}px)`, transition: "transform 0.2s ease-out" }}>
-        {/* Head â€” flat & wide */}
+        {/* Head â€" flat & wide */}
         <ellipse cx="9" cy="4" rx="8" ry="4" fill="#4B5563" />
         <ellipse cx="9" cy="3" rx="6" ry="2.5" fill="#6B7280" opacity="0.6" />
         <ellipse cx="9" cy="2.5" rx="3" ry="1" fill="#9CA3AF" opacity="0.4" />
@@ -297,7 +297,7 @@ function CartoonNail({ size = 55, sunk = 0 }: { size?: number; sunk: number }) {
   );
 }
 
-/* â”€â”€ SCENE SVGs (shovel, sand, pickaxe, rock, decorations) â”€â”€â”€â”€â”€â”€ */
+/* â"€â"€ SCENE SVGs (shovel, sand, pickaxe, rock, decorations) â"€â"€â"€â"€â"€â"€ */
 
 function CartoonShovel({ size = 90 }: { size?: number }) {
   return (
@@ -435,7 +435,7 @@ function CartoonCementBag({ size = 60 }: { size?: number }) {
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   PART B â€” EFFECTS (sparks, dirt, debris)
+   PART B â€" EFFECTS (sparks, dirt, debris)
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function Sparks({ x, y }: { x: number; y: number }) {
@@ -507,7 +507,7 @@ function RockDebris() {
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   PART C â€” FLOATING TOOLS (fixed overlay, bouncing physics)
+   PART C â€" FLOATING TOOLS (fixed overlay, bouncing physics)
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 type ToolConfig = {
@@ -563,7 +563,7 @@ const NAILS: NailConfig[] = [
   { id: "nail-7", xPct: 70, yPct: 92, rotate: 175 },
 ];
 
-/* â”€â”€ Bouncing physics hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* â"€â"€ Bouncing physics hook â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */
 
 type PhysicsBody = {
   x: number;
@@ -627,7 +627,7 @@ function useBouncingPhysics(count: number, sizes: number[]) {
       for (const b of bs) {
         if (b.paused) continue;
 
-        // Friction â€” gradually slow down
+        // Friction â€" gradually slow down
         b.vx *= 0.9995;
         b.vy *= 0.9995;
 
@@ -652,7 +652,7 @@ function useBouncingPhysics(count: number, sizes: number[]) {
         if (b.y + b.h >= vh - padBottom) { b.y = vh - b.h - padBottom; b.vy = -Math.abs(b.vy) * 0.92; }
       }
 
-      // Always update â€” includes paused bodies moved by drag
+      // Always update â€" includes paused bodies moved by drag
       frameCount++;
       if (frameCount % 2 === 0) {
         setPositions(bs.map((b) => ({ x: b.x, y: b.y })));
@@ -765,7 +765,7 @@ export function FloatingTools() {
     };
   }, [mounted, positions.length]);
 
-  /* â”€â”€ Drag tracking via pointer events â”€â”€ */
+  /* â"€â"€ Drag tracking via pointer events â"€â"€ */
   const dragRef = useRef<{
     index: number;
     offsetX: number;
@@ -942,7 +942,7 @@ export function FloatingTools() {
                   animate={{ opacity: 0.7, scale: 1 }}
                   transition={{ type: "spring", stiffness: 400 }}
                 >
-                  âœ“
+                  âœ"
                 </motion.div>
               )}
             </motion.div>
@@ -956,7 +956,7 @@ export function FloatingTools() {
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   PART D â€” CONSTRUCTION SCENE (page section, NOT fixed overlay)
+   PART D â€" CONSTRUCTION SCENE (page section, NOT fixed overlay)
    Draggable shovel + pickaxe with continuous collision detection
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 

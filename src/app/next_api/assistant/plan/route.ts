@@ -411,7 +411,7 @@ export const GET = requestMiddleware(
 
       let output = raw ? sanitize(raw, q) : makeFallbackPlan(q);
 
-      // Si el plan “alucina”, usamos fallback determinístico
+      // Si el plan "alucina", usamos fallback determinístico
       if (isPlanMismatch(q, output)) {
         output = makeFallbackPlan(q);
         output.safety.notes = ["Gemini intent mismatch; fallback aplicado"];

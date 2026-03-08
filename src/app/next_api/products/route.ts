@@ -90,7 +90,7 @@ async function fetchFromUnwrangle(
       },
     ];
   } else {
-    // “All stores”: por ahora consultamos Amazon + Home Depot
+    // "All stores": por ahora consultamos Amazon + Home Depot
     platforms = [
       { platform: "amazon_search", store_name: "Amazon", store_website_url: "https://www.amazon.com" },
       { platform: "homedepot_search", store_name: "Home Depot", store_website_url: "https://www.homedepot.com" },
@@ -288,7 +288,7 @@ export const GET = requestMiddleware(
           }
         }
 
-        // Cache: se actualiza aunque la respuesta venga vacía (para evitar “pegarle” a Unwrangle en cada request)
+        // Cache: se actualiza aunque la respuesta venga vacía (para evitar "pegarle" a Unwrangle en cada request)
         const cachePayload = {
           query: term,
           store_id: storeId,

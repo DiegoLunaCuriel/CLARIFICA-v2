@@ -54,7 +54,7 @@ export function getFamilyQuestions(
           { label: "Hasta 6 mm", value: 6 },
           { label: "Hasta 8 mm", value: 8 },
           { label: "Hasta 10 mm", value: 10 },
-          { label: "Hasta 13 mm (1/2”)", value: 13 },
+          { label: "Hasta 13 mm (1/2")", value: 13 },
           { label: "Más de 13 mm", value: 16 },
         ],
       });
@@ -133,9 +133,9 @@ export function getFamilyQuestions(
         type: "single",
         required: true,
         options: [
-          { label: "Compactas (6”)", value: "6in" },
-          { label: "Medianas (8”)", value: "8in" },
-          { label: "Grandes (10”+)", value: "10in" },
+          { label: "Compactas (6")", value: "6in" },
+          { label: "Medianas (8")", value: "8in" },
+          { label: "Grandes (10"+)", value: "10in" },
         ],
       });
     }

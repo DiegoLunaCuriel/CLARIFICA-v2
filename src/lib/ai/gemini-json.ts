@@ -105,7 +105,7 @@ async function repairJsonWithGemini(badJsonText: string, options: GeminiOptions 
     "Devuelve SOLO el JSON corregido (sin markdown ni explicación).\n\n" +
     badJsonText;
 
-  // Temperatura 0 para que “arregle” de forma determinista
+  // Temperatura 0 para que "arregle" de forma determinista
   const repaired = await geminiRawText(repairPrompt, { ...options, temperature: 0 });
   return extractFirstJsonObject(repaired);
 }

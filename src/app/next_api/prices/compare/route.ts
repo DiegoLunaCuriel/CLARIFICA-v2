@@ -46,17 +46,17 @@ export const GET = requestMiddleware(async (request) => {
 
       // Elegimos el mejor: el menor precio válido de los primeros resultados
       const best = results
-        .filter((r) => typeof r.price === “number” && r.price !== null)
+        .filter((r) => typeof r.price === "number" && r.price !== null)
         .sort((a, b) => (a.price! as number) - (b.price! as number))[0]
         ?? results[0];
 
       if (!best) {
-        throw new Error(“No results”);
+        throw new Error("No results");
       }
 
-      const price = typeof best.price === “number” ? best.price : null;
+      const price = typeof best.price === "number" ? best.price : null;
       if (price === null) {
-        throw new Error(“Result without parsable price”);
+        throw new Error("Result without parsable price");
       }
 
       table.push({
@@ -64,24 +64,24 @@ export const GET = requestMiddleware(async (request) => {
         storeName: store.storeName,
         title: best.title || `${query}`,
         price,
-        currency: best.currency || “MXN”,
+        currency: best.currency || "MXN",
         url: best.url,
         confidence: 92,
-        source: “live”,
+        source: "live",
       });
 
       liveStores.push(store.storeId);
     } catch (e: any) {
       errors.push({
         storeId: store.storeId,
-        message: typeof e?.message === “string” ? e.message : “Live fetch failed”,
+        message: typeof e?.message === "string" ? e.message : "Live fetch failed",
       });
     }
   }
 
   const normalized = await normalizeOffersWithAI(table);
 
-  const mode = liveStores.length > 0 ? “live” : “unavailable”;
+  const mode = liveStores.length > 0 ? "live" : "unavailable";
 
   return createSuccessResponse({
     mode,
