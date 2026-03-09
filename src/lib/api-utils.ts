@@ -183,8 +183,8 @@ export async function sendVerificationEmail(
           <tr>
             <td style="background:linear-gradient(135deg,#1c1408 0%,#251a05 60%,#1a1020 100%);padding:40px 32px 36px;text-align:center;border-bottom:1px solid rgba(245,158,11,0.15);">
 
-              <!-- HardHat icon placeholder (emoji fallback for email clients) -->
-              <div style="display:inline-block;width:52px;height:52px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.35);border-radius:14px;line-height:52px;font-size:26px;margin-bottom:16px;">🪖</div>
+              <!-- Logo -->
+              <img src="https://clarifica.site/images/landing/logo.png" width="64" height="64" alt="CLARIFICA" style="display:inline-block;border-radius:14px;margin-bottom:16px;border:1px solid rgba(245,158,11,0.35);background:rgba(245,158,11,0.1);" />
 
               <h1 style="margin:0 0 4px 0;font-size:22px;font-weight:900;letter-spacing:2px;
                 background:linear-gradient(90deg,#fbbf24,#fb923c);
@@ -270,7 +270,7 @@ export async function sendVerificationEmail(
     await resend.emails.send({
       from: fromAddress,
       to: email,
-      subject: "🪖 Tu código de verificación — CLARIFICA",
+      subject: "⛑️ Tu código de verificación — CLARIFICA",
       html: htmlTemplate,
     });
     return true;
