@@ -1,37 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <defs>
-    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%"   stop-color="#c8960c"/>
-      <stop offset="45%"  stop-color="#f0c040"/>
-      <stop offset="100%" stop-color="#a07010"/>
-    </linearGradient>
-  </defs>
+  <g stroke="#f5df55" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
 
-  <!-- Background: very dark warm brown, heavily rounded -->
-  <rect width="100" height="100" rx="24" fill="#231400"/>
-
-  <!-- Golden border ring -->
-  <rect x="2.5" y="2.5" width="95" height="95" rx="21.5"
-        fill="none" stroke="url(#borderGrad)" stroke-width="4"/>
-
-  <!-- Hard hat icon — outline / stroke style, amber -->
-  <g stroke="#f5a400" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
-
-    <!-- Top vent/button: outer rounded rect -->
-    <rect x="44" y="16" width="12" height="15" rx="3.5"/>
-    <!-- Vent slot inside -->
-    <line x1="50" y1="19" x2="50" y2="28"/>
+    <!-- Top vent: rounded rect -->
+    <rect x="43.5" y="14" width="13" height="17" rx="4.5"/>
+    <!-- Vent slot -->
+    <line x1="50" y1="17.5" x2="50" y2="28.5"/>
 
     <!-- Dome arc -->
-    <path d="M 22 60 C 22 39 34 29 50 29 C 66 29 78 39 78 60"/>
+    <path d="M 19 61 C 19 37 33 27 50 27 C 67 27 81 37 81 61"/>
 
     <!-- Left strap anchor -->
-    <line x1="33" y1="73" x2="33" y2="62"/>
+    <line x1="32" y1="61" x2="32" y2="74"/>
     <!-- Right strap anchor -->
-    <line x1="67" y1="73" x2="67" y2="62"/>
+    <line x1="68" y1="61" x2="68" y2="74"/>
 
-    <!-- Brim: wide rounded rect -->
-    <rect x="14" y="60" width="72" height="14" rx="6.5"/>
+    <!-- Brim outer -->
+    <rect x="12" y="61" width="76" height="23" rx="7.5"/>
+    <!-- Inner brim band -->
+    <rect x="19.5" y="67.5" width="61" height="10" rx="4"/>
 
   </g>
 </svg>
