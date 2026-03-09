@@ -119,8 +119,26 @@ function ProductCard({
   storeId: string;
   compareHref: string;
 }) {
-  const [imgError, setImgError] = useState(false);
+  // "direct" → try item.image directly
+  // "proxy"  → route through /next_api/image-proxy (bypasses CDN hotlink/CORS)
+  // "error"  → both failed, show placeholder
+  const [imgState, setImgState] = useState<"direct" | "proxy" | "error">("direct");
   const theme = STORE_THEME[storeId as StoreThemeKey];
+
+  const imageSrc =
+    imgState === "direct"
+      ? item.image ?? null
+      : imgState === "proxy" && item.image
+      ? `/next_api/image-proxy?url=${encodeURIComponent(item.image)}`
+      : null;
+
+  const handleImgError = () => {
+    if (imgState === "direct" && item.image) {
+      setImgState("proxy");
+    } else {
+      setImgState("error");
+    }
+  };
 
   return (
     <motion.div
@@ -139,14 +157,14 @@ function ProductCard({
     >
       {/* Image */}
       <div className="w-full aspect-[4/3] bg-white flex items-center justify-center overflow-hidden relative p-3">
-        {item.image && !imgError ? (
+        {imageSrc && imgState !== "error" ? (
           <img
-            src={item.image}
+            src={imageSrc}
             alt={item.title}
             className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
             referrerPolicy="no-referrer"
             loading="lazy"
-            onError={() => setImgError(true)}
+            onError={handleImgError}
           />
         ) : (
           <div className="flex items-center" style={{ color: "#ccc" }}>

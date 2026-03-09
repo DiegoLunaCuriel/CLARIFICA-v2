@@ -420,12 +420,21 @@ async function googleCseSearch(params: {
     const amazonItems = needsImage.filter((it) => isAmazon(it.link || ""));
     const otherItems = needsImage.filter((it) => !isAmazon(it.link || ""));
 
-    // Non-Amazon: fetch og:image from page (free)
+    // Non-Amazon: MercadoLibre API (reliable) or og:image scrape (other stores)
     if (otherItems.length > 0) {
       await Promise.all(
         otherItems.map(async (item) => {
           try {
-            const img = await fetchOgImageFromPage(item.link || "");
+            let img: string | null = null;
+            // MercadoLibre: use public API — Cloudflare blocks direct page fetches
+            const mlId = extractMercadoLibreItemId(item.link || "");
+            if (mlId) {
+              img = await fetchMercadoLibreImage(mlId);
+            }
+            // Other stores (e.g. Home Depot): scrape og:image from page HTML
+            if (!img) {
+              img = await fetchOgImageFromPage(item.link || "");
+            }
             if (img) {
               item.pagemap = {
                 metatags: [{ "og:image": img }],
@@ -476,6 +485,39 @@ async function googleCseSearch(params: {
   }
 
   return { items };
+}
+
+/** Extract MercadoLibre item ID (e.g. MLM3166849376) from a product URL. */
+function extractMercadoLibreItemId(url: string): string | null {
+  const match = url.match(/\/MLM[-]?(\d+)/i);
+  return match ? `MLM${match[1]}` : null;
+}
+
+/**
+ * Fetch product thumbnail from MercadoLibre's public API (no auth required).
+ * Much more reliable than scraping because ML uses Cloudflare on product pages.
+ */
+async function fetchMercadoLibreImage(itemId: string): Promise<string | null> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(
+      `https://api.mercadolibre.com/items/${itemId}?attributes=thumbnail,pictures`,
+      { signal: controller.signal, headers: { Accept: "application/json" } }
+    );
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => null);
+    if (!data) return null;
+    // Prefer first picture (full size) over thumbnail (90x90)
+    const picUrl: string | undefined =
+      (Array.isArray(data.pictures) && data.pictures[0]?.url) || data.thumbnail;
+    if (!picUrl) return null;
+    // Upgrade from -I (90x90) → -V (~720px) for better display quality
+    return picUrl.replace(/-[A-Z](\.(jpg|png|webp))$/i, "-V$1");
+  } catch {
+    return null;
+  }
 }
 
 /** Fetch og:image from a product page HTML <head>. Fast: 4s timeout, reads max 30KB. */

@@ -165,13 +165,22 @@ async function enrichImages(
   const amazonItems = needsImage.filter((it) => isAmazonUrl(it.link));
   const otherItems = needsImage.filter((it) => !isAmazonUrl(it.link));
 
-  // Strategy 1: Fetch og:image for non-Amazon items (free)
+  // Strategy 1: MercadoLibre API (reliable) or og:image scrape (other stores)
   if (otherItems.length > 0) {
-    console.log(`[search] Fetching og:image for ${otherItems.length} non-Amazon items...`);
+    console.log(`[search] Fetching images for ${otherItems.length} non-Amazon items...`);
     await Promise.all(
       otherItems.map(async (item) => {
         try {
-          const img = await fetchOgImage(item.link);
+          let img: string | null = null;
+          // MercadoLibre: use public API — Cloudflare blocks direct page fetches
+          const mlId = extractMercadoLibreItemId(item.link);
+          if (mlId) {
+            img = await fetchMercadoLibreImage(mlId);
+          }
+          // Other stores: scrape og:image from page HTML
+          if (!img) {
+            img = await fetchOgImage(item.link);
+          }
           if (img) setImage(item, img);
         } catch { /* skip */ }
       })
@@ -268,6 +277,37 @@ async function enrichAmazonImages(
     console.log(`[search] Amazon images matched: ${amazonItems.filter(hasImage).length}/${amazonItems.length}`);
   } catch (err: any) {
     console.warn("[search] Serper images fetch error:", err?.message);
+  }
+}
+
+/** Extract MercadoLibre item ID (e.g. MLM3166849376) from a product URL. */
+function extractMercadoLibreItemId(url: string): string | null {
+  const match = url.match(/\/MLM[-]?(\d+)/i);
+  return match ? `MLM${match[1]}` : null;
+}
+
+/**
+ * Fetch product thumbnail from MercadoLibre's public API (no auth required).
+ * Much more reliable than scraping because ML uses Cloudflare on product pages.
+ */
+async function fetchMercadoLibreImage(itemId: string): Promise<string | null> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(
+      `https://api.mercadolibre.com/items/${itemId}?attributes=thumbnail,pictures`,
+      { signal: controller.signal, headers: { Accept: "application/json" } }
+    );
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => null);
+    if (!data) return null;
+    const picUrl: string | undefined =
+      (Array.isArray(data.pictures) && data.pictures[0]?.url) || data.thumbnail;
+    if (!picUrl) return null;
+    return picUrl.replace(/-[A-Z](\.(jpg|png|webp))$/i, "-V$1");
+  } catch {
+    return null;
   }
 }
 
