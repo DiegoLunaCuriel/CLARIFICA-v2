@@ -2,13 +2,9 @@
 
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Search, Package, Loader2 } from 'lucide-react';
 import { AnimateOnScroll } from '@/components/ui/animate-on-scroll';
 import { api } from '@/lib/api-client';
@@ -40,19 +36,33 @@ type LookupResponse = {
 
 function MaterialSkeleton() {
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="p-0">
-        <Skeleton className="w-full h-48 rounded-none rounded-t-xl" />
-        <div className="p-4 space-y-2">
-          <Skeleton className="h-5 w-3/4" />
-          <Skeleton className="h-4 w-1/3" />
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <Skeleton className="h-4 w-1/2" />
-        <Skeleton className="h-4 w-2/3" />
-      </CardContent>
-    </Card>
+    <div
+      style={{
+        background: 'var(--surface-1)',
+        border: '1px solid var(--border)',
+        borderRadius: '4px',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        className="w-full h-44 animate-pulse"
+        style={{ background: 'var(--surface-3)' }}
+      />
+      <div className="p-4 space-y-2">
+        <div
+          className="h-4 w-3/4 rounded animate-pulse"
+          style={{ background: 'var(--surface-3)' }}
+        />
+        <div
+          className="h-3 w-1/3 rounded animate-pulse"
+          style={{ background: 'var(--surface-3)' }}
+        />
+        <div
+          className="h-3 w-1/2 rounded animate-pulse mt-3"
+          style={{ background: 'var(--surface-3)' }}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -124,8 +134,6 @@ export default function MaterialsPage() {
 
       setMaterials(list);
 
-      // Trigger AI generation if no material NAME matches the search term
-      // (description-only matches don't count — the user wants a specific material)
       if (triggerAiOnEmpty && term) {
         const termLower = term.toLowerCase();
         const hasNameMatch = list.some((m) =>
@@ -237,7 +245,6 @@ export default function MaterialsPage() {
       for (const m of withoutThumbnail) {
         if (cancelled) break;
         await generateThumbnail(m);
-        // Small delay between requests to avoid rate limits
         await new Promise((r) => setTimeout(r, 500));
       }
     })();
@@ -257,59 +264,106 @@ export default function MaterialsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: '#f59e0b' }} />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="animate-in fade-in slide-in-from-bottom-3 duration-500">
-        <div className="flex items-center gap-3">
+
+      {/* ── Header ── */}
+      <div>
+        {/* Top accent line */}
+        <div
+          className="h-[3px] mb-5"
+          style={{ background: 'linear-gradient(90deg, #f59e0b, transparent)', borderRadius: '2px' }}
+        />
+        <div className="flex items-start gap-4">
           <div
-            className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
-            style={{
-              background: "linear-gradient(135deg, rgba(245,158,11,0.2), rgba(251,146,60,0.1))",
-              border: "1px solid rgba(245,158,11,0.25)",
-              boxShadow: "0 0 16px rgba(245,158,11,0.12)",
-            }}
+            className="h-12 w-12 flex items-center justify-center shrink-0"
+            style={{ background: '#f59e0b', borderRadius: '4px' }}
           >
-            <Package className="h-5 w-5 text-amber-400" />
+            <Package className="h-6 w-6" style={{ color: '#0d0d0d' }} />
           </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">Biblioteca de materiales</h1>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1
+                className="font-black text-3xl leading-none tracking-tight"
+                style={{ fontFamily: "'Syne', sans-serif" }}
+              >
+                Biblioteca de materiales
+              </h1>
               {isGenerating && (
-                <Badge className="bg-amber-500/15 text-amber-400 border-amber-500/30">Generando con IA…</Badge>
+                <span
+                  className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-1"
+                  style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    background: 'rgba(245,158,11,0.1)',
+                    border: '1px solid rgba(245,158,11,0.2)',
+                    color: '#f59e0b',
+                    borderRadius: '4px',
+                  }}
+                >
+                  <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                  Generando con IA...
+                </span>
               )}
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-1">
               Fichas técnicas, usos y recomendaciones asistidas por inteligencia artificial
             </p>
           </div>
         </div>
       </div>
 
-      {/* Controles de búsqueda */}
-      <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: "100ms", animationFillMode: "both" }}>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 flex gap-2">
+      {/* ── Search controls ── */}
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div
+            className="flex-1 flex items-center gap-2 px-3 py-2"
+            style={{
+              background: 'var(--card)',
+              border: '1px solid var(--border)',
+              borderRadius: '4px',
+            }}
+          >
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
             <Input
               placeholder="Buscar materiales..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               disabled={loadingMaterials || isGenerating}
+              className="border-0 bg-transparent shadow-none text-sm focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-8"
             />
-            <Button onClick={handleSearch} disabled={loadingMaterials || isGenerating}>
-              <Search className="h-4 w-4 mr-2" />
+            <button
+              onClick={handleSearch}
+              disabled={loadingMaterials || isGenerating}
+              className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 transition-all shrink-0"
+              style={{
+                background: '#f59e0b',
+                color: '#0d0d0d',
+                borderRadius: '4px',
+                border: 'none',
+                cursor: loadingMaterials || isGenerating ? 'not-allowed' : 'pointer',
+                opacity: loadingMaterials || isGenerating ? 0.5 : 1,
+              }}
+            >
+              <Search className="h-3.5 w-3.5" />
               Buscar
-            </Button>
+            </button>
           </div>
 
           <Select value={selectedCategory} onValueChange={setSelectedCategory} disabled={loadingMaterials || isGenerating}>
-            <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectTrigger
+              className="w-full sm:w-[200px] text-sm"
+              style={{
+                background: 'var(--surface-1)',
+                border: '1px solid var(--border)',
+                borderRadius: '4px',
+              }}
+            >
               <SelectValue placeholder="Todas las categorías" />
             </SelectTrigger>
             <SelectContent>
@@ -323,182 +377,312 @@ export default function MaterialsPage() {
           </Select>
         </div>
 
-        <p className="text-sm text-muted-foreground">
+        <p
+          className="text-[11px]"
+          style={{ fontFamily: "'JetBrains Mono', monospace", color: '#555' }}
+        >
           Si no hay resultados, el sistema generará una ficha con IA y la guardará para futuras búsquedas.
         </p>
       </div>
 
-      {/* Contenido */}
+      {/* ── Content grid ── */}
       {loadingMaterials ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <MaterialSkeleton key={i} />
           ))}
         </div>
       ) : materials.length === 0 ? (
-        <div className="text-center py-16">
-          <Package className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
-          <p className="text-muted-foreground">
+        <div
+          className="text-center py-20"
+          style={{
+            background: 'var(--surface-1)',
+            border: '1px solid var(--border)',
+            borderRadius: '4px',
+          }}
+        >
+          <Package className="h-10 w-10 mx-auto mb-3" style={{ color: 'rgba(255,255,255,0.1)' }} />
+          <p className="text-sm text-muted-foreground">
             {searchTerm.trim()
-              ? 'No se encontraron materiales. Generando con IA…'
+              ? 'No se encontraron materiales. Generando con IA...'
               : 'Escribe un término para buscar materiales.'}
           </p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {materials.map((material, idx) => (
             <AnimateOnScroll key={material.id} delay={idx * 0.05}>
-              <Card
-                className="cursor-pointer group overflow-hidden transition-all duration-300 hover:-translate-y-1"
+              <div
+                className="cursor-pointer transition-all"
                 style={{
-                  borderColor: "rgba(255,255,255,0.08)",
+                  background: 'var(--surface-1)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 16px 40px -8px rgba(0,0,0,0.4), 0 0 0 1px rgba(245,158,11,0.2)";
-                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(245,158,11,0.3)";
+                  (e.currentTarget as HTMLElement).style.borderColor = '#f59e0b';
+                  (e.currentTarget as HTMLElement).style.borderTop = '3px solid #f59e0b';
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = "";
-                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.08)";
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
+                  (e.currentTarget as HTMLElement).style.borderTop = '1px solid var(--border)';
                 }}
                 onClick={() => setSelectedMaterial(material)}
               >
-                <CardHeader className="p-0">
-                  {material.thumbnail_url ? (
-                    <div className="w-full h-48 bg-white flex items-center justify-center p-3 overflow-hidden">
-                      <img
-                        src={material.thumbnail_url}
-                        alt={material.name}
-                        className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                    </div>
-                  ) : generatingIds.has(material.id) ? (
-                    <div className="w-full h-48 bg-muted flex flex-col items-center justify-center gap-2">
-                      <Loader2 className="h-8 w-8 animate-spin text-amber-400" />
-                      <span className="text-xs text-muted-foreground">Generando imagen…</span>
-                    </div>
-                  ) : (
-                    <div
-                      className="w-full h-48 flex items-center justify-center"
+                {/* Image area */}
+                {material.thumbnail_url ? (
+                  <div
+                    className="w-full h-44 flex items-center justify-center p-3 overflow-hidden"
+                    style={{ background: '#fff' }}
+                  >
+                    <img
+                      src={material.thumbnail_url}
+                      alt={material.name}
+                      className="max-w-full max-h-full object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : generatingIds.has(material.id) ? (
+                  <div
+                    className="w-full h-44 flex flex-col items-center justify-center gap-2"
+                    style={{ background: 'var(--surface-3)' }}
+                  >
+                    <Loader2 className="h-6 w-6 animate-spin" style={{ color: '#f59e0b' }} />
+                    <span
+                      className="text-[10px]"
+                      style={{ fontFamily: "'JetBrains Mono', monospace", color: '#555' }}
+                    >
+                      Generando imagen...
+                    </span>
+                  </div>
+                ) : (
+                  <div
+                    className="w-full h-44 flex items-center justify-center"
+                    style={{ background: 'var(--surface-2)' }}
+                  >
+                    <Package className="h-12 w-12" style={{ color: 'rgba(245,158,11,0.15)' }} />
+                  </div>
+                )}
+
+                {/* Card content */}
+                <div className="p-4 space-y-2.5">
+                  <div>
+                    <p className="font-semibold text-sm leading-snug">{material.name}</p>
+                    <span
+                      className="inline-block text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 mt-1"
                       style={{
-                        background: "linear-gradient(135deg, rgba(245,158,11,0.06), rgba(251,146,60,0.04))",
+                        fontFamily: "'JetBrains Mono', monospace",
+                        background: 'rgba(245,158,11,0.08)',
+                        border: '1px solid rgba(245,158,11,0.18)',
+                        color: '#f59e0b',
+                        borderRadius: '4px',
                       }}
                     >
-                      <Package className="h-14 w-14 text-amber-500/25" />
-                    </div>
-                  )}
-                  <div className="p-4">
-                    <CardTitle className="text-base">{material.name}</CardTitle>
-                    <CardDescription className="mt-1">
-                      <Badge className="text-[11px] bg-amber-500/10 text-amber-400 border-amber-500/25">
-                        {getCategoryName(material.category_id)}
-                      </Badge>
-                    </CardDescription>
+                      {getCategoryName(material.category_id)}
+                    </span>
                   </div>
-                </CardHeader>
 
-                <CardContent className="pt-0 px-4 pb-4">
-                  <div className="space-y-1.5 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">Unidad:</span>{" "}
+                  <div className="space-y-1 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Unidad</span>
                       <span className="font-medium">{material.unit_of_measurement}</span>
                     </div>
                     {material.average_price_per_unit != null && (
-                      <div>
-                        <span className="text-muted-foreground">Precio prom.:</span>{" "}
-                        <span className="font-semibold text-amber-400">${material.average_price_per_unit}/{material.unit_of_measurement}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Precio prom.</span>
+                        <span
+                          className="font-bold"
+                          style={{ fontFamily: "'JetBrains Mono', monospace", color: '#f59e0b' }}
+                        >
+                          ${material.average_price_per_unit}/{material.unit_of_measurement}
+                        </span>
                       </div>
                     )}
                     {material.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{material.description}</p>
+                      <p className="text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
+                        {material.description}
+                      </p>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </AnimateOnScroll>
           ))}
         </div>
       )}
 
-      {/* Dialog de detalle */}
+      {/* ── Detail Dialog ── */}
       <Dialog open={!!selectedMaterial} onOpenChange={() => setSelectedMaterial(null)}>
-        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+        <DialogContent
+          className="max-w-3xl max-h-[85vh] overflow-y-auto"
+          style={{
+            background: 'var(--surface-1)',
+            border: '1px solid var(--border)',
+            borderRadius: '4px',
+          }}
+        >
           <DialogHeader>
-            <DialogTitle className="text-2xl">{selectedMaterial?.name}</DialogTitle>
+            <DialogTitle
+              className="font-black text-2xl"
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            >
+              {selectedMaterial?.name}
+            </DialogTitle>
 
-            <DialogDescription className="flex flex-wrap gap-2 pt-2">
-              <Badge variant="secondary">
-                {selectedMaterial ? getCategoryName(selectedMaterial.category_id) : 'Sin categoría'}
-              </Badge>
+            <DialogDescription asChild>
+              <div className="flex flex-wrap gap-2 pt-2">
+                <span
+                  className="text-[10px] font-bold uppercase tracking-wider px-2 py-1"
+                  style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    background: 'rgba(245,158,11,0.08)',
+                    border: '1px solid rgba(245,158,11,0.18)',
+                    color: '#f59e0b',
+                    borderRadius: '4px',
+                  }}
+                >
+                  {selectedMaterial ? getCategoryName(selectedMaterial.category_id) : 'Sin categoría'}
+                </span>
 
-              {selectedMaterial?.unit_of_measurement && (
-                <Badge variant="outline">Unidad: {selectedMaterial.unit_of_measurement}</Badge>
-              )}
+                {selectedMaterial?.unit_of_measurement && (
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-wider px-2 py-1"
+                    style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                      background: 'var(--surface-3)',
+                      border: '1px solid var(--border)',
+                      color: '#888',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    Unidad: {selectedMaterial.unit_of_measurement}
+                  </span>
+                )}
 
-              {selectedMaterial?.average_price_per_unit != null && (
-                <Badge variant="outline">
-                  Precio prom.: ${selectedMaterial.average_price_per_unit}/{selectedMaterial.unit_of_measurement}
-                </Badge>
-              )}
+                {selectedMaterial?.average_price_per_unit != null && (
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-wider px-2 py-1"
+                    style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                      background: 'var(--surface-3)',
+                      border: '1px solid var(--border)',
+                      color: '#888',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    ${selectedMaterial.average_price_per_unit}/{selectedMaterial.unit_of_measurement}
+                  </span>
+                )}
+              </div>
             </DialogDescription>
           </DialogHeader>
 
           {selectedMaterial && (
-            <div className="space-y-6">
-              <section className="space-y-2">
-                <h4 className="font-semibold flex items-center gap-2">
-                  <span className="h-1 w-4 rounded-full bg-amber-500 inline-block" />
+            <div className="space-y-5 mt-2">
+
+              {/* Descripción */}
+              <section
+                className="p-4"
+                style={{
+                  background: 'var(--surface-2)',
+                  border: '1px solid var(--border)',
+                  borderLeft: '3px solid #f59e0b',
+                  borderRadius: '4px',
+                }}
+              >
+                <p
+                  className="text-[10px] font-bold uppercase tracking-wider mb-2"
+                  style={{ fontFamily: "'JetBrains Mono', monospace", color: '#f59e0b' }}
+                >
                   Descripción
-                </h4>
+                </p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {selectedMaterial.description || 'Sin descripción disponible'}
                 </p>
               </section>
 
-              <section className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <h4 className="font-semibold flex items-center gap-2">
-                    <span className="h-1 w-4 rounded-full bg-blue-500 inline-block" />
+              {/* Usos + Recomendaciones */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <section
+                  className="p-4"
+                  style={{
+                    background: 'var(--surface-2)',
+                    border: '1px solid var(--border)',
+                    borderLeft: '3px solid #38bdf8',
+                    borderRadius: '4px',
+                  }}
+                >
+                  <p
+                    className="text-[10px] font-bold uppercase tracking-wider mb-2"
+                    style={{ fontFamily: "'JetBrains Mono', monospace", color: '#38bdf8' }}
+                  >
                     Usos comunes
-                  </h4>
+                  </p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {selectedMaterial.common_uses || '—'}
                   </p>
-                </div>
+                </section>
 
-                <div className="space-y-2">
-                  <h4 className="font-semibold flex items-center gap-2">
-                    <span className="h-1 w-4 rounded-full bg-emerald-500 inline-block" />
+                <section
+                  className="p-4"
+                  style={{
+                    background: 'var(--surface-2)',
+                    border: '1px solid var(--border)',
+                    borderLeft: '3px solid #10b981',
+                    borderRadius: '4px',
+                  }}
+                >
+                  <p
+                    className="text-[10px] font-bold uppercase tracking-wider mb-2"
+                    style={{ fontFamily: "'JetBrains Mono', monospace", color: '#10b981' }}
+                  >
                     Recomendaciones de uso
-                  </h4>
+                  </p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {selectedMaterial.usage_recommendations || '—'}
                   </p>
-                </div>
-              </section>
+                </section>
+              </div>
 
+              {/* Especificaciones técnicas */}
               {selectedMaterial.technical_specs && (
                 <section className="space-y-3">
-                  <h4 className="font-semibold flex items-center gap-2">
-                    <span className="h-1 w-4 rounded-full bg-orange-500 inline-block" />
+                  <p
+                    className="text-[10px] font-bold uppercase tracking-wider"
+                    style={{ fontFamily: "'JetBrains Mono', monospace", color: '#f97316' }}
+                  >
                     Especificaciones técnicas
-                  </h4>
+                  </p>
 
-                  <div className="rounded-md border bg-muted/30">
-                    <div className="grid grid-cols-1 divide-y">
-                      {Object.entries(selectedMaterial.technical_specs).map(([k, v]) => (
-                        <div key={k} className="grid md:grid-cols-3 gap-3 p-3">
-                          <div className="text-sm font-medium">{formatLabel(k)}</div>
-                          <div className="md:col-span-2 text-sm text-muted-foreground whitespace-pre-wrap break-words">
-                            {formatValue(v)}
-                          </div>
+                  <div
+                    style={{
+                      background: 'var(--surface-2)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '4px',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {Object.entries(selectedMaterial.technical_specs).map(([k, v], idx, arr) => (
+                      <div
+                        key={k}
+                        className="grid md:grid-cols-3 gap-3 px-4 py-3"
+                        style={{
+                          borderBottom: idx < arr.length - 1 ? '1px solid var(--border)' : 'none',
+                        }}
+                      >
+                        <div className="text-xs font-semibold">{formatLabel(k)}</div>
+                        <div className="md:col-span-2 text-xs text-muted-foreground whitespace-pre-wrap break-words">
+                          {formatValue(v)}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
 
-                  <p className="text-xs text-muted-foreground">
+                  <p
+                    className="text-[10px]"
+                    style={{ fontFamily: "'JetBrains Mono', monospace", color: '#555' }}
+                  >
                     Nota: los valores pueden variar según marca/proveedor y ficha técnica.
                   </p>
                 </section>

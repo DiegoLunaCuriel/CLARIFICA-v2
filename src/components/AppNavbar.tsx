@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -28,21 +28,61 @@ import {
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Inicio", icon: Building2, color: "amber" },
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, color: "amber", requiresAuth: true },
-  { href: "/materials", label: "Materiales", icon: Package, color: "orange" },
-  { href: "/store-search", label: "Buscador", icon: Search, color: "blue" },
-  { href: "/compare", label: "Comparador", icon: ShoppingCart, color: "emerald" },
-  { href: "/decision", label: "Asistente IA", icon: Sparkles, color: "purple" },
+  { href: "/", label: "Inicio", icon: Building2, accentColor: "#f5a400", accentRgb: "245,164,0" },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, accentColor: "#f5a400", accentRgb: "245,164,0", requiresAuth: true },
+  { href: "/materials", label: "Materiales", icon: Package, accentColor: "#ff6600", accentRgb: "255,102,0" },
+  { href: "/store-search", label: "Buscador", icon: Search, accentColor: "#00cfff", accentRgb: "0,207,255" },
+  { href: "/compare", label: "Comparador", icon: ShoppingCart, accentColor: "#00c56e", accentRgb: "0,197,110" },
+  { href: "/decision", label: "Asistente IA", icon: Sparkles, accentColor: "#a855f7", accentRgb: "168,85,247" },
 ];
 
-const ICON_COLORS: Record<string, string> = {
-  amber: "text-amber-400",
-  orange: "text-orange-400",
-  blue: "text-blue-400",
-  emerald: "text-emerald-400",
-  purple: "text-purple-400",
-};
+function NavItem({
+  item,
+  isActive,
+  collapsed,
+  onClick,
+}: {
+  item: typeof NAV_ITEMS[0];
+  isActive: boolean;
+  collapsed: boolean;
+  onClick: () => void;
+}) {
+  const Icon = item.icon;
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "group flex items-center gap-3 w-full py-2 text-[13px] font-medium transition-all duration-150",
+        collapsed ? "justify-center px-0" : "px-3"
+      )}
+      style={{
+        fontFamily: "'DM Sans', sans-serif",
+        color: isActive ? item.accentColor : "var(--muted-foreground)",
+        background: isActive ? `rgba(${item.accentRgb}, 0.09)` : "transparent",
+        borderLeft: isActive ? `2px solid ${item.accentColor}` : "2px solid transparent",
+        borderRadius: "0 2px 2px 0",
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) {
+          (e.currentTarget as HTMLElement).style.color = "var(--foreground)";
+          (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) {
+          (e.currentTarget as HTMLElement).style.color = "var(--muted-foreground)";
+          (e.currentTarget as HTMLElement).style.background = "transparent";
+        }
+      }}
+      title={collapsed ? item.label : undefined}
+    >
+      <Icon className="h-4 w-4 shrink-0" style={{ strokeWidth: 1.8 }} />
+      {!collapsed && (
+        <span style={{ letterSpacing: "-0.01em" }}>{item.label}</span>
+      )}
+    </button>
+  );
+}
 
 function SidebarContent({
   collapsed,
@@ -72,49 +112,39 @@ function SidebarContent({
       {/* ── Brand ── */}
       <div
         className={cn(
-          "relative flex items-center gap-3 px-4 py-5 shrink-0",
-          collapsed && "justify-center px-2"
+          "flex items-center gap-3 px-4 py-[18px] shrink-0",
+          collapsed && "justify-center px-0"
         )}
+        style={{ borderBottom: "1px solid var(--sidebar-border)" }}
       >
-        {/* Background glow */}
+        {/* Logo icon */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="shrink-0 h-8 w-8 flex items-center justify-center relative overflow-hidden"
           style={{
-            background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(245,158,11,0.12), transparent 80%)",
-          }}
-        />
-        <div
-          className="relative shrink-0 h-9 w-9 rounded-xl flex items-center justify-center"
-          style={{
-            background: "linear-gradient(135deg, rgba(245,158,11,0.25) 0%, rgba(251,146,60,0.15) 100%)",
-            border: "1px solid rgba(245,158,11,0.35)",
-            boxShadow: "0 0 16px rgba(245,158,11,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
+            background: "var(--amber)",
+            borderRadius: "2px",
           }}
         >
-          <HardHat className="h-5 w-5 text-amber-400" />
+          <HardHat className="h-4 w-4" style={{ color: "#080807", strokeWidth: 2.2 }} />
         </div>
+
         {!collapsed && (
-          <div className="relative flex flex-col leading-tight min-w-0">
-            <span
-              className="font-extrabold tracking-tight text-sm"
-              style={{
-                background: "linear-gradient(90deg, #fbbf24, #fb923c)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
+          <div className="min-w-0 overflow-hidden">
+            <div
+              className="font-black text-[15px] leading-none tracking-[-0.04em] truncate"
+              style={{ fontFamily: "'Syne', sans-serif", color: "var(--foreground)" }}
             >
               CLARIFICA
-            </span>
-            <span className="text-[9px] text-muted-foreground tracking-widest uppercase">
-              Hub de Construcción
-            </span>
+            </div>
+            <div
+              className="text-[9px] tracking-[0.14em] uppercase mt-0.5 truncate"
+              style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)" }}
+            >
+              Hub Construcción
+            </div>
           </div>
         )}
       </div>
-
-      {/* Divider */}
-      <div className="h-px mx-3 shrink-0" style={{ background: "linear-gradient(90deg, transparent, rgba(245,158,11,0.2), transparent)" }} />
 
       {/* ── Nav ── */}
       <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto overflow-x-hidden">
@@ -122,136 +152,137 @@ function SidebarContent({
           if (item.requiresAuth && !user) return null;
           const isActive =
             item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-          const Icon = item.icon;
-          const iconColor = ICON_COLORS[item.color];
-
           return (
-            <button
+            <NavItem
               key={item.href}
+              item={item}
+              isActive={isActive}
+              collapsed={collapsed}
               onClick={() => handleNav(item.href)}
-              className={cn(
-                "group relative flex items-center gap-3 w-full rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                isActive
-                  ? "text-amber-300"
-                  : "text-muted-foreground hover:text-foreground",
-                collapsed && "justify-center px-2"
-              )}
-              style={
-                isActive
-                  ? {
-                    background: "linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(251,146,60,0.08) 100%)",
-                    border: "1px solid rgba(245,158,11,0.25)",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 12px rgba(245,158,11,0.1)",
-                  }
-                  : {
-                    border: "1px solid transparent",
-                  }
-              }
-              onMouseEnter={(e) => {
-                if (!isActive) {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)";
-                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.06)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) {
-                  (e.currentTarget as HTMLElement).style.background = "";
-                  (e.currentTarget as HTMLElement).style.borderColor = "transparent";
-                }
-              }}
-              title={collapsed ? item.label : undefined}
-            >
-              <Icon
-                className={cn(
-                  "h-4 w-4 shrink-0 transition-all duration-200",
-                  isActive ? iconColor : "text-muted-foreground group-hover:text-foreground"
-                )}
-              />
-              {!collapsed && <span>{item.label}</span>}
-              {isActive && !collapsed && (
-                <span
-                  className="ml-auto h-1.5 w-1.5 rounded-full"
-                  style={{
-                    background: "#f59e0b",
-                    boxShadow: "0 0 6px rgba(245,158,11,0.9)",
-                  }}
-                />
-              )}
-            </button>
+            />
           );
         })}
       </nav>
 
-      {/* Divider */}
-      <div className="h-px mx-3 shrink-0" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)" }} />
+      {/* ── Divider ── */}
+      <div
+        className="mx-2 shrink-0"
+        style={{ height: "1px", background: "var(--sidebar-border)" }}
+      />
 
       {/* ── Footer ── */}
-      <div className="px-2 py-4 space-y-1 shrink-0">
-        <div className={cn("flex items-center px-1 py-1", collapsed ? "justify-center" : "justify-between")}>
-          {!collapsed && <span className="text-[11px] text-muted-foreground px-2">Tema</span>}
+      <div className={cn("px-2 py-3 space-y-0.5 shrink-0")}>
+        {/* Theme toggle */}
+        <div
+          className={cn(
+            "flex items-center py-1.5",
+            collapsed ? "justify-center px-0" : "justify-between px-2"
+          )}
+        >
+          {!collapsed && (
+            <span
+              className="text-[10px] uppercase tracking-[0.12em]"
+              style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)", opacity: 0.6 }}
+            >
+              Tema
+            </span>
+          )}
           <ThemeToggle />
         </div>
 
+        {/* Login / Logout */}
         {user ? (
           <button
-            className="group flex items-center gap-3 w-full rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:text-red-400 transition-all duration-200"
-            style={{ border: "1px solid transparent" }}
+            className={cn(
+              "flex items-center gap-3 w-full py-2 text-[13px] transition-all duration-150",
+              collapsed ? "justify-center px-0" : "px-3"
+            )}
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              color: "var(--muted-foreground)",
+              borderRadius: "2px",
+              borderLeft: "2px solid transparent",
+            }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)";
-              (e.currentTarget as HTMLElement).style.borderColor = "rgba(239,68,68,0.15)";
+              (e.currentTarget as HTMLElement).style.color = "#ff3b30";
+              (e.currentTarget as HTMLElement).style.background = "rgba(255,59,48,0.08)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "";
-              (e.currentTarget as HTMLElement).style.borderColor = "transparent";
+              (e.currentTarget as HTMLElement).style.color = "var(--muted-foreground)";
+              (e.currentTarget as HTMLElement).style.background = "transparent";
             }}
             onClick={handleLogout}
           >
-            <LogOut className="h-4 w-4 shrink-0" />
+            <LogOut className="h-4 w-4 shrink-0" style={{ strokeWidth: 1.8 }} />
             {!collapsed && <span>Cerrar sesión</span>}
           </button>
         ) : (
           <button
-            className="group flex items-center gap-3 w-full rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:text-amber-400 transition-all duration-200"
-            style={{ border: "1px solid transparent" }}
+            className={cn(
+              "flex items-center gap-3 w-full py-2 text-[13px] transition-all duration-150",
+              collapsed ? "justify-center px-0" : "px-3"
+            )}
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              color: "var(--muted-foreground)",
+              borderRadius: "2px",
+              borderLeft: "2px solid transparent",
+            }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "rgba(245,158,11,0.08)";
-              (e.currentTarget as HTMLElement).style.borderColor = "rgba(245,158,11,0.15)";
+              (e.currentTarget as HTMLElement).style.color = "var(--amber)";
+              (e.currentTarget as HTMLElement).style.background = "rgba(245,164,0,0.08)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "";
-              (e.currentTarget as HTMLElement).style.borderColor = "transparent";
+              (e.currentTarget as HTMLElement).style.color = "var(--muted-foreground)";
+              (e.currentTarget as HTMLElement).style.background = "transparent";
             }}
             onClick={() => handleNav("/login")}
           >
-            <LogIn className="h-4 w-4 shrink-0" />
+            <LogIn className="h-4 w-4 shrink-0" style={{ strokeWidth: 1.8 }} />
             {!collapsed && <span>Iniciar sesión</span>}
           </button>
         )}
 
+        {/* Privacy */}
         <button
           className={cn(
-            "group flex items-center gap-3 w-full rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:text-amber-400 transition-all duration-200",
-            collapsed && "justify-center px-2"
+            "flex items-center gap-3 w-full py-2 text-[13px] transition-all duration-150",
+            collapsed ? "justify-center px-0" : "px-3"
           )}
-          style={{ border: "1px solid transparent" }}
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            color: "rgba(122,110,98,0.5)",
+            borderRadius: "2px",
+            borderLeft: "2px solid transparent",
+          }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.background = "rgba(245,158,11,0.08)";
-            (e.currentTarget as HTMLElement).style.borderColor = "rgba(245,158,11,0.15)";
+            (e.currentTarget as HTMLElement).style.color = "var(--muted-foreground)";
+            (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)";
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.background = "";
-            (e.currentTarget as HTMLElement).style.borderColor = "transparent";
+            (e.currentTarget as HTMLElement).style.color = "rgba(122,110,98,0.5)";
+            (e.currentTarget as HTMLElement).style.background = "transparent";
           }}
           onClick={() => handleNav("/privacidad")}
           title={collapsed ? "Aviso de Privacidad" : undefined}
         >
-          <Shield className="h-4 w-4 shrink-0" />
+          <Shield className="h-4 w-4 shrink-0" style={{ strokeWidth: 1.8 }} />
           {!collapsed && <span>Privacidad</span>}
         </button>
 
+        {/* Collapse toggle */}
         {onToggleCollapse && (
           <button
-            className="flex items-center justify-center w-full rounded-xl p-2 text-muted-foreground hover:text-amber-400 hover:bg-amber-500/8 transition-all duration-200"
+            className="flex items-center justify-center w-full py-2 transition-all duration-150"
+            style={{ color: "rgba(122,110,98,0.4)", borderRadius: "2px" }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.color = "var(--amber)";
+              (e.currentTarget as HTMLElement).style.background = "rgba(245,164,0,0.06)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.color = "rgba(122,110,98,0.4)";
+              (e.currentTarget as HTMLElement).style.background = "transparent";
+            }}
             onClick={onToggleCollapse}
           >
             {collapsed
@@ -277,13 +308,10 @@ export default function AppNavbar({ collapsed, onToggleCollapse }: AppNavbarProp
     <>
       {/* ── Mobile: topbar + Sheet ── */}
       <div
-        className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-4 h-14"
+        className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-4 h-12"
         style={{
-          background: "rgba(9, 9, 16, 0.85)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
-          boxShadow: "0 1px 0 rgba(245,158,11,0.08)",
+          background: "var(--sidebar)",
+          borderBottom: "1px solid var(--sidebar-border)",
         }}
       >
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -291,17 +319,18 @@ export default function AppNavbar({ collapsed, onToggleCollapse }: AppNavbarProp
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-amber-400 hover:bg-amber-500/10"
+              className="h-8 w-8"
+              style={{ color: "var(--muted-foreground)" }}
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-5 w-5" style={{ strokeWidth: 1.8 }} />
             </Button>
           </SheetTrigger>
           <SheetContent
             side="left"
-            className="w-60 p-0"
+            className="w-[220px] p-0"
             style={{
-              background: "oklch(0.11 0.016 260)",
-              borderRight: "1px solid rgba(255,255,255,0.07)",
+              background: "var(--sidebar)",
+              borderRight: "1px solid var(--sidebar-border)",
             }}
           >
             <SidebarContent
@@ -311,24 +340,17 @@ export default function AppNavbar({ collapsed, onToggleCollapse }: AppNavbarProp
           </SheetContent>
         </Sheet>
 
+        {/* Mobile brand */}
         <div className="flex items-center gap-2">
           <div
-            className="h-7 w-7 rounded-lg flex items-center justify-center"
-            style={{
-              background: "rgba(245,158,11,0.15)",
-              border: "1px solid rgba(245,158,11,0.3)",
-            }}
+            className="h-7 w-7 flex items-center justify-center shrink-0"
+            style={{ background: "var(--amber)", borderRadius: "2px" }}
           >
-            <HardHat className="h-4 w-4 text-amber-400" />
+            <HardHat className="h-3.5 w-3.5" style={{ color: "#080807", strokeWidth: 2.2 }} />
           </div>
           <span
-            className="font-extrabold tracking-tight text-sm"
-            style={{
-              background: "linear-gradient(90deg, #fbbf24, #fb923c)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
+            className="font-black text-[15px] tracking-[-0.04em]"
+            style={{ fontFamily: "'Syne', sans-serif" }}
           >
             CLARIFICA
           </span>
@@ -339,12 +361,11 @@ export default function AppNavbar({ collapsed, onToggleCollapse }: AppNavbarProp
       <aside
         className={cn(
           "hidden lg:flex flex-col fixed left-0 top-0 bottom-0 z-40 transition-all duration-300",
-          collapsed ? "w-16" : "w-56"
+          collapsed ? "w-[60px]" : "w-[220px]"
         )}
         style={{
-          background: "oklch(0.11 0.016 260)",
-          borderRight: "1px solid rgba(255,255,255,0.07)",
-          boxShadow: "1px 0 0 rgba(245,158,11,0.05), 4px 0 32px rgba(0,0,0,0.3)",
+          background: "var(--sidebar)",
+          borderRight: "1px solid var(--sidebar-border)",
         }}
       >
         <SidebarContent
@@ -355,4 +376,3 @@ export default function AppNavbar({ collapsed, onToggleCollapse }: AppNavbarProp
     </>
   );
 }
-

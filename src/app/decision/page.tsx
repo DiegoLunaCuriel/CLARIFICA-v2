@@ -21,6 +21,7 @@ import {
   Package,
   Zap,
   Store,
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTypingPlaceholder } from "@/components/ui/typing-effect";
@@ -55,36 +56,36 @@ interface AnswerEntry {
 /* ─────────────────────────── Framer variants ───────────────────────── */
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   },
 };
 
 const staggerContainer = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
 };
 
 const slideInLeft = {
-  hidden: { opacity: 0, x: -14 },
+  hidden: { opacity: 0, x: -10 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   },
 };
 
 /* ─────────────────────── Static data (outside component) ───────────── */
 
 const SUGGESTION_CHIPS = [
-  { label: "Taladro percutor", emoji: "🔩" },
-  { label: "Cemento Portland", emoji: "🧱" },
-  { label: "Pintura interior", emoji: "🎨" },
-  { label: "Sierra circular", emoji: "⚙️" },
-  { label: "Pala con cabo", emoji: "⛏️" },
+  { label: "Taladro percutor" },
+  { label: "Cemento Portland" },
+  { label: "Pintura interior" },
+  { label: "Sierra circular" },
+  { label: "Pala con cabo" },
 ];
 
 const FEATURES = [
@@ -298,287 +299,214 @@ export default function DecisionPage() {
             variants={staggerContainer}
             initial="hidden"
             animate="visible"
-            exit={{ opacity: 0, y: -16, transition: { duration: 0.25 } }}
-            className="space-y-7 pt-2"
+            exit={{ opacity: 0, y: -12, transition: { duration: 0.2 } }}
+            className="space-y-8 pt-2"
           >
-            {/* Hero section */}
-            <motion.div variants={fadeUp} className="text-center space-y-5">
-              {/* Icon with glow */}
-              <div className="relative mx-auto w-fit">
-                <div
-                  className="absolute inset-0 rounded-3xl blur-3xl opacity-50"
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(168,85,247,0.7) 0%, rgba(245,158,11,0.4) 60%, transparent 100%)",
-                  }}
-                />
-                <motion.div
-                  className="relative h-20 w-20 rounded-3xl mx-auto flex items-center justify-center"
-                  style={{
-                    background:
-                      "linear-gradient(145deg, rgba(168,85,247,0.22) 0%, rgba(245,158,11,0.14) 100%)",
-                    border: "1px solid rgba(168,85,247,0.28)",
-                    boxShadow:
-                      "0 0 40px rgba(168,85,247,0.18), inset 0 1px 0 rgba(255,255,255,0.08)",
-                  }}
-                  animate={{ y: [0, -4, 0] }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <motion.div
-                    animate={{ rotate: [0, 8, -8, 0] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <Sparkles className="h-9 w-9 text-purple-300" />
-                  </motion.div>
-                </motion.div>
-              </div>
+            {/* Header */}
+            <motion.div variants={fadeUp} className="space-y-6">
+              {/* Top border strip */}
+              <div
+                className="h-[3px] w-full"
+                style={{ background: "linear-gradient(90deg, #a855f7, #f59e0b)" }}
+              />
 
-              {/* Heading */}
-              <div className="space-y-2">
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
-                  <span
-                    style={{
-                      background: "linear-gradient(135deg, #f8fafc 20%, rgba(245,158,11,0.85) 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                    }}
+              <div className="flex items-start gap-4">
+                {/* Icon */}
+                <div
+                  className="h-12 w-12 flex items-center justify-center shrink-0"
+                  style={{
+                    background: "#a855f7",
+                    borderRadius: "4px",
+                  }}
+                >
+                  <Sparkles className="h-6 w-6" style={{ color: "#0d0d0d" }} />
+                </div>
+                <div>
+                  <h1
+                    className="font-black text-3xl sm:text-4xl leading-none tracking-tight"
+                    style={{ fontFamily: "'Syne', sans-serif" }}
                   >
                     Asistente de compra
-                  </span>
-                  <br />
-                  <span
-                    style={{
-                      background:
-                        "linear-gradient(135deg, rgba(168,85,247,0.9) 0%, rgba(245,158,11,0.85) 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                    }}
-                  >
-                    inteligente
-                  </span>
-                </h1>
-                <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
-                  Describe el producto que necesitas y la IA te ayuda a elegir el ideal comparando precios en las mejores tiendas de México.
-                </p>
+                  </h1>
+                  <p className="text-muted-foreground text-sm mt-2 leading-relaxed max-w-md">
+                    Describe el producto que necesitas y la IA te ayuda a elegir el ideal
+                    comparando precios en las mejores tiendas de México.
+                  </p>
+                </div>
               </div>
             </motion.div>
 
             {/* Search input */}
-            <motion.div variants={fadeUp}>
+            <motion.div variants={fadeUp} className="space-y-3">
               <div
-                className="rounded-2xl p-[2px]"
+                className="flex items-center gap-2 px-4 py-2"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(168,85,247,0.35) 0%, rgba(245,158,11,0.25) 50%, rgba(168,85,247,0.15) 100%)",
-                  boxShadow: "0 0 48px rgba(168,85,247,0.07)",
+                  background: "var(--card)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "4px",
                 }}
               >
-                <div
-                  className="rounded-2xl flex items-center gap-2 px-4 py-2"
+                <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && query.trim()) handleSearch();
+                  }}
+                  placeholder={typingPlaceholder || "ej: taladro percutor profesional..."}
+                  className="border-0 bg-transparent shadow-none text-sm focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-10"
+                />
+                <button
+                  onClick={handleSearch}
+                  disabled={!query.trim()}
+                  className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-sm font-semibold transition-all"
                   style={{
-                    background: "var(--card)",
-                    border: "1px solid rgba(255,255,255,0.04)",
+                    background: query.trim() ? "#f59e0b" : "var(--surface-2)",
+                    color: query.trim() ? "#0d0d0d" : "#555",
+                    borderRadius: "4px",
+                    border: "none",
+                    cursor: query.trim() ? "pointer" : "not-allowed",
                   }}
                 >
-                  <Search className="h-5 w-5 text-muted-foreground shrink-0" />
-                  <Input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && query.trim()) handleSearch();
-                    }}
-                    placeholder={typingPlaceholder || "ej: taladro percutor profesional..."}
-                    className="border-0 bg-transparent shadow-none text-[15px] focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-11"
-                  />
-                  <Button
-                    onClick={handleSearch}
-                    disabled={!query.trim()}
-                    className="shrink-0 rounded-xl h-9 px-4 text-sm font-semibold"
-                    style={{
-                      background: query.trim()
-                        ? "linear-gradient(135deg, #d97706, #b45309)"
-                        : undefined,
-                      boxShadow: query.trim()
-                        ? "0 4px 16px rgba(217,119,6,0.35)"
-                        : undefined,
-                    }}
-                  >
-                    Buscar
-                    <ArrowRight className="h-4 w-4 ml-1.5" />
-                  </Button>
-                </div>
+                  Buscar
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
               </div>
 
               {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-3 rounded-xl px-4 py-3 text-sm text-red-400"
+                <div
+                  className="px-4 py-3 text-sm text-red-400"
                   style={{
-                    background: "rgba(239,68,68,0.08)",
-                    border: "1px solid rgba(239,68,68,0.2)",
+                    background: "rgba(239,68,68,0.06)",
+                    border: "1px solid rgba(239,68,68,0.18)",
+                    borderRadius: "4px",
                   }}
                 >
                   {error}
-                </motion.div>
+                </div>
               )}
             </motion.div>
 
             {/* Suggestion chips */}
-            <motion.div variants={fadeUp} className="space-y-3">
-              <p className="text-xs text-muted-foreground text-center">Búsquedas frecuentes</p>
-              <motion.div
-                className="flex flex-wrap gap-2 justify-center"
-                variants={staggerContainer}
-                initial="hidden"
-                animate="visible"
+            <motion.div variants={fadeUp} className="space-y-2">
+              <p
+                className="text-[10px] uppercase tracking-widest"
+                style={{ fontFamily: "'JetBrains Mono', monospace", color: "#444" }}
               >
+                Búsquedas frecuentes
+              </p>
+              <div className="flex flex-wrap gap-2">
                 {SUGGESTION_CHIPS.map((chip) => (
-                  <motion.button
+                  <button
                     key={chip.label}
-                    variants={fadeUp}
                     onClick={() => {
                       setQuery(chip.label);
                       handleSearchWithQuery(chip.label);
                     }}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-colors"
+                    className="px-3 py-1.5 text-xs font-medium transition-all"
                     style={{
-                      background: "rgba(255,255,255,0.04)",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      color: "var(--muted-foreground)",
+                      background: "var(--surface-2)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "4px",
+                      color: "#888",
+                      cursor: "pointer",
                     }}
-                    whileHover={{
-                      scale: 1.04,
-                      backgroundColor: "rgba(245,158,11,0.1)",
-                      borderColor: "rgba(245,158,11,0.32)",
-                      color: "#f59e0b",
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor = "#f59e0b";
+                      (e.currentTarget as HTMLElement).style.color = "#f59e0b";
                     }}
-                    whileTap={{ scale: 0.96 }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+                      (e.currentTarget as HTMLElement).style.color = "#888";
+                    }}
                   >
-                    <span className="text-sm">{chip.emoji}</span>
                     {chip.label}
-                  </motion.button>
+                  </button>
                 ))}
-              </motion.div>
+              </div>
             </motion.div>
 
             {/* Feature cards */}
             <motion.div variants={fadeUp}>
-              <div className="grid grid-cols-3 gap-3">
-                {FEATURES.map(({ Icon, label, sub }) => (
+              <div
+                className="grid grid-cols-3"
+                style={{ border: "1px solid var(--border)", borderRadius: "4px", overflow: "hidden" }}
+              >
+                {FEATURES.map(({ Icon, label, sub }, idx) => (
                   <div
                     key={label}
-                    className="rounded-xl p-3.5 text-center space-y-1.5"
+                    className="p-4 text-center space-y-2"
                     style={{
-                      background: "rgba(255,255,255,0.02)",
-                      border: "1px solid rgba(255,255,255,0.05)",
+                      background: "var(--surface-1)",
+                      borderRight: idx < FEATURES.length - 1 ? "1px solid var(--border)" : "none",
                     }}
                   >
                     <div
-                      className="h-8 w-8 rounded-lg mx-auto flex items-center justify-center"
+                      className="h-8 w-8 mx-auto flex items-center justify-center"
                       style={{
-                        background: "rgba(245,158,11,0.1)",
-                        border: "1px solid rgba(245,158,11,0.15)",
+                        background: "rgba(168,85,247,0.12)",
+                        border: "1px solid rgba(168,85,247,0.2)",
+                        borderRadius: "4px",
                       }}
                     >
-                      <Icon className="h-4 w-4 text-amber-500" />
+                      <Icon className="h-4 w-4" style={{ color: "#a855f7" }} />
                     </div>
                     <p className="text-xs font-semibold">{label}</p>
-                    <p className="text-xs text-muted-foreground leading-snug">{sub}</p>
+                    <p className="text-[11px] text-muted-foreground leading-snug">{sub}</p>
                   </div>
                 ))}
               </div>
             </motion.div>
 
-            {/* ── Cómo funciona: animated process flow ── */}
-            <motion.div variants={fadeUp} className="space-y-5">
+            {/* Cómo funciona */}
+            <motion.div variants={fadeUp} className="space-y-4">
               <p
-                className="text-center text-xs font-medium uppercase tracking-widest"
-                style={{ color: "rgba(255,255,255,0.2)" }}
+                className="text-[10px] uppercase tracking-widest"
+                style={{ fontFamily: "'JetBrains Mono', monospace", color: "#444" }}
               >
                 Cómo funciona
               </p>
-
-              {/* Step cards with animated connector lines */}
-              <div className="relative">
-                {/* Connector line */}
-                <div
-                  className="absolute top-10 left-0 right-0 h-px hidden sm:block"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, transparent 5%, rgba(245,158,11,0.18) 30%, rgba(168,85,247,0.18) 70%, transparent 95%)",
-                  }}
-                />
-                <div className="grid grid-cols-3 gap-4 relative">
-                  {[
-                    {
-                      emoji: "🔍",
-                      step: "01",
-                      title: "Describe lo que necesitas",
-                      sub: "Escribe el producto o herramienta que buscas",
-                      color: "rgba(245,158,11,0.7)",
-                      bg: "rgba(245,158,11,0.08)",
-                      border: "rgba(245,158,11,0.18)",
-                    },
-                    {
-                      emoji: "🤖",
-                      step: "02",
-                      title: "La IA te hace preguntas",
-                      sub: "Preguntas clave para entender tu caso específico",
-                      color: "rgba(168,85,247,0.7)",
-                      bg: "rgba(168,85,247,0.08)",
-                      border: "rgba(168,85,247,0.18)",
-                    },
-                    {
-                      emoji: "📦",
-                      step: "03",
-                      title: "Recibe recomendaciones",
-                      sub: "Productos ideales para ti con pros, contras y precios",
-                      color: "rgba(34,197,94,0.7)",
-                      bg: "rgba(34,197,94,0.08)",
-                      border: "rgba(34,197,94,0.18)",
-                    },
-                  ].map(({ emoji, step, title, sub, color, bg, border }, idx) => (
-                    <motion.div
-                      key={step}
-                      className="rounded-xl p-4 text-center space-y-2.5 flex flex-col items-center"
-                      style={{ background: bg, border: `1px solid ${border}` }}
-                      animate={{ y: [0, -5, 0] }}
-                      transition={{
-                        duration: 3 + idx * 0.6,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: idx * 0.4,
-                      }}
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  {
+                    step: "01",
+                    title: "Describe lo que necesitas",
+                    sub: "Escribe el producto o herramienta que buscas",
+                    accentColor: "#f59e0b",
+                  },
+                  {
+                    step: "02",
+                    title: "La IA te hace preguntas",
+                    sub: "Preguntas clave para entender tu caso específico",
+                    accentColor: "#a855f7",
+                  },
+                  {
+                    step: "03",
+                    title: "Recibe recomendaciones",
+                    sub: "Productos con pros, contras y precios comparados",
+                    accentColor: "#10b981",
+                  },
+                ].map(({ step, title, sub, accentColor }) => (
+                  <div
+                    key={step}
+                    className="p-4 space-y-2"
+                    style={{
+                      background: "var(--surface-1)",
+                      border: "1px solid var(--border)",
+                      borderTop: `3px solid ${accentColor}`,
+                      borderRadius: "4px",
+                    }}
+                  >
+                    <span
+                      className="text-[10px] font-bold"
+                      style={{ fontFamily: "'JetBrains Mono', monospace", color: accentColor }}
                     >
-                      {/* Step badge + emoji */}
-                      <div className="relative">
-                        <motion.div
-                          className="text-2xl select-none"
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 2.5, repeat: Infinity, delay: idx * 0.7 }}
-                        >
-                          {emoji}
-                        </motion.div>
-                        <div
-                          className="absolute -top-1 -right-3 text-[9px] font-bold px-1 rounded"
-                          style={{ background: color, color: "#000" }}
-                        >
-                          {step}
-                        </div>
-                      </div>
-                      <p className="text-xs font-semibold leading-snug">{title}</p>
-                      <p
-                        className="text-[11px] leading-snug"
-                        style={{ color: "rgba(255,255,255,0.38)" }}
-                      >
-                        {sub}
-                      </p>
-                    </motion.div>
-                  ))}
-                </div>
+                      {step}
+                    </span>
+                    <p className="text-xs font-semibold leading-snug">{title}</p>
+                    <p className="text-[11px] text-muted-foreground leading-snug">{sub}</p>
+                  </div>
+                ))}
               </div>
             </motion.div>
           </motion.div>
@@ -588,64 +516,39 @@ export default function DecisionPage() {
         {phase === "loading" && (
           <motion.div
             key="loading"
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.94 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col items-center justify-center py-28 space-y-7"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex flex-col items-center justify-center py-32 space-y-6"
           >
-            {/* Pulsing orb */}
-            <div className="relative">
-              <motion.div
-                className="h-24 w-24 rounded-full"
-                style={{
-                  background:
-                    "radial-gradient(circle at 38% 38%, rgba(168,85,247,0.6) 0%, rgba(245,158,11,0.3) 55%, transparent 80%)",
-                  boxShadow: "0 0 60px rgba(168,85,247,0.25)",
-                }}
-                animate={{
-                  scale: [1, 1.1, 1],
-                  opacity: [0.75, 1, 0.75],
-                  boxShadow: [
-                    "0 0 40px rgba(168,85,247,0.2)",
-                    "0 0 70px rgba(168,85,247,0.35)",
-                    "0 0 40px rgba(168,85,247,0.2)",
-                  ],
-                }}
-                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Sparkles className="h-9 w-9 text-purple-300" />
-              </div>
+            {/* Icon */}
+            <div
+              className="h-16 w-16 flex items-center justify-center"
+              style={{ background: "#a855f7", borderRadius: "4px" }}
+            >
+              <Sparkles className="h-8 w-8" style={{ color: "#0d0d0d" }} />
             </div>
 
-            <div className="text-center space-y-2">
-              <p className="font-semibold text-xl">Analizando tu búsqueda</p>
+            <div className="text-center space-y-1.5">
+              <p
+                className="font-black text-xl"
+                style={{ fontFamily: "'Syne', sans-serif" }}
+              >
+                Analizando tu búsqueda
+              </p>
               <p className="text-sm text-muted-foreground">
-                Generando preguntas inteligentes para{" "}
-                <span className="text-foreground font-medium">
+                Generando preguntas para{" "}
+                <span className="font-medium" style={{ color: "#f59e0b" }}>
                   &ldquo;{query}&rdquo;
                 </span>
               </p>
             </div>
 
-            {/* Bouncing dots */}
-            <div className="flex items-center gap-2">
-              {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="h-2 w-2 rounded-full"
-                  style={{ background: "rgba(245,158,11,0.8)" }}
-                  animate={{ opacity: [0.25, 1, 0.25], y: [0, -6, 0] }}
-                  transition={{
-                    duration: 1.2,
-                    repeat: Infinity,
-                    delay: i * 0.18,
-                    ease: "easeInOut",
-                  }}
-                />
-              ))}
-            </div>
+            <Loader2
+              className="h-5 w-5 animate-spin"
+              style={{ color: "#a855f7" }}
+            />
           </motion.div>
         )}
 
@@ -653,62 +556,70 @@ export default function DecisionPage() {
         {phase === "asking" && currentQuestion && (
           <motion.div
             key={`asking-${currentIdx}`}
-            initial={{ opacity: 0, x: 40 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-5"
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="space-y-4"
           >
             {/* Top bar */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 {productType && (
-                  <Badge
-                    className="text-xs border"
+                  <span
+                    className="text-[10px] font-bold uppercase tracking-wider px-2 py-1"
                     style={{
-                      background: "rgba(245,158,11,0.12)",
-                      color: "#fbbf24",
-                      borderColor: "rgba(245,158,11,0.25)",
+                      fontFamily: "'JetBrains Mono', monospace",
+                      background: "rgba(168,85,247,0.1)",
+                      border: "1px solid rgba(168,85,247,0.2)",
+                      color: "#a855f7",
+                      borderRadius: "4px",
                     }}
                   >
                     {productType}
-                  </Badge>
+                  </span>
                 )}
-                <span className="text-xs text-muted-foreground">
-                  Pregunta {currentIdx + 1} de {questions.length}
+                <span
+                  className="text-[10px] uppercase tracking-wider"
+                  style={{ fontFamily: "'JetBrains Mono', monospace", color: "#555" }}
+                >
+                  {currentIdx + 1} / {questions.length}
                 </span>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={resetAll}
-                className="text-xs text-muted-foreground h-7 px-2.5 rounded-lg hover:text-foreground"
+                className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors"
+                style={{ background: "none", border: "none", cursor: "pointer" }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = "#ebebeb";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = "#888";
+                }}
               >
-                <RotateCcw className="h-3 w-3 mr-1.5" />
+                <RotateCcw className="h-3 w-3" />
                 Reiniciar
-              </Button>
+              </button>
             </div>
 
             {/* Progress bar */}
             <div
-              className="h-1.5 rounded-full overflow-hidden"
-              style={{ background: "rgba(255,255,255,0.06)" }}
+              className="h-1 overflow-hidden"
+              style={{ background: "var(--surface-3)", borderRadius: "2px" }}
             >
               <motion.div
-                className="h-full rounded-full"
-                style={{
-                  background: "linear-gradient(90deg, #a855f7, #f59e0b)",
-                }}
+                className="h-full"
+                style={{ background: "#a855f7", borderRadius: "2px" }}
                 initial={{ width: `${(currentIdx / questions.length) * 100}%` }}
                 animate={{ width: `${((currentIdx + 1) / questions.length) * 100}%` }}
-                transition={{ duration: 0.55, ease: "easeOut" }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
               />
             </div>
 
             {/* Answer history */}
             {history.length > 0 && (
               <motion.div
-                className="space-y-1.5"
+                className="space-y-1"
                 variants={staggerContainer}
                 initial="hidden"
                 animate="visible"
@@ -717,20 +628,26 @@ export default function DecisionPage() {
                   <motion.div
                     key={a.questionId}
                     variants={slideInLeft}
-                    className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-xs text-muted-foreground"
+                    className="flex items-center gap-2.5 px-3 py-2 text-xs text-muted-foreground"
                     style={{
-                      background: "rgba(255,255,255,0.025)",
-                      border: "1px solid rgba(255,255,255,0.05)",
+                      background: "var(--surface-1)",
+                      border: "1px solid var(--border)",
+                      borderLeft: "2px solid #10b981",
+                      borderRadius: "4px",
                     }}
                   >
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="h-3 w-3 text-emerald-500 shrink-0" />
                     <span className="truncate flex-1">{a.questionTitle}</span>
-                    <Badge
-                      variant="secondary"
-                      className="text-[10px] h-5 shrink-0"
+                    <span
+                      className="text-[10px] font-medium px-1.5 py-0.5 shrink-0"
+                      style={{
+                        background: "var(--surface-3)",
+                        border: "1px solid var(--border)",
+                        borderRadius: "4px",
+                      }}
                     >
                       {a.label}
-                    </Badge>
+                    </span>
                   </motion.div>
                 ))}
               </motion.div>
@@ -738,96 +655,88 @@ export default function DecisionPage() {
 
             {/* Question card */}
             <div
-              className="rounded-2xl overflow-hidden"
               style={{
                 background: "var(--card)",
-                border: "1px solid rgba(168,85,247,0.18)",
-                boxShadow:
-                  "0 0 50px rgba(168,85,247,0.05), 0 2px 8px rgba(0,0,0,0.25)",
+                border: "1px solid var(--border)",
+                borderTop: "3px solid #a855f7",
+                borderRadius: "4px",
+                overflow: "hidden",
               }}
             >
-              {/* Accent line */}
-              <div
-                className="h-[2px]"
-                style={{
-                  background:
-                    "linear-gradient(90deg, #a855f7, #f59e0b, transparent)",
-                }}
-              />
-
-              <div className="p-6">
-                <p className="font-semibold text-[15px] leading-snug mb-1">
+              <div className="p-5">
+                <p className="font-semibold text-sm leading-snug mb-1">
                   {currentQuestion.title}
                 </p>
                 {currentQuestion.description && (
-                  <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
+                  <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
                     {currentQuestion.description}
                   </p>
                 )}
-                {!currentQuestion.description && <div className="mb-5" />}
+                {!currentQuestion.description && <div className="mb-4" />}
 
                 {/* Options */}
-                <motion.div
-                  className="space-y-2"
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="visible"
-                >
+                <div className="space-y-2">
                   {currentQuestion.options.map((opt, idx) => (
-                    <motion.button
+                    <button
                       key={opt.value}
-                      variants={fadeUp}
                       onClick={() => handleAnswer(opt.value, opt.label)}
-                      className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left text-sm cursor-pointer group"
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm transition-all"
                       style={{
-                        background: "rgba(255,255,255,0.03)",
-                        border: "1px solid rgba(255,255,255,0.07)",
+                        background: "var(--surface-2)",
+                        border: "1px solid var(--border)",
+                        borderRadius: "4px",
+                        cursor: "pointer",
                       }}
-                      whileHover={{
-                        x: 5,
-                        backgroundColor: "rgba(245,158,11,0.07)",
-                        borderColor: "rgba(245,158,11,0.32)",
-                        transition: { duration: 0.15 },
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.borderColor = "#a855f7";
+                        (e.currentTarget as HTMLElement).style.borderLeft = "3px solid #a855f7";
                       }}
-                      whileTap={{ scale: 0.98 }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+                        (e.currentTarget as HTMLElement).style.borderLeft = "1px solid var(--border)";
+                      }}
                     >
-                      {/* Number badge */}
                       <span
-                        className="h-7 w-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0"
+                        className="h-6 w-6 flex items-center justify-center text-[10px] font-bold shrink-0"
                         style={{
-                          background: "rgba(245,158,11,0.12)",
-                          color: "rgba(245,158,11,0.9)",
-                          border: "1px solid rgba(245,158,11,0.2)",
+                          fontFamily: "'JetBrains Mono', monospace",
+                          background: "rgba(168,85,247,0.1)",
+                          border: "1px solid rgba(168,85,247,0.2)",
+                          color: "#a855f7",
+                          borderRadius: "4px",
                         }}
                       >
                         {idx + 1}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <span className="font-medium">{opt.label}</span>
+                        <span className="font-medium text-sm">{opt.label}</span>
                         {opt.hint && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {opt.hint}
-                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{opt.hint}</p>
                         )}
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-60 transition-opacity shrink-0" />
-                    </motion.button>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                    </button>
                   ))}
-                </motion.div>
+                </div>
 
                 {/* Skip */}
                 <div
-                  className="mt-5 pt-4"
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+                  className="mt-4 pt-3"
+                  style={{ borderTop: "1px solid var(--border)" }}
                 >
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  <button
                     onClick={handleSkip}
-                    className="text-xs text-muted-foreground h-7 px-2 hover:text-foreground"
+                    className="text-xs text-muted-foreground transition-colors"
+                    style={{ background: "none", border: "none", cursor: "pointer" }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "#ebebeb";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "#888";
+                    }}
                   >
                     Omitir esta pregunta →
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -838,47 +747,39 @@ export default function DecisionPage() {
         {phase === "searching" && (
           <motion.div
             key="searching"
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -24 }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="py-10 space-y-8"
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.35 }}
+            className="py-10 space-y-6"
           >
-            {/* Animated header */}
-            <div className="text-center space-y-4">
-              <div className="relative mx-auto w-fit">
-                <motion.div
-                  className="h-20 w-20 rounded-full"
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(245,158,11,0.55) 0%, rgba(251,146,60,0.25) 60%, transparent 80%)",
-                    boxShadow: "0 0 50px rgba(245,158,11,0.2)",
-                  }}
-                  animate={{
-                    scale: [1, 1.12, 1],
-                    opacity: [0.7, 1, 0.7],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <ShoppingBag className="h-8 w-8 text-amber-400" />
-                </div>
+            {/* Header */}
+            <div className="flex items-center gap-4">
+              <div
+                className="h-12 w-12 flex items-center justify-center shrink-0"
+                style={{ background: "#f59e0b", borderRadius: "4px" }}
+              >
+                <ShoppingBag className="h-6 w-6" style={{ color: "#0d0d0d" }} />
               </div>
               <div>
-                <p className="font-semibold text-xl">Buscando los mejores productos</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Comparando precios en tiempo real
+                <p
+                  className="font-black text-xl"
+                  style={{ fontFamily: "'Syne', sans-serif" }}
+                >
+                  Buscando los mejores productos
                 </p>
+                <p className="text-sm text-muted-foreground">Comparando precios en tiempo real</p>
               </div>
             </div>
 
             {/* Steps panel */}
             <div
-              className="rounded-2xl p-5 space-y-3.5"
+              className="space-y-0"
               style={{
-                background: "var(--card)",
-                border: "1px solid rgba(255,255,255,0.06)",
-                boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+                background: "var(--surface-1)",
+                border: "1px solid var(--border)",
+                borderRadius: "4px",
+                overflow: "hidden",
               }}
             >
               {SEARCH_STEPS.map((step, i) => {
@@ -887,53 +788,56 @@ export default function DecisionPage() {
                 return (
                   <motion.div
                     key={step.label}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={
-                      searchStep >= i
-                        ? { opacity: 1, x: 0 }
-                        : { opacity: 0.2, x: -8 }
-                    }
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="flex items-center gap-3"
+                    initial={{ opacity: 0.2 }}
+                    animate={{ opacity: searchStep >= i ? 1 : 0.25 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex items-center gap-3 px-4 py-3"
+                    style={{
+                      borderBottom: i < SEARCH_STEPS.length - 1 ? "1px solid var(--border)" : "none",
+                      borderLeft: isActive
+                        ? "3px solid #f59e0b"
+                        : isDone
+                        ? "3px solid #10b981"
+                        : "3px solid transparent",
+                    }}
                   >
-                    {/* Step indicator */}
                     <div
-                      className="h-7 w-7 rounded-full flex items-center justify-center shrink-0"
+                      className="h-6 w-6 flex items-center justify-center shrink-0"
                       style={{
                         background: isDone
-                          ? "rgba(16,185,129,0.15)"
+                          ? "rgba(16,185,129,0.1)"
                           : isActive
-                          ? "rgba(245,158,11,0.15)"
-                          : "rgba(255,255,255,0.03)",
+                          ? "rgba(245,158,11,0.1)"
+                          : "var(--surface-3)",
                         border: isDone
-                          ? "1px solid rgba(16,185,129,0.3)"
+                          ? "1px solid rgba(16,185,129,0.25)"
                           : isActive
-                          ? "1px solid rgba(245,158,11,0.3)"
-                          : "1px solid rgba(255,255,255,0.06)",
+                          ? "1px solid rgba(245,158,11,0.25)"
+                          : "1px solid var(--border)",
+                        borderRadius: "4px",
                       }}
                     >
                       {isDone ? (
                         <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
                       ) : isActive ? (
-                        <motion.div
-                          className="h-3.5 w-3.5 rounded-full border-2 border-t-transparent"
-                          style={{ borderColor: "rgba(245,158,11,0.8)", borderTopColor: "transparent" }}
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                        <Loader2
+                          className="h-3.5 w-3.5 animate-spin"
+                          style={{ color: "#f59e0b" }}
                         />
                       ) : (
-                        <span className="text-[10px] text-muted-foreground">{i + 1}</span>
+                        <span
+                          className="text-[9px] font-bold"
+                          style={{ fontFamily: "'JetBrains Mono', monospace", color: "#444" }}
+                        >
+                          {i + 1}
+                        </span>
                       )}
                     </div>
 
                     <span
-                      className="text-sm"
+                      className="text-sm flex-1"
                       style={{
-                        color: isDone
-                          ? "var(--muted-foreground)"
-                          : isActive
-                          ? "var(--foreground)"
-                          : "var(--muted-foreground)",
+                        color: isDone ? "#555" : isActive ? "#ebebeb" : "#444",
                         fontWeight: isActive ? 500 : 400,
                       }}
                     >
@@ -941,13 +845,7 @@ export default function DecisionPage() {
                     </span>
 
                     {isDone && (
-                      <motion.span
-                        initial={{ opacity: 0, scale: 0.7 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="ml-auto text-xs text-emerald-500"
-                      >
-                        ✓
-                      </motion.span>
+                      <span className="text-xs text-emerald-500">✓</span>
                     )}
                   </motion.div>
                 );
@@ -956,20 +854,27 @@ export default function DecisionPage() {
 
             {/* Answer profile chips */}
             {visibleAnswers.length > 0 && (
-              <div className="flex flex-wrap gap-2 justify-center">
-                <span className="text-xs text-muted-foreground self-center">Tu perfil:</span>
+              <div className="flex flex-wrap gap-2 items-center">
+                <span
+                  className="text-[10px] uppercase tracking-widest"
+                  style={{ fontFamily: "'JetBrains Mono', monospace", color: "#444" }}
+                >
+                  Tu perfil:
+                </span>
                 {visibleAnswers.map((a) => (
-                  <Badge
+                  <span
                     key={a.questionId}
-                    className="text-xs border"
+                    className="text-[11px] px-2 py-1"
                     style={{
-                      background: "rgba(168,85,247,0.1)",
-                      color: "#c084fc",
-                      borderColor: "rgba(168,85,247,0.2)",
+                      background: "rgba(168,85,247,0.08)",
+                      border: "1px solid rgba(168,85,247,0.18)",
+                      color: "#a855f7",
+                      borderRadius: "4px",
+                      fontFamily: "'JetBrains Mono', monospace",
                     }}
                   >
                     {a.label}
-                  </Badge>
+                  </span>
                 ))}
               </div>
             )}
@@ -985,14 +890,15 @@ export default function DecisionPage() {
             animate="visible"
             className="space-y-4"
           >
-            {/* Error banner (if search failed) */}
+            {/* Error banner */}
             {error && (
               <motion.div
                 variants={fadeUp}
-                className="rounded-xl px-4 py-3 text-sm text-red-400"
+                className="px-4 py-3 text-sm text-red-400"
                 style={{
-                  background: "rgba(239,68,68,0.08)",
-                  border: "1px solid rgba(239,68,68,0.2)",
+                  background: "rgba(239,68,68,0.06)",
+                  border: "1px solid rgba(239,68,68,0.18)",
+                  borderRadius: "4px",
                 }}
               >
                 {error}
@@ -1002,19 +908,25 @@ export default function DecisionPage() {
             {/* Answer profile */}
             {visibleAnswers.length > 0 && (
               <motion.div variants={fadeUp} className="flex flex-wrap gap-2 items-center">
-                <span className="text-xs text-muted-foreground">Perfil de búsqueda:</span>
+                <span
+                  className="text-[10px] uppercase tracking-widest"
+                  style={{ fontFamily: "'JetBrains Mono', monospace", color: "#555" }}
+                >
+                  Perfil:
+                </span>
                 {visibleAnswers.map((a) => (
-                  <Badge
+                  <span
                     key={a.questionId}
-                    className="text-xs border"
+                    className="text-[11px] px-2 py-1"
                     style={{
-                      background: "rgba(168,85,247,0.1)",
-                      color: "#c084fc",
-                      borderColor: "rgba(168,85,247,0.2)",
+                      background: "rgba(168,85,247,0.08)",
+                      border: "1px solid rgba(168,85,247,0.18)",
+                      color: "#a855f7",
+                      borderRadius: "4px",
                     }}
                   >
                     {a.label}
-                  </Badge>
+                  </span>
                 ))}
               </motion.div>
             )}
@@ -1023,39 +935,30 @@ export default function DecisionPage() {
             {recommendation && (
               <motion.div variants={fadeUp}>
                 <div
-                  className="rounded-2xl overflow-hidden"
                   style={{
-                    border: "1px solid rgba(245,158,11,0.22)",
-                    background:
-                      "linear-gradient(135deg, rgba(245,158,11,0.07) 0%, rgba(251,146,60,0.04) 100%)",
-                    boxShadow:
-                      "0 0 40px rgba(245,158,11,0.07), inset 0 1px 0 rgba(245,158,11,0.07)",
+                    background: "var(--surface-1)",
+                    border: "1px solid var(--border)",
+                    borderLeft: "3px solid #f59e0b",
+                    borderRadius: "4px",
+                    overflow: "hidden",
                   }}
                 >
-                  <div
-                    className="h-px"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, transparent 0%, #f59e0b 30%, #fb923c 70%, transparent 100%)",
-                    }}
-                  />
-                  <div className="p-5 flex items-start gap-4">
+                  <div className="p-4 flex items-start gap-3">
                     <div
-                      className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+                      className="h-8 w-8 flex items-center justify-center shrink-0"
                       style={{
-                        background: "rgba(245,158,11,0.14)",
-                        border: "1px solid rgba(245,158,11,0.22)",
-                        boxShadow: "0 0 20px rgba(245,158,11,0.12)",
+                        background: "#f59e0b",
+                        borderRadius: "4px",
                       }}
                     >
-                      <Sparkles className="h-5 w-5 text-amber-400" />
+                      <Sparkles className="h-4 w-4" style={{ color: "#0d0d0d" }} />
                     </div>
                     <div>
                       <p
-                        className="text-[11px] font-bold uppercase tracking-widest mb-2"
-                        style={{ color: "rgba(245,158,11,0.75)" }}
+                        className="text-[10px] font-bold uppercase tracking-widest mb-1.5"
+                        style={{ fontFamily: "'JetBrains Mono', monospace", color: "#f59e0b" }}
                       >
-                        Recomendación del Asistente IA
+                        Recomendación IA
                       </p>
                       <p className="text-sm leading-relaxed">{recommendation}</p>
                     </div>
@@ -1066,25 +969,30 @@ export default function DecisionPage() {
 
             {/* Results header */}
             {results.length > 0 && (
-              <motion.div
-                variants={fadeUp}
-                className="flex items-center justify-between pt-1"
-              >
+              <motion.div variants={fadeUp} className="flex items-center justify-between pt-1">
                 <div className="flex items-center gap-2">
-                  <ShoppingBag className="h-4 w-4 text-amber-400" />
-                  <span className="text-sm font-semibold">
+                  <ShoppingBag className="h-4 w-4" style={{ color: "#f59e0b" }} />
+                  <span
+                    className="text-sm font-semibold"
+                    style={{ fontFamily: "'Syne', sans-serif" }}
+                  >
                     {results.length} producto{results.length !== 1 ? "s" : ""} recomendado{results.length !== 1 ? "s" : ""}
                   </span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   onClick={resetAll}
-                  className="text-xs text-muted-foreground h-7 px-2.5 rounded-lg"
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors"
+                  style={{ background: "none", border: "none", cursor: "pointer" }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = "#ebebeb";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = "#888";
+                  }}
                 >
-                  <RotateCcw className="h-3 w-3 mr-1.5" />
+                  <RotateCcw className="h-3 w-3" />
                   Nueva búsqueda
-                </Button>
+                </button>
               </motion.div>
             )}
 
@@ -1095,36 +1003,24 @@ export default function DecisionPage() {
                   <motion.div
                     key={i}
                     variants={fadeUp}
-                    className="rounded-2xl overflow-hidden"
                     style={{
                       background: "var(--card)",
-                      border: "1px solid rgba(255,255,255,0.06)",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
-                      transition: "border-color 0.2s, box-shadow 0.2s, transform 0.2s",
-                    }}
-                    whileHover={{
-                      y: -2,
-                      boxShadow: "0 6px 28px rgba(245,158,11,0.1)",
-                      borderColor: "rgba(245,158,11,0.24)",
-                      transition: { duration: 0.2 },
+                      border: "1px solid var(--border)",
+                      borderTop: (p.relevance ?? 0) >= 8 ? "3px solid #f59e0b" : "1px solid var(--border)",
+                      borderRadius: "4px",
+                      overflow: "hidden",
                     }}
                   >
-                    {/* Top relevance accent */}
-                    {(p.relevance ?? 0) >= 8 && (
-                      <div
-                        className="h-[2px]"
-                        style={{
-                          background:
-                            "linear-gradient(90deg, #f59e0b, #fb923c, transparent)",
-                        }}
-                      />
-                    )}
                     <div className="p-4 flex gap-4">
                       {/* Product image */}
                       {p.image && (
                         <div
-                          className="w-[72px] h-[72px] rounded-xl bg-white flex items-center justify-center shrink-0 overflow-hidden p-1.5"
-                          style={{ border: "1px solid rgba(0,0,0,0.08)" }}
+                          className="w-[68px] h-[68px] flex items-center justify-center shrink-0 overflow-hidden p-1.5"
+                          style={{
+                            background: "#fff",
+                            border: "1px solid #e5e5e5",
+                            borderRadius: "4px",
+                          }}
                         >
                           <img
                             src={p.image}
@@ -1132,29 +1028,32 @@ export default function DecisionPage() {
                             className="max-w-full max-h-full object-contain"
                             referrerPolicy="no-referrer"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).parentElement!.style.display =
-                                "none";
+                              (e.target as HTMLImageElement).parentElement!.style.display = "none";
                             }}
                           />
                         </div>
                       )}
 
                       <div className="flex-1 min-w-0">
-                        {/* Title + relevance score */}
+                        {/* Title + relevance */}
                         <div className="flex items-start gap-2 justify-between">
                           <h4 className="font-semibold text-sm leading-snug line-clamp-2 flex-1">
                             {p.title}
                           </h4>
                           {(p.relevance ?? 0) > 0 && (
                             <div
-                              className="flex items-center gap-1 shrink-0 rounded-lg px-2 py-0.5"
+                              className="flex items-center gap-1 shrink-0 px-1.5 py-0.5"
                               style={{
-                                background: "rgba(245,158,11,0.1)",
-                                border: "1px solid rgba(245,158,11,0.2)",
+                                background: "rgba(245,158,11,0.08)",
+                                border: "1px solid rgba(245,158,11,0.18)",
+                                borderRadius: "4px",
                               }}
                             >
                               <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
-                              <span className="text-xs font-bold text-amber-500">
+                              <span
+                                className="text-[11px] font-bold text-amber-500"
+                                style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                              >
                                 {p.relevance}
                               </span>
                             </div>
@@ -1163,7 +1062,15 @@ export default function DecisionPage() {
 
                         {/* Store */}
                         {p.source && (
-                          <p className="text-xs text-muted-foreground mt-0.5">{p.source}</p>
+                          <p
+                            className="text-[11px] mt-0.5"
+                            style={{
+                              fontFamily: "'JetBrains Mono', monospace",
+                              color: "#555",
+                            }}
+                          >
+                            {p.source}
+                          </p>
                         )}
 
                         {/* Snippet */}
@@ -1197,21 +1104,31 @@ export default function DecisionPage() {
                           </div>
                         )}
 
-                        {/* CTA button */}
+                        {/* CTA */}
                         <div className="mt-3">
-                          <a href={p.url} target="_blank" rel="noreferrer">
-                            <Button
-                              size="sm"
-                              className="h-7 text-xs rounded-lg font-medium"
-                              style={{
-                                background: "rgba(245,158,11,0.1)",
-                                border: "1px solid rgba(245,158,11,0.22)",
-                                color: "#f59e0b",
-                              }}
-                            >
-                              <ExternalLink className="h-3 w-3 mr-1.5" />
-                              Ver en {p.source || "tienda"}
-                            </Button>
+                          <a
+                            href={p.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 transition-all"
+                            style={{
+                              background: "var(--surface-2)",
+                              border: "1px solid var(--border)",
+                              borderRadius: "4px",
+                              color: "#f59e0b",
+                              textDecoration: "none",
+                            }}
+                            onMouseEnter={(e) => {
+                              (e.currentTarget as HTMLElement).style.background = "rgba(245,158,11,0.08)";
+                              (e.currentTarget as HTMLElement).style.borderColor = "rgba(245,158,11,0.3)";
+                            }}
+                            onMouseLeave={(e) => {
+                              (e.currentTarget as HTMLElement).style.background = "var(--surface-2)";
+                              (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+                            }}
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            Ver en {p.source || "tienda"}
                           </a>
                         </div>
                       </div>
@@ -1223,13 +1140,14 @@ export default function DecisionPage() {
               !error && (
                 <motion.div
                   variants={fadeUp}
-                  className="rounded-2xl p-12 text-center"
+                  className="p-12 text-center"
                   style={{
-                    background: "var(--card)",
-                    border: "1px solid rgba(255,255,255,0.05)",
+                    background: "var(--surface-1)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "4px",
                   }}
                 >
-                  <Package className="h-11 w-11 text-muted-foreground/30 mx-auto mb-3" />
+                  <Package className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
                   <p className="text-sm text-muted-foreground">
                     No se encontraron productos. Intenta con otro nombre.
                   </p>
@@ -1241,15 +1159,17 @@ export default function DecisionPage() {
             {tip && (
               <motion.div variants={fadeUp}>
                 <div
-                  className="rounded-2xl p-4 flex items-start gap-3"
+                  className="p-4 flex items-start gap-3"
                   style={{
-                    background: "rgba(245,158,11,0.04)",
-                    border: "1px solid rgba(245,158,11,0.1)",
+                    background: "var(--surface-1)",
+                    border: "1px solid var(--border)",
+                    borderLeft: "3px solid #f59e0b",
+                    borderRadius: "4px",
                   }}
                 >
                   <Lightbulb className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    <span className="font-semibold" style={{ color: "rgba(245,158,11,0.8)" }}>
+                    <span className="font-semibold" style={{ color: "#f59e0b" }}>
                       Consejo:{" "}
                     </span>
                     {tip}
@@ -1258,17 +1178,30 @@ export default function DecisionPage() {
               </motion.div>
             )}
 
-            {/* Bottom search again */}
+            {/* Search again */}
             <motion.div variants={fadeUp} className="flex justify-center pt-2">
-              <Button
-                variant="outline"
+              <button
                 onClick={resetAll}
-                className="rounded-xl"
-                style={{ borderColor: "rgba(255,255,255,0.1)" }}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all"
+                style={{
+                  background: "var(--surface-1)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "4px",
+                  color: "#888",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = "#f59e0b";
+                  (e.currentTarget as HTMLElement).style.color = "#f59e0b";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+                  (e.currentTarget as HTMLElement).style.color = "#888";
+                }}
               >
-                <Search className="h-4 w-4 mr-2" />
+                <Search className="h-4 w-4" />
                 Buscar otro producto
-              </Button>
+              </button>
             </motion.div>
           </motion.div>
         )}
