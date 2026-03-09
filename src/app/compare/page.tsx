@@ -504,52 +504,60 @@ export default function ComparePage() {
               ];
               return (
                 <div style={{ background: "var(--surface-1)", border: "1px solid var(--border)", borderRadius: "2px", overflow: "hidden" }}>
-                  {/* Header row */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr 1fr", borderBottom: "1px solid var(--border)" }}>
-                    <div className="px-4 py-3">
-                      <span className="text-[10px] uppercase tracking-widest" style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)" }}>
-                        Producto
-                      </span>
-                    </div>
-                    {TABLE_STORES.map((s) => (
-                      <div key={s.name} className="px-4 py-3 flex items-center gap-1.5" style={{ borderLeft: "1px solid var(--border)", background: `rgba(${s.rgb},0.04)` }}>
-                        <div className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: s.color }} />
-                        <span className="text-[10px] uppercase tracking-widest font-bold truncate" style={{ fontFamily: "'JetBrains Mono', monospace", color: s.color }}>
-                          {s.name}
-                        </span>
+                  <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" as React.CSSProperties["WebkitOverflowScrolling"] }}>
+                    <div style={{ minWidth: "560px" }}>
+                      {/* Header row */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 1fr 1fr", borderBottom: "1px solid var(--border)" }}>
+                        <div className="px-4 py-3">
+                          <span className="text-[10px] uppercase tracking-widest" style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)" }}>
+                            Producto
+                          </span>
+                        </div>
+                        {TABLE_STORES.map((s) => (
+                          <div key={s.name} className="px-4 py-3 flex items-center gap-1.5" style={{ borderLeft: "1px solid var(--border)", borderTop: `3px solid ${s.color}`, background: `rgba(${s.rgb},0.06)` }}>
+                            <div className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: s.color }} />
+                            <span className="text-[10px] uppercase tracking-widest font-bold whitespace-nowrap" style={{ fontFamily: "'JetBrains Mono', monospace", color: s.color }}>
+                              {s.name}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+
+                      {/* Data rows */}
+                      {TABLE_ROWS.map(({ product, prices, best }, rowIdx) => (
+                        <div key={rowIdx} style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr 1fr 1fr", borderTop: "1px solid var(--border)", background: rowIdx % 2 === 1 ? "rgba(255,255,255,0.015)" : "transparent" }}>
+                          <div className="px-4 py-3 flex items-center gap-2.5">
+                            <span className="text-[10px] shrink-0 tabular-nums" style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)", opacity: 0.5 }}>
+                              {String(rowIdx + 1).padStart(2, "0")}
+                            </span>
+                            <span className="text-xs truncate" style={{ fontFamily: "'DM Sans', sans-serif", color: "var(--foreground)" }}>{product}</span>
+                          </div>
+                          {prices.map((price, pi) => {
+                            const isBest = pi === best;
+                            const sc = TABLE_STORES[pi];
+                            return (
+                              <div key={pi} className="px-4 py-3 flex items-center gap-1.5" style={{ borderLeft: "1px solid var(--border)", background: isBest ? `rgba(${sc.rgb},0.07)` : "transparent" }}>
+                                <span className="text-sm font-bold" style={{ fontFamily: "'JetBrains Mono', monospace", color: isBest ? sc.color : "var(--muted-foreground)" }}>
+                                  {price}
+                                </span>
+                                {isBest && (
+                                  <span className="text-[8px] px-1 py-0.5 font-bold shrink-0" style={{ background: `rgba(${sc.rgb},0.15)`, color: sc.color, borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace" }}>
+                                    ↓ MIN
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Data rows */}
-                  {TABLE_ROWS.map(({ product, prices, best }, rowIdx) => (
-                    <div key={rowIdx} style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr 1fr", borderTop: rowIdx > 0 ? "1px solid var(--border)" : undefined }}>
-                      <div className="px-4 py-3 flex items-center">
-                        <span className="text-xs truncate" style={{ fontFamily: "'DM Sans', sans-serif", color: "var(--muted-foreground)" }}>{product}</span>
-                      </div>
-                      {prices.map((price, pi) => {
-                        const isBest = pi === best;
-                        const sc = TABLE_STORES[pi];
-                        return (
-                          <div key={pi} className="px-4 py-3 flex items-center gap-1.5" style={{ borderLeft: "1px solid var(--border)", background: isBest ? `rgba(${sc.rgb},0.07)` : "transparent" }}>
-                            <span className="text-sm font-bold" style={{ fontFamily: "'JetBrains Mono', monospace", color: isBest ? sc.color : "var(--muted-foreground)" }}>
-                              {price}
-                            </span>
-                            {isBest && (
-                              <span className="text-[8px] px-1 py-0.5 font-bold shrink-0" style={{ background: `rgba(${sc.rgb},0.15)`, color: sc.color, borderRadius: "2px", fontFamily: "'JetBrains Mono', monospace" }}>
-                                MIN
-                              </span>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ))}
-
                   {/* Footer note */}
-                  <div className="px-4 py-2.5" style={{ borderTop: "1px solid var(--border)", background: "var(--surface-2)" }}>
+                  <div className="px-4 py-2.5 flex items-center gap-1.5" style={{ borderTop: "1px solid var(--border)", background: "var(--surface-2)" }}>
+                    <TrendingDown className="h-3 w-3 shrink-0" style={{ color: "var(--muted-foreground)", strokeWidth: 1.8 }} />
                     <span className="text-[10px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)" }}>
-                      * Precios de ejemplo — busca tu producto para ver precios reales en tiempo real
+                      Precios de ejemplo — busca tu producto para ver precios reales en tiempo real
                     </span>
                   </div>
                 </div>

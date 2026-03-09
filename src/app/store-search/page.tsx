@@ -451,76 +451,112 @@ export default function StoreSearchPage() {
           </p>
 
           {/* Search bar */}
-          <div
-            className="flex items-center gap-2 p-1.5 max-w-2xl"
-            style={{
-              background: "var(--background)",
-              border: "1px solid var(--border-strong)",
-              borderRadius: "2px",
-            }}
-          >
-            <div className="relative flex-1">
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
-                style={{ color: "var(--muted-foreground)", strokeWidth: 2 }}
-              />
-              <Input
-                value={query}
-                onChange={(e) => { setQuery(e.target.value); updateUrl({ query: e.target.value }); }}
-                placeholder="Ej. cemento 50kg, taladro, pintura exterior..."
-                className="pl-9 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm h-10"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-                onKeyDown={(e) => { if (e.key === "Enter") fetchSearch(); }}
-              />
-            </div>
-
-            <Select
-              value={storeId}
-              onValueChange={(v) => {
-                setStoreId(v);
-                updateUrl({ storeId: v });
-                setActiveTab(v === "all" ? "all" : v);
+          <div className="max-w-2xl space-y-2">
+            <div
+              className="flex items-center gap-2 p-1.5"
+              style={{
+                background: "var(--background)",
+                border: "1px solid var(--border-strong)",
+                borderRadius: "2px",
               }}
             >
-              <SelectTrigger
-                className="w-36 shrink-0 h-10 text-sm border-0"
+              <div className="relative flex-1 min-w-0">
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+                  style={{ color: "var(--muted-foreground)", strokeWidth: 2 }}
+                />
+                <Input
+                  value={query}
+                  onChange={(e) => { setQuery(e.target.value); updateUrl({ query: e.target.value }); }}
+                  placeholder="Ej. cemento 50kg, taladro..."
+                  className="pl-9 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm h-11"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  onKeyDown={(e) => { if (e.key === "Enter") fetchSearch(); }}
+                />
+              </div>
+
+              {/* Select — solo desktop */}
+              <div className="hidden sm:block shrink-0">
+                <Select
+                  value={storeId}
+                  onValueChange={(v) => {
+                    setStoreId(v);
+                    updateUrl({ storeId: v });
+                    setActiveTab(v === "all" ? "all" : v);
+                  }}
+                >
+                  <SelectTrigger
+                    className="w-36 h-9 text-sm"
+                    style={{
+                      background: "var(--surface-2)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "2px",
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    <SelectValue placeholder="Tienda" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STORES.map((s) => (
+                      <SelectItem key={s.storeId} value={s.storeId} style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        {s.storeName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <button
+                onClick={fetchSearch}
+                disabled={uiState === "loading" || !query.trim()}
+                className="shrink-0 h-11 px-4 sm:px-5 text-sm font-bold flex items-center gap-2 transition-all duration-150 active:scale-95 disabled:opacity-40 btn-shimmer"
                 style={{
-                  background: "var(--surface-2)",
-                  border: "1px solid var(--border)",
+                  background: query.trim() ? "var(--amber)" : "var(--surface-3)",
+                  color: query.trim() ? "#080807" : "var(--muted-foreground)",
+                  border: "none",
                   borderRadius: "2px",
                   fontFamily: "'DM Sans', sans-serif",
+                  letterSpacing: "-0.01em",
                 }}
               >
-                <SelectValue placeholder="Tienda" />
-              </SelectTrigger>
-              <SelectContent>
-                {STORES.map((s) => (
-                  <SelectItem key={s.storeId} value={s.storeId} style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                    {s.storeName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                {uiState === "loading" ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <><span className="hidden sm:inline">Buscar</span><ArrowUpRight className="h-4 w-4" /></>
+                )}
+              </button>
+            </div>
 
-            <button
-              onClick={fetchSearch}
-              disabled={uiState === "loading" || !query.trim()}
-              className="shrink-0 h-10 px-5 text-sm font-bold flex items-center gap-2 transition-all duration-150 active:scale-95 disabled:opacity-40 btn-shimmer"
-              style={{
-                background: query.trim() ? "var(--amber)" : "var(--surface-3)",
-                color: query.trim() ? "#080807" : "var(--muted-foreground)",
-                border: "none",
-                borderRadius: "2px",
-                fontFamily: "'DM Sans', sans-serif",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              {uiState === "loading" ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>Buscar <ArrowUpRight className="h-4 w-4" /></>
-              )}
-            </button>
+            {/* Select — solo mobile (fila completa) */}
+            <div className="sm:hidden">
+              <Select
+                value={storeId}
+                onValueChange={(v) => {
+                  setStoreId(v);
+                  updateUrl({ storeId: v });
+                  setActiveTab(v === "all" ? "all" : v);
+                }}
+              >
+                <SelectTrigger
+                  className="w-full h-10 text-sm"
+                  style={{
+                    background: "var(--surface-2)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "2px",
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}
+                >
+                  <SelectValue placeholder="Tienda" />
+                </SelectTrigger>
+                <SelectContent>
+                  {STORES.map((s) => (
+                    <SelectItem key={s.storeId} value={s.storeId} style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {s.storeName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Store filter pills */}
