@@ -41,7 +41,9 @@
       "Bash(wc -l src/**/*.ts src/**/*.tsx)",
       "Bash(Get-ChildItem \"C:\\\\Users\\\\diego\\\\Downloads\\\\Contrulink V2 Zoer hasta CSE\\\\Contrulink V2 Zoer\\\\src\\\\app\\\\decision\" -Recurse)",
       "Bash(Select-Object FullName)",
-      "Bash(npm install animejs)"
+      "Bash(npm install animejs)",
+      "Bash(where gh)",
+      "Bash(winget list GitHub.cli)"
     ]
   }
 }

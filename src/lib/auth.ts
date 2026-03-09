@@ -63,12 +63,13 @@ export async function generateAdminUserToken() {
 }
 
 // Generate access token
-export async function generateToken(user: Omit<User, "isAdmin">, expiresIn: number = ACCESS_TOKEN_EXPIRE_TIME): Promise<string> {
+export async function generateToken(user: Omit<User, "isAdmin"> & { name?: string }, expiresIn: number = ACCESS_TOKEN_EXPIRE_TIME): Promise<string> {
   const payload: Omit<JWTPayload, "iat" | "exp"> = {
     sub: user.sub.toString(),
     email: user.email,
     role: user.role,
     isAdmin: user.role === process.env.SCHEMA_ADMIN_USER,
+    ...(user.name ? { name: user.name } : {}),
   };
 
   const token = await new SignJWT(payload)

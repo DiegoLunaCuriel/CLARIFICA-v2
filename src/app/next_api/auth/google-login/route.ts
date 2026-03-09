@@ -76,6 +76,7 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
       sub: user.id,
       role: user.role,
       email: user.email,
+      name: name || undefined,
     });
 
     const refreshToken = await generateRandomString();

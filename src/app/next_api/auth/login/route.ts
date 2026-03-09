@@ -5,6 +5,7 @@ import { generateToken, authCrudOperations } from "@/lib/auth";
 import { generateRandomString, pbkdf2Hash, verifyHashString } from "@/lib/server-utils";
 import { REFRESH_TOKEN_EXPIRE_TIME } from "@/constants/auth";
 import { z } from "zod";
+import CrudOperations from "@/lib/crud-operations";
 
 const loginSchema = z.object({
   email: z.string().email("Ingresa un correo electrónico válido"),
@@ -44,10 +45,16 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
       });
     }
 
+    const serviceRoleKey = process.env.POSTGREST_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+    const profilesCrud = new CrudOperations("user_profiles", serviceRoleKey);
+    const profiles = await profilesCrud.findMany({ user_id: parseInt(user.id) }).catch(() => null);
+    const name: string | undefined = profiles?.[0]?.name;
+
     const accessToken = await generateToken({
       sub: user.id,
       role: user.role,
       email: user.email,
+      name,
     });
 
     const refreshToken = generateRandomString();

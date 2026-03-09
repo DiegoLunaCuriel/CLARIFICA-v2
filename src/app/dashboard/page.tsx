@@ -329,7 +329,7 @@ export default function Dashboard() {
                 backgroundClip: "text",
               }}
             >
-              {user.email?.split("@")[0] || "usuario"}
+              {user.name || user.email?.split("@")[0] || "usuario"}
             </span>
           </h1>
           <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">

@@ -5,6 +5,7 @@ import { generateToken, authCrudOperations } from "@/lib/auth";
 import { generateRandomString, pbkdf2Hash } from "@/lib/server-utils";
 import { REFRESH_TOKEN_EXPIRE_TIME } from "@/constants/auth";
 import { AUTH_CODE } from "@/constants/auth";
+import CrudOperations from "@/lib/crud-operations";
 
 
 export const POST = requestMiddleware(async (request: NextRequest) => {
@@ -61,10 +62,16 @@ export const POST = requestMiddleware(async (request: NextRequest) => {
 
     const user = await usersCrud.findById(refreshTokenRecord.user_id);
 
+    const serviceRoleKey = process.env.POSTGREST_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+    const profilesCrud = new CrudOperations("user_profiles", serviceRoleKey);
+    const profiles = await profilesCrud.findMany({ user_id: parseInt(user.id) }).catch(() => null);
+    const name: string | undefined = profiles?.[0]?.name;
+
     const accessToken = await generateToken({
       sub: user.id,
       role: user.role,
       email: user.email,
+      name,
     });
 
     return createAuthResponse({

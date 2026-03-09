@@ -102,6 +102,7 @@ export const POST = requestMiddleware(
         sub: newUser.id.toString(),
         email: newUser.email,
         role: newUser.role,
+        name: name || undefined,
       });
 
       // Generate refresh token + session (so login persists)

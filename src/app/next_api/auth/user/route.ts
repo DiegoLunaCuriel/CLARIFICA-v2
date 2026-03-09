@@ -27,5 +27,6 @@ export const GET = requestMiddleware(async (request: NextRequest, params: ApiPar
     email: params.payload.email,
     role: params.payload.role,
     isAdmin: params.payload.isAdmin || false,
+    name: params.payload.name,
   });
 }, true); // checkToken = true
