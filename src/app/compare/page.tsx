@@ -2,16 +2,16 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   ShoppingCart,
   Search,
   ExternalLink,
-  ArrowRight,
+  ArrowUpRight,
   Package,
   ImageOff,
+  Loader2,
+  TrendingDown,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -41,41 +41,10 @@ type ApiResponse = {
 
 /* ─────────────────────────── Constants ─────────────────────── */
 
-const STORE_COLORS: Record<string, { color: string; glow: string; border: string; headerBg: string }> = {
-  home_depot: {
-    color: "#f97316",
-    glow: "rgba(249,115,22,0.15)",
-    border: "rgba(249,115,22,0.28)",
-    headerBg: "rgba(249,115,22,0.07)",
-  },
-  mercado_libre: {
-    color: "#eab308",
-    glow: "rgba(234,179,8,0.15)",
-    border: "rgba(234,179,8,0.28)",
-    headerBg: "rgba(234,179,8,0.07)",
-  },
-  amazon: {
-    color: "#3b82f6",
-    glow: "rgba(59,130,246,0.15)",
-    border: "rgba(59,130,246,0.28)",
-    headerBg: "rgba(59,130,246,0.07)",
-  },
-};
-
-/* ─────────────────────── Framer variants ───────────────────── */
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
-  },
-};
-
-const staggerContainer = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+const STORE_COLORS: Record<string, { color: string; rgb: string }> = {
+  home_depot: { color: "#ff6600", rgb: "255,102,0" },
+  mercado_libre: { color: "#f5a400", rgb: "245,164,0" },
+  amazon: { color: "#00cfff", rgb: "0,207,255" },
 };
 
 /* ──────────────────── Skeleton components ──────────────────── */
@@ -83,15 +52,11 @@ const staggerContainer = {
 function SkeletonRow() {
   return (
     <div className="flex gap-3 p-3 animate-pulse">
-      <div
-        className="w-20 h-20 rounded-xl shrink-0"
-        style={{ background: "rgba(255,255,255,0.05)" }}
-      />
+      <div className="w-16 h-16 rounded shrink-0" style={{ background: "var(--surface-3)" }} />
       <div className="flex-1 space-y-2">
-        <div className="h-4 w-full rounded-lg" style={{ background: "rgba(255,255,255,0.06)" }} />
-        <div className="h-3 w-3/4 rounded-lg" style={{ background: "rgba(255,255,255,0.04)" }} />
-        <div className="h-3 w-1/2 rounded-lg" style={{ background: "rgba(255,255,255,0.04)" }} />
-        <div className="h-7 w-28 rounded-xl mt-1" style={{ background: "rgba(255,255,255,0.05)" }} />
+        <div className="h-3 w-full rounded" style={{ background: "var(--surface-3)" }} />
+        <div className="h-2.5 w-3/4 rounded" style={{ background: "var(--surface-2)" }} />
+        <div className="h-6 w-24 rounded mt-1" style={{ background: "var(--surface-2)" }} />
       </div>
     </div>
   );
@@ -100,26 +65,18 @@ function SkeletonRow() {
 function SkeletonStoreCard({ color }: { color?: string }) {
   return (
     <div
-      className="rounded-2xl overflow-hidden"
+      className="overflow-hidden"
       style={{
-        background: "var(--card)",
-        border: "1px solid rgba(255,255,255,0.06)",
+        background: "var(--surface-1)",
+        border: "1px solid var(--border)",
+        borderRadius: "2px",
+        borderLeft: color ? `3px solid ${color}` : undefined,
       }}
     >
-      {color && (
-        <div
-          className="h-[2px]"
-          style={{ background: `linear-gradient(90deg, ${color}, transparent 80%)` }}
-        />
-      )}
-      <div className="p-4 space-y-1.5">
-        <div className="flex items-center justify-between">
-          <div className="h-5 w-32 rounded-lg animate-pulse" style={{ background: "rgba(255,255,255,0.06)" }} />
-          <div className="h-5 w-16 rounded-lg animate-pulse" style={{ background: "rgba(255,255,255,0.05)" }} />
-        </div>
-        <div className="h-3 w-24 rounded-lg animate-pulse" style={{ background: "rgba(255,255,255,0.04)" }} />
+      <div className="p-4" style={{ borderBottom: "1px solid var(--border)" }}>
+        <div className="h-4 w-32 rounded animate-pulse" style={{ background: "var(--surface-3)" }} />
       </div>
-      <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+      <div>
         {Array.from({ length: 3 }).map((_, i) => (
           <SkeletonRow key={i} />
         ))}
@@ -147,20 +104,19 @@ function ProductRow({
   const fav = item.favicon || "";
 
   return (
-    <motion.div
-      className="flex gap-3 p-3 group cursor-default"
+    <div
+      className="flex gap-3 p-3 transition-colors duration-150"
       style={{
-        borderTop: index > 0 ? "1px solid rgba(255,255,255,0.04)" : "none",
-        transition: "background 0.15s",
+        borderTop: index > 0 ? "1px solid var(--border)" : "none",
       }}
-      initial={{ opacity: 0, x: -12 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true, margin: "-10px" }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "var(--surface-2)"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = ""; }}
     >
       {/* Product image */}
-      <div className="w-[72px] h-[72px] rounded-xl bg-white flex items-center justify-center overflow-hidden shrink-0 p-1.5">
+      <div
+        className="w-16 h-16 bg-white flex items-center justify-center overflow-hidden shrink-0 p-1.5"
+        style={{ borderRadius: "2px" }}
+      >
         {img && !imgError ? (
           <img
             src={img}
@@ -174,60 +130,63 @@ function ProductRow({
           <img
             src={fav}
             alt={host}
-            className="w-10 h-10 object-contain opacity-80"
+            className="w-7 h-7 object-contain opacity-70"
             loading="lazy"
             referrerPolicy="no-referrer"
           />
         ) : (
-          <ImageOff className="h-6 w-6 text-muted-foreground/30" />
+          <ImageOff className="h-5 w-5" style={{ color: "#bbb", strokeWidth: 1.5 }} />
         )}
       </div>
 
       <div className="min-w-0 flex-1">
-        {/* Host + favicon */}
         <div className="flex items-center gap-1.5 mb-1">
           {fav && (
-            <img
-              src={fav}
-              alt={host}
-              className="w-3.5 h-3.5"
-              loading="lazy"
-              referrerPolicy="no-referrer"
-            />
+            <img src={fav} alt={host} className="w-3 h-3" loading="lazy" referrerPolicy="no-referrer" />
           )}
-          <span className="text-[11px] text-muted-foreground/60 truncate">{host}</span>
+          <span
+            className="text-[10px] truncate"
+            style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)" }}
+          >
+            {host}
+          </span>
         </div>
 
-        <h4 className="font-medium text-sm leading-snug line-clamp-2">{title}</h4>
+        <h4
+          className="font-medium text-[13px] leading-snug line-clamp-2"
+          style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "-0.01em" }}
+        >
+          {title}
+        </h4>
 
         {item.snippet && (
-          <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
+          <p
+            className="text-xs mt-1 line-clamp-1 leading-relaxed"
+            style={{ color: "var(--muted-foreground)", fontFamily: "'DM Sans', sans-serif" }}
+          >
             {item.snippet}
           </p>
         )}
 
         <div className="mt-2">
           <a href={item.link} target="_blank" rel="noreferrer">
-            <Button
-              size="sm"
-              className="text-xs h-7 rounded-lg font-medium"
-              style={
-                theme
-                  ? {
-                      background: `${theme.color}16`,
-                      border: `1px solid ${theme.border}`,
-                      color: theme.color,
-                    }
-                  : {}
-              }
+            <button
+              className="text-xs h-7 px-3 flex items-center gap-1.5 font-semibold transition-all duration-150"
+              style={{
+                background: theme ? `rgba(${theme.rgb}, 0.08)` : "var(--surface-2)",
+                border: `1px solid ${theme ? `rgba(${theme.rgb}, 0.22)` : "var(--border)"}`,
+                color: theme ? theme.color : "var(--foreground)",
+                borderRadius: "2px",
+                fontFamily: "'DM Sans', sans-serif",
+              }}
             >
-              <ExternalLink className="h-3 w-3 mr-1.5" />
+              <ExternalLink className="h-3 w-3" style={{ strokeWidth: 2 }} />
               Ver en tienda
-            </Button>
+            </button>
           </a>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -239,67 +198,59 @@ function StoreCard({ store, index }: { store: StoreBlock; index: number }) {
 
   return (
     <motion.div
-      className="rounded-2xl overflow-hidden"
+      className="overflow-hidden"
       style={{
-        background: "var(--card)",
-        border: "1px solid rgba(255,255,255,0.06)",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+        background: "var(--surface-1)",
+        border: "1px solid var(--border)",
+        borderRadius: "2px",
+        borderLeft: theme ? `3px solid ${theme.color}` : undefined,
       }}
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.1,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      whileHover={{
-        boxShadow: theme
-          ? `0 8px 32px ${theme.glow}`
-          : "0 8px 32px rgba(0,0,0,0.3)",
-        borderColor: theme?.border || "rgba(255,255,255,0.1)",
-        transition: { duration: 0.2 },
-      }}
+      transition={{ duration: 0.4, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Colored top bar */}
-      {theme && (
-        <div
-          className="h-[3px]"
-          style={{
-            background: `linear-gradient(90deg, ${theme.color}, ${theme.color}80, transparent)`,
-          }}
-        />
-      )}
-
       {/* Store header */}
       <div
-        className="px-4 pt-4 pb-3 flex items-center justify-between"
-        style={{
-          borderBottom: "1px solid rgba(255,255,255,0.05)",
-          background: theme?.headerBg || "transparent",
-        }}
+        className="px-4 py-3 flex items-center justify-between"
+        style={{ borderBottom: "1px solid var(--border)" }}
       >
-        <div>
-          <h3
-            className="font-bold text-base"
-            style={{ color: theme?.color || "inherit" }}
-          >
-            {store.storeName}
-          </h3>
-          <p className="text-xs text-muted-foreground mt-0.5">{store.site}</p>
+        <div className="flex items-center gap-2.5">
+          <div className="h-2 w-2 rounded-full shrink-0" style={{ background: theme?.color }} />
+          <div>
+            <h3
+              className="font-semibold text-sm tracking-[-0.01em]"
+              style={{ color: theme?.color || "var(--foreground)", fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {store.storeName}
+            </h3>
+            <p
+              className="text-[10px] mt-0.5"
+              style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)" }}
+            >
+              {store.site}
+            </p>
+          </div>
         </div>
-        <Badge
-          variant="secondary"
-          className="text-[11px] font-normal shrink-0"
+        <span
+          className="text-[10px] px-2 py-0.5"
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            color: "var(--muted-foreground)",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border)",
+            borderRadius: "2px",
+          }}
         >
-          {items.length} resultado{items.length !== 1 ? "s" : ""}
-        </Badge>
+          {items.length} resultados
+        </span>
       </div>
 
-      {/* Product rows */}
       {items.length === 0 ? (
         <div className="py-10 text-center">
-          <Package className="h-8 w-8 mx-auto mb-2 text-muted-foreground/25" />
-          <p className="text-sm text-muted-foreground">Sin resultados relevantes.</p>
+          <Package className="h-7 w-7 mx-auto mb-2" style={{ color: "var(--muted-foreground)", strokeWidth: 1.5 }} />
+          <p className="text-sm" style={{ color: "var(--muted-foreground)", fontFamily: "'DM Sans', sans-serif" }}>
+            Sin resultados relevantes.
+          </p>
         </div>
       ) : (
         <div>
@@ -363,21 +314,14 @@ export default function ComparePage() {
       setStores(Array.isArray(json.data?.stores) ? json.data!.stores : []);
     } catch (e: unknown) {
       setStores([]);
-      setError(
-        typeof (e as Error)?.message === "string"
-          ? (e as Error).message
-          : "Error de red/servidor"
-      );
+      setError(typeof (e as Error)?.message === "string" ? (e as Error).message : "Error de red/servidor");
     } finally {
       setLoading(false);
     }
   }, [endpointUrl, query]);
 
   useEffect(() => {
-    if (initialQuery) {
-      setQuery(initialQuery);
-      void runSearch();
-    }
+    if (initialQuery) { setQuery(initialQuery); void runSearch(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -387,369 +331,256 @@ export default function ComparePage() {
     [stores, queryTokens, query, limit]
   );
 
-  const totalResults = improvedStores.reduce(
-    (sum, s) => sum + (s.items?.length || 0),
-    0
-  );
+  const totalResults = improvedStores.reduce((sum, s) => sum + (s.items?.length || 0), 0);
   const storesWithResults = improvedStores.filter((s) => s.items.length > 0).length;
 
-  /* ─── Render ─── */
-
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-10">
+    <div className="max-w-6xl mx-auto space-y-6 pb-10">
 
-      {/* ════════════════════ HERO ════════════════════ */}
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-        className="text-center space-y-6 pt-2"
+      {/* ════════════════════ HEADER ════════════════════ */}
+      <div
+        className="relative overflow-hidden"
+        style={{
+          background: "var(--surface-1)",
+          border: "1px solid var(--border)",
+          borderRadius: "2px",
+          borderTop: "3px solid #00cfff",
+        }}
       >
-        {/* Icon with glow */}
-        <motion.div variants={fadeUp} className="relative mx-auto w-fit">
-          <div
-            className="absolute inset-0 rounded-3xl blur-3xl opacity-40"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(59,130,246,0.7) 0%, rgba(99,102,241,0.4) 60%, transparent 100%)",
-            }}
-          />
-          <motion.div
-            className="relative h-20 w-20 rounded-3xl mx-auto flex items-center justify-center"
-            style={{
-              background:
-                "linear-gradient(145deg, rgba(59,130,246,0.22) 0%, rgba(99,102,241,0.14) 100%)",
-              border: "1px solid rgba(59,130,246,0.28)",
-              boxShadow:
-                "0 0 40px rgba(59,130,246,0.18), inset 0 1px 0 rgba(255,255,255,0.08)",
-            }}
-            animate={{ y: [0, -4, 0] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <ShoppingCart className="h-9 w-9 text-blue-300" />
-          </motion.div>
-        </motion.div>
+        {/* Grid bg */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(0,207,255,0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0,207,255,0.04) 1px, transparent 1px)
+            `,
+            backgroundSize: "32px 32px",
+            maskImage: "radial-gradient(ellipse 100% 100% at 0% 0%, black 20%, transparent 80%)",
+            WebkitMaskImage: "radial-gradient(ellipse 100% 100% at 0% 0%, black 20%, transparent 80%)",
+          }}
+        />
 
-        {/* Heading */}
-        <motion.div variants={fadeUp} className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
-            <span
-              style={{
-                background: "linear-gradient(135deg, #f8fafc 20%, rgba(99,102,241,0.9) 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              Comparador
-            </span>{" "}
-            <span
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(59,130,246,0.9) 0%, rgba(99,102,241,0.85) 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              de precios
-            </span>
-          </h1>
-          <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
-            Compara productos entre Home Depot, Mercado Libre y Amazon México y encuentra el mejor precio.
-          </p>
-        </motion.div>
-
-        {/* Search bar */}
-        <motion.div variants={fadeUp} className="max-w-xl mx-auto">
-          <div
-            className="rounded-2xl p-[2px]"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(59,130,246,0.35) 0%, rgba(99,102,241,0.25) 50%, rgba(59,130,246,0.15) 100%)",
-              boxShadow: "0 0 48px rgba(59,130,246,0.06)",
-            }}
-          >
+        <div className="relative p-6 md:p-10">
+          <div className="flex items-center gap-3 mb-5">
             <div
-              className="rounded-2xl flex items-center gap-2 px-4 py-2"
+              className="h-10 w-10 flex items-center justify-center shrink-0"
               style={{
-                background: "var(--card)",
-                border: "1px solid rgba(255,255,255,0.04)",
+                background: "rgba(0,207,255,0.1)",
+                border: "1px solid rgba(0,207,255,0.22)",
+                borderRadius: "2px",
               }}
             >
-              <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+              <ShoppingCart className="h-5 w-5" style={{ color: "#00cfff", strokeWidth: 1.8 }} />
+            </div>
+            <p
+              className="text-[10px] tracking-[0.18em] uppercase font-medium"
+              style={{ fontFamily: "'JetBrains Mono', monospace", color: "#00cfff" }}
+            >
+              // Comparador de precios
+            </p>
+          </div>
+
+          <h1
+            className="text-3xl md:text-4xl font-black tracking-[-0.03em] mb-2"
+            style={{ fontFamily: "'Syne', sans-serif" }}
+          >
+            Comparador de precios
+          </h1>
+          <p
+            className="text-sm mb-7 max-w-lg"
+            style={{ fontFamily: "'DM Sans', sans-serif", color: "var(--muted-foreground)" }}
+          >
+            Compara el mismo producto entre Home Depot, Mercado Libre y Amazon México y encuentra el mejor precio.
+          </p>
+
+          {/* Search bar */}
+          <div
+            className="flex items-center gap-2 p-1.5 max-w-2xl"
+            style={{
+              background: "var(--background)",
+              border: "1px solid var(--border-strong)",
+              borderRadius: "2px",
+            }}
+          >
+            <div className="relative flex-1">
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
+                style={{ color: "var(--muted-foreground)", strokeWidth: 2 }}
+              />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder='Ej. "cemento 50kg" o "varilla 3/8"'
-                className="border-0 bg-transparent shadow-none text-[15px] focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-11"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") void runSearch();
-                }}
+                className="pl-9 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-sm h-10"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                onKeyDown={(e) => { if (e.key === "Enter") void runSearch(); }}
               />
-              <div className="flex items-center gap-2 shrink-0">
-                {hasSearched && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 px-3 rounded-xl text-xs text-muted-foreground"
-                    onClick={() => {
-                      setQuery("");
-                      setStores([]);
-                      setError(null);
-                      setHasSearched(false);
-                    }}
-                    disabled={loading}
-                  >
-                    Limpiar
-                  </Button>
-                )}
-                <Button
-                  onClick={() => void runSearch()}
-                  disabled={loading || !query.trim()}
-                  className="rounded-xl h-9 px-4 text-sm font-semibold shrink-0"
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              {hasSearched && (
+                <button
+                  className="h-9 px-3 text-xs font-medium transition-all duration-150"
                   style={{
-                    background: query.trim()
-                      ? "linear-gradient(135deg, #2563eb, #1d4ed8)"
-                      : undefined,
-                    boxShadow: query.trim()
-                      ? "0 4px 16px rgba(37,99,235,0.35)"
-                      : undefined,
+                    color: "var(--muted-foreground)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "2px",
+                    background: "transparent",
+                    fontFamily: "'DM Sans', sans-serif",
                   }}
+                  onClick={() => { setQuery(""); setStores([]); setError(null); setHasSearched(false); }}
+                  disabled={loading}
                 >
-                  {loading ? (
-                    <motion.div
-                      className="h-4 w-4 rounded-full border-2 border-white border-t-transparent"
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    />
-                  ) : (
-                    <>
-                      Buscar
-                      <ArrowRight className="h-4 w-4 ml-1.5" />
-                    </>
-                  )}
-                </Button>
-              </div>
+                  Limpiar
+                </button>
+              )}
+              <button
+                onClick={() => void runSearch()}
+                disabled={loading || !query.trim()}
+                className="h-9 px-5 text-sm font-bold flex items-center gap-2 transition-all duration-150 active:scale-95 disabled:opacity-40 btn-shimmer"
+                style={{
+                  background: query.trim() ? "#00cfff" : "var(--surface-3)",
+                  color: query.trim() ? "#080807" : "var(--muted-foreground)",
+                  border: "none",
+                  borderRadius: "2px",
+                  fontFamily: "'DM Sans', sans-serif",
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>Comparar <ArrowUpRight className="h-4 w-4" /></>
+                )}
+              </button>
             </div>
           </div>
 
           {/* Error */}
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-3 rounded-xl px-4 py-3 text-sm text-red-400"
+            <div
+              className="mt-4 px-4 py-3 text-sm max-w-2xl"
               style={{
-                background: "rgba(239,68,68,0.08)",
-                border: "1px solid rgba(239,68,68,0.2)",
+                background: "rgba(255,59,48,0.06)",
+                border: "1px solid rgba(255,59,48,0.22)",
+                borderRadius: "2px",
+                color: "#ff3b30",
+                fontFamily: "'DM Sans', sans-serif",
               }}
             >
               {error}
-            </motion.div>
+            </div>
           )}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
-      {/* ════════════════════ RESULTS AREA ════════════════════ */}
+      {/* ════════════════════ RESULTS ════════════════════ */}
       <AnimatePresence mode="wait">
 
         {/* ── Idle ── */}
         {!hasSearched && !loading && (
           <motion.div
             key="idle"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="space-y-10 py-6"
+            className="space-y-6"
           >
-            {/* ── Comparison showcase: 3 store panels side by side ── */}
-            <div className="grid grid-cols-3 gap-4">
-              {(
-                [
-                  {
-                    id: "home_depot" as keyof typeof STORE_COLORS,
-                    name: "Home Depot",
-                    badge: "Gran variedad",
-                    rows: [
-                      { w1: "78%", w2: "52%", price: "$189" },
-                      { w1: "62%", w2: "40%", price: "$1,450" },
-                      { w1: "85%", w2: "58%", price: "$96" },
-                    ],
-                  },
-                  {
-                    id: "mercado_libre" as keyof typeof STORE_COLORS,
-                    name: "Mercado Libre",
-                    badge: "Más económico",
-                    rows: [
-                      { w1: "70%", w2: "48%", price: "$159" },
-                      { w1: "55%", w2: "36%", price: "$1,280" },
-                      { w1: "80%", w2: "52%", price: "$82" },
-                    ],
-                  },
-                  {
-                    id: "amazon" as keyof typeof STORE_COLORS,
-                    name: "Amazon México",
-                    badge: "Envío rápido",
-                    rows: [
-                      { w1: "74%", w2: "50%", price: "$175" },
-                      { w1: "60%", w2: "44%", price: "$1,390" },
-                      { w1: "76%", w2: "46%", price: "$91" },
-                    ],
-                  },
-                ] as const
-              ).map(({ id, name, badge, rows }, idx) => {
-                const sc = STORE_COLORS[id];
-                return (
-                  <motion.div
-                    key={id}
-                    animate={{ y: [0, -8, 0] }}
-                    transition={{
-                      duration: 3.4 + idx * 0.7,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: idx * 0.5,
-                    }}
-                    className="rounded-2xl overflow-hidden flex flex-col"
-                    style={{ border: `1px solid ${sc.border}` }}
-                  >
-                    {/* Colored top bar */}
-                    <div style={{ height: 3, background: sc.color }} />
-                    {/* Header */}
-                    <div
-                      className="px-3.5 py-3 flex items-center justify-between"
-                      style={{ background: sc.headerBg, borderBottom: `1px solid ${sc.border}` }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <motion.div
-                          className="h-2 w-2 rounded-full"
-                          style={{ background: sc.color }}
-                          animate={{ opacity: [0.5, 1, 0.5] }}
-                          transition={{ duration: 1.8, repeat: Infinity, delay: idx * 0.25 }}
-                        />
-                        <span className="text-xs font-semibold" style={{ color: sc.color }}>
-                          {name}
-                        </span>
-                      </div>
-                      <span
-                        className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                        style={{
-                          background: `${sc.color}15`,
-                          border: `1px solid ${sc.color}25`,
-                          color: sc.color,
-                        }}
-                      >
-                        {badge}
+            {/* Price comparison table */}
+            {(() => {
+              const TABLE_STORES = [
+                { name: "Home Depot", color: "#ff6600", rgb: "255,102,0" },
+                { name: "Mercado Libre", color: "#f5a400", rgb: "245,164,0" },
+                { name: "Amazon MX", color: "#00cfff", rgb: "0,207,255" },
+              ];
+              const TABLE_ROWS = [
+                { product: "Cemento gris 50 kg",       prices: ["$189", "$210", "$225"], best: 0 },
+                { product: 'Varilla corrugada 3/8"',   prices: ["$96",  "$88",  "$105"], best: 1 },
+                { product: "Pintura vinílica 4 L",     prices: ["$340", "$298", "$320"], best: 1 },
+                { product: "Taladro percutor 850 W",   prices: ["$1,450","$1,299","$1,380"], best: 1 },
+                { product: "Cable THW calibre 12",     prices: ["$529", "$480", "$495"], best: 1 },
+              ];
+              return (
+                <div style={{ background: "var(--surface-1)", border: "1px solid var(--border)", borderRadius: "2px", overflow: "hidden" }}>
+                  {/* Header row */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr 1fr", borderBottom: "1px solid var(--border)" }}>
+                    <div className="px-4 py-3">
+                      <span className="text-[10px] uppercase tracking-widest" style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)" }}>
+                        Producto
                       </span>
                     </div>
-                    {/* Skeleton rows */}
-                    <div className="p-3 space-y-2 flex-1 bg-transparent">
-                      {rows.map((row, i) => (
-                        <motion.div
-                          key={i}
-                          className="flex items-center gap-2 rounded-lg px-2 py-1.5"
-                          style={{
-                            background: i === 0 ? `${sc.color}08` : "transparent",
-                          }}
-                          animate={{ opacity: [0.5, 0.85, 0.5] }}
-                          transition={{
-                            duration: 2.2,
-                            repeat: Infinity,
-                            delay: i * 0.4 + idx * 0.15,
-                          }}
-                        >
-                          <div
-                            className="h-6 w-6 rounded shrink-0"
-                            style={{ background: `${sc.color}10` }}
-                          />
-                          <div className="flex-1 space-y-1 min-w-0">
-                            <div
-                              className="h-1.5 rounded-full"
-                              style={{ width: row.w1, background: `${sc.color}20` }}
-                            />
-                            <div
-                              className="h-1.5 rounded-full"
-                              style={{ width: row.w2, background: "rgba(255,255,255,0.06)" }}
-                            />
+                    {TABLE_STORES.map((s) => (
+                      <div key={s.name} className="px-4 py-3 flex items-center gap-1.5" style={{ borderLeft: "1px solid var(--border)", background: `rgba(${s.rgb},0.04)` }}>
+                        <div className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: s.color }} />
+                        <span className="text-[10px] uppercase tracking-widest font-bold truncate" style={{ fontFamily: "'JetBrains Mono', monospace", color: s.color }}>
+                          {s.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Data rows */}
+                  {TABLE_ROWS.map(({ product, prices, best }, rowIdx) => (
+                    <div key={rowIdx} style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr 1fr", borderTop: rowIdx > 0 ? "1px solid var(--border)" : undefined }}>
+                      <div className="px-4 py-3 flex items-center">
+                        <span className="text-xs truncate" style={{ fontFamily: "'DM Sans', sans-serif", color: "var(--muted-foreground)" }}>{product}</span>
+                      </div>
+                      {prices.map((price, pi) => {
+                        const isBest = pi === best;
+                        const sc = TABLE_STORES[pi];
+                        return (
+                          <div key={pi} className="px-4 py-3 flex items-center gap-1.5" style={{ borderLeft: "1px solid var(--border)", background: isBest ? `rgba(${sc.rgb},0.07)` : "transparent" }}>
+                            <span className="text-sm font-bold" style={{ fontFamily: "'JetBrains Mono', monospace", color: isBest ? sc.color : "var(--muted-foreground)" }}>
+                              {price}
+                            </span>
+                            {isBest && (
+                              <span className="text-[8px] px-1 py-0.5 font-bold shrink-0" style={{ background: `rgba(${sc.rgb},0.15)`, color: sc.color, borderRadius: "2px", fontFamily: "'JetBrains Mono', monospace" }}>
+                                MIN
+                              </span>
+                            )}
                           </div>
-                          <span
-                            className="text-xs font-mono font-bold shrink-0"
-                            style={{ color: sc.color }}
-                          >
-                            {row.price}
-                          </span>
-                        </motion.div>
-                      ))}
+                        );
+                      })}
                     </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+                  ))}
 
-            {/* ── Why compare ── */}
-            <div className="space-y-4">
-              <p
-                className="text-center text-xs font-medium uppercase tracking-widest"
-                style={{ color: "rgba(255,255,255,0.2)" }}
-              >
-                Por qué comparar precios
-              </p>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  {
-                    emoji: "💰",
-                    title: "Ahorra hasta 30%",
-                    sub: "El mismo producto puede costar muy diferente según la tienda",
-                    delay: 0.05,
-                  },
-                  {
-                    emoji: "⚡",
-                    title: "Búsqueda simultánea",
-                    sub: "Consultamos las 3 tiendas al mismo tiempo, en segundos",
-                    delay: 0.15,
-                  },
-                  {
-                    emoji: "🎯",
-                    title: "Sin saltar entre tabs",
-                    sub: "Ve todo en un solo lugar y elige la mejor opción",
-                    delay: 0.25,
-                  },
-                ].map(({ emoji, title, sub, delay }, idx) => (
-                  <motion.div
-                    key={title}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay, duration: 0.5 }}
-                    className="rounded-xl p-4 text-center space-y-2"
-                    style={{
-                      background: "rgba(59,130,246,0.03)",
-                      border: "1px solid rgba(59,130,246,0.08)",
-                    }}
-                  >
-                    <motion.div
-                      className="text-2xl select-none"
-                      animate={{ scale: [1, 1.16, 1] }}
-                      transition={{ duration: 2.8, repeat: Infinity, delay: idx * 0.55 }}
+                  {/* Footer note */}
+                  <div className="px-4 py-2.5" style={{ borderTop: "1px solid var(--border)", background: "var(--surface-2)" }}>
+                    <span className="text-[10px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)" }}>
+                      * Precios de ejemplo — busca tu producto para ver precios reales en tiempo real
+                    </span>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Why compare */}
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { num: "01", icon: TrendingDown, title: "Ahorra hasta 30%", sub: "El mismo producto puede costar muy diferente según la tienda", color: "#00c56e" },
+                { num: "02", icon: Search, title: "Búsqueda simultánea", sub: "Consultamos las 3 tiendas al mismo tiempo, en segundos", color: "#00cfff" },
+                { num: "03", icon: ShoppingCart, title: "Sin saltar entre tabs", sub: "Ve todo en un solo lugar y elige la mejor opción", color: "var(--amber)" },
+              ].map(({ num, icon: Icon, title, sub, color }) => (
+                <div
+                  key={num}
+                  className="p-5"
+                  style={{ background: "var(--surface-1)", border: "1px solid var(--border)", borderRadius: "2px" }}
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <div
+                      className="h-7 w-7 flex items-center justify-center"
+                      style={{ background: `rgba(${color === "#00c56e" ? "0,197,110" : color === "#00cfff" ? "0,207,255" : "245,164,0"},0.1)`, borderRadius: "2px" }}
                     >
-                      {emoji}
-                    </motion.div>
-                    <p className="text-xs font-semibold">{title}</p>
-                    <p className="text-xs leading-snug" style={{ color: "rgba(255,255,255,0.38)" }}>
-                      {sub}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* ── Prompt text ── */}
-            <div className="text-center">
-              <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
-                Escribe un producto y haz clic en{" "}
-                <span style={{ color: "rgba(255,255,255,0.7)", fontWeight: 600 }}>Buscar</span>{" "}
-                para comparar precios.
-              </p>
+                      <Icon className="h-3.5 w-3.5" style={{ color, strokeWidth: 1.8 }} />
+                    </div>
+                    <span className="text-xs" style={{ fontFamily: "'JetBrains Mono', monospace", color }}>{num}</span>
+                  </div>
+                  <p className="text-sm font-semibold mb-1 tracking-[-0.01em]" style={{ fontFamily: "'Syne', sans-serif" }}>{title}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: "var(--muted-foreground)", fontFamily: "'DM Sans', sans-serif" }}>{sub}</p>
+                </div>
+              ))}
             </div>
           </motion.div>
         )}
@@ -758,58 +589,30 @@ export default function ComparePage() {
         {loading && (
           <motion.div
             key="loading"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="space-y-6"
+            className="space-y-5"
           >
-            {/* Animated header */}
-            <div className="flex flex-col items-center gap-4 py-4">
-              <div className="relative">
-                <motion.div
-                  className="h-16 w-16 rounded-full"
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(99,102,241,0.2) 60%, transparent 80%)",
-                    boxShadow: "0 0 40px rgba(59,130,246,0.2)",
-                  }}
-                  animate={{ scale: [1, 1.12, 1], opacity: [0.7, 1, 0.7] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <ShoppingCart className="h-7 w-7 text-blue-400" />
-                </div>
+            <div className="flex flex-col items-center gap-3 py-8">
+              <div
+                className="h-14 w-14 flex items-center justify-center"
+                style={{
+                  background: "rgba(0,207,255,0.1)",
+                  border: "1px solid rgba(0,207,255,0.22)",
+                  borderRadius: "2px",
+                }}
+              >
+                <Loader2 className="h-7 w-7 animate-spin" style={{ color: "#00cfff" }} />
               </div>
               <div className="text-center">
-                <p className="font-semibold text-lg">Comparando precios</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Buscando{" "}
-                  <span className="text-foreground font-medium">&ldquo;{query}&rdquo;</span>{" "}
-                  en 3 tiendas...
+                <p className="font-bold tracking-[-0.02em]" style={{ fontFamily: "'Syne', sans-serif" }}>Comparando precios</p>
+                <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)", fontFamily: "'DM Sans', sans-serif" }}>
+                  Buscando <span className="font-semibold">&ldquo;{query}&rdquo;</span> en 3 tiendas...
                 </p>
               </div>
-              {/* Bouncing dots */}
-              <div className="flex items-center gap-2">
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="h-2 w-2 rounded-full"
-                    style={{ background: "rgba(59,130,246,0.8)" }}
-                    animate={{ opacity: [0.25, 1, 0.25], y: [0, -6, 0] }}
-                    transition={{
-                      duration: 1.2,
-                      repeat: Infinity,
-                      delay: i * 0.18,
-                      ease: "easeInOut",
-                    }}
-                  />
-                ))}
-              </div>
             </div>
-
-            {/* Skeleton store cards */}
-            <div className="grid lg:grid-cols-2 gap-5">
+            <div className="grid lg:grid-cols-2 gap-4">
               {Object.entries(STORE_COLORS).map(([sid, theme]) => (
                 <SkeletonStoreCard key={sid} color={theme.color} />
               ))}
@@ -821,26 +624,27 @@ export default function ComparePage() {
         {!loading && hasSearched && (
           <motion.div
             key="results"
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="space-y-5"
+            transition={{ duration: 0.3 }}
+            className="space-y-4"
           >
-            {/* Summary */}
             {totalResults > 0 && (
               <div className="flex items-center gap-2">
-                <ShoppingCart className="h-4 w-4 text-blue-400" />
-                <p className="text-sm text-muted-foreground">
+                <ShoppingCart className="h-4 w-4" style={{ color: "#00cfff", strokeWidth: 1.8 }} />
+                <p
+                  className="text-sm"
+                  style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--muted-foreground)" }}
+                >
                   {totalResults} resultado{totalResults !== 1 ? "s" : ""} en{" "}
                   {storesWithResults} tienda{storesWithResults !== 1 ? "s" : ""}
                 </p>
               </div>
             )}
 
-            {/* Store cards grid */}
             {totalResults > 0 ? (
-              <div className="grid lg:grid-cols-2 gap-5">
+              <div className="grid lg:grid-cols-2 gap-4">
                 {improvedStores.map((s, idx) => (
                   <StoreCard key={s.storeId} store={s} index={idx} />
                 ))}
@@ -848,17 +652,14 @@ export default function ComparePage() {
             ) : (
               !error && (
                 <div
-                  className="rounded-2xl p-12 text-center"
-                  style={{
-                    background: "var(--card)",
-                    border: "1px solid rgba(255,255,255,0.05)",
-                  }}
+                  className="p-12 text-center"
+                  style={{ background: "var(--surface-1)", border: "1px solid var(--border)", borderRadius: "2px" }}
                 >
-                  <Package className="h-11 w-11 mx-auto mb-3 text-muted-foreground/25" />
-                  <p className="font-medium text-muted-foreground">
+                  <Package className="h-10 w-10 mx-auto mb-3" style={{ color: "var(--muted-foreground)", strokeWidth: 1.5 }} />
+                  <p className="font-semibold tracking-[-0.01em]" style={{ fontFamily: "'Syne', sans-serif" }}>
                     No se encontraron resultados.
                   </p>
-                  <p className="text-sm mt-1 text-muted-foreground/60">
+                  <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)", fontFamily: "'DM Sans', sans-serif" }}>
                     Intenta con otro término de búsqueda.
                   </p>
                 </div>
