@@ -20,10 +20,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CLARIFICA — Hub de Construcción",
   description: "Materiales de construcción, comparación de precios y asistente IA",
-  icons: {
-    icon: "/images/landing/logo.png",
-    apple: "/images/landing/logo.png",
-  },
 };
 
 export default function RootLayout({
