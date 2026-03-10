@@ -413,29 +413,24 @@ async function googleCseSearch(params: {
     };
   });
 
-  // Enrich images via ONE Serper /shopping call (covers Amazon + MercadoLibre).
-  // For other stores (Home Depot) that Serper organic already returns images for,
-  // we fall back to og:image scraping.
+  // Enrich images via ONE Serper /shopping call (covers Amazon, MercadoLibre AND Home Depot).
   const needsImage = items.filter((it) => !it.pagemap);
   if (needsImage.length > 0) {
     const getHostname = (url: string) => { try { return new URL(url).hostname; } catch { return ""; } };
-    const isAmazon = (url: string) => getHostname(url).includes("amazon");
+    const isAmazon      = (url: string) => getHostname(url).includes("amazon");
     const isMercadoLibre = (url: string) => getHostname(url).includes("mercadolibre");
+    const isHomeDepot   = (url: string) => getHostname(url).includes("homedepot");
 
     const amazonItems = needsImage.filter((it) => isAmazon(it.link || ""));
     const mlItems     = needsImage.filter((it) => isMercadoLibre(it.link || ""));
-    const otherItems  = needsImage.filter((it) => !isAmazon(it.link || "") && !isMercadoLibre(it.link || ""));
+    const hdItems     = needsImage.filter((it) => isHomeDepot(it.link || ""));
 
-    // Other stores (e.g. Home Depot): skip og:image scraping — too slow (4s per item).
-    // HD images usually come through Serper organic results directly.
-
-    // Amazon + MercadoLibre: ONE Serper /shopping call, filter by source
-    if (amazonItems.length > 0 || mlItems.length > 0) {
+    // ONE Serper /shopping call covers all three stores — filter by source afterwards
+    if (amazonItems.length > 0 || mlItems.length > 0 || hdItems.length > 0) {
       try {
         const shopRes = await fetch("https://google.serper.dev/shopping", {
           method: "POST",
           headers: { "X-API-KEY": apiKey, "Content-Type": "application/json" },
-          // Shopping doesn't support site: — use base query, filter by source afterwards
           body: JSON.stringify({ q: params.q, gl: "mx", hl: "es", num: 20 }),
         });
         if (shopRes.ok) {
@@ -466,7 +461,7 @@ async function googleCseSearch(params: {
                   });
                 }
               }
-              // 3. Next unused image from pool
+              // 3. Next unused image from pool (general fallback)
               if (!pick) pick = imgPool.find((s) => !usedUrls.has(s.url));
 
               if (pick?.url) {
@@ -488,9 +483,18 @@ async function googleCseSearch(params: {
             (s.source ?? "").toLowerCase().includes("mercado") ||
             (s.link ?? "").includes("mercadolibre")
           );
+          const hdShop = allShop.filter((s) =>
+            (s.source ?? "").toLowerCase().includes("home depot") ||
+            (s.source ?? "").toLowerCase().includes("homedepot") ||
+            (s.link ?? "").includes("homedepot")
+          );
+
+          // For HD: if no store-filtered results, allow any image from the pool (same product)
+          const hdPool = hdShop.length > 0 ? hdShop : allShop;
 
           if (amazonItems.length > 0) assignFromPool(amazonItems, amazonShop);
           if (mlItems.length > 0)     assignFromPool(mlItems, mlShop);
+          if (hdItems.length > 0)     assignFromPool(hdItems, hdPool);
         }
       } catch { /* skip enrichment */ }
     }
