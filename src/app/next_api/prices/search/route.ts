@@ -413,94 +413,104 @@ async function googleCseSearch(params: {
     };
   });
 
-  // Enrich images via ONE Serper /shopping call (covers Amazon, MercadoLibre AND Home Depot).
-  const needsImage = items.filter((it) => !it.pagemap);
-  if (needsImage.length > 0) {
-    const getHostname = (url: string) => { try { return new URL(url).hostname; } catch { return ""; } };
-    const isAmazon      = (url: string) => getHostname(url).includes("amazon");
-    const isMercadoLibre = (url: string) => getHostname(url).includes("mercadolibre");
-    const isHomeDepot   = (url: string) => getHostname(url).includes("homedepot");
-
-    const amazonItems = needsImage.filter((it) => isAmazon(it.link || ""));
-    const mlItems     = needsImage.filter((it) => isMercadoLibre(it.link || ""));
-    const hdItems     = needsImage.filter((it) => isHomeDepot(it.link || ""));
-
-    // ONE Serper /shopping call covers all three stores — filter by source afterwards
-    if (amazonItems.length > 0 || mlItems.length > 0 || hdItems.length > 0) {
-      try {
-        const shopRes = await fetch("https://google.serper.dev/shopping", {
-          method: "POST",
-          headers: { "X-API-KEY": apiKey, "Content-Type": "application/json" },
-          body: JSON.stringify({ q: params.q, gl: "mx", hl: "es", num: 20 }),
-        });
-        if (shopRes.ok) {
-          const shopData = await shopRes.json().catch(() => ({}));
-          const allShop: Array<{ title?: string; imageUrl?: string; thumbnailUrl?: string; link?: string; source?: string }> =
-            Array.isArray(shopData?.shopping) ? shopData.shopping : [];
-
-          /** Assign images from a filtered pool to a set of items, no duplicates. */
-          const assignFromPool = (
-            targetItems: GoogleItem[],
-            pool: typeof allShop
-          ) => {
-            const imgPool = pool
-              .filter((s) => s.imageUrl || s.thumbnailUrl)
-              .map((s) => ({ title: s.title ?? "", link: s.link ?? "", url: (s.imageUrl || s.thumbnailUrl)! }));
-
-            const usedUrls = new Set<string>();
-            for (const item of targetItems) {
-              // 1. Exact URL match
-              let pick = imgPool.find((s) => s.link === item.link);
-              // 2. Title similarity (first 20 chars)
-              if (!pick) {
-                const t1 = (item.title || "").toLowerCase().slice(0, 20);
-                if (t1.length > 5) {
-                  pick = imgPool.find((s) => {
-                    const t2 = s.title.toLowerCase();
-                    return t2.includes(t1) || t1.includes(t2.slice(0, 20));
-                  });
-                }
-              }
-              // 3. Next unused image from pool (general fallback)
-              if (!pick) pick = imgPool.find((s) => !usedUrls.has(s.url));
-
-              if (pick?.url) {
-                usedUrls.add(pick.url);
-                item.pagemap = {
-                  metatags: [{ "og:image": pick.url }],
-                  cse_image: [{ src: pick.url }],
-                  cse_thumbnail: [{ src: pick.url }],
-                };
-              }
-            }
-          };
-
-          const amazonShop = allShop.filter((s) =>
-            (s.source ?? "").toLowerCase().includes("amazon") ||
-            (s.link ?? "").includes("amazon.com")
-          );
-          const mlShop = allShop.filter((s) =>
-            (s.source ?? "").toLowerCase().includes("mercado") ||
-            (s.link ?? "").includes("mercadolibre")
-          );
-          const hdShop = allShop.filter((s) =>
-            (s.source ?? "").toLowerCase().includes("home depot") ||
-            (s.source ?? "").toLowerCase().includes("homedepot") ||
-            (s.link ?? "").includes("homedepot")
-          );
-
-          // For HD: if no store-filtered results, allow any image from the pool (same product)
-          const hdPool = hdShop.length > 0 ? hdShop : allShop;
-
-          if (amazonItems.length > 0) assignFromPool(amazonItems, amazonShop);
-          if (mlItems.length > 0)     assignFromPool(mlItems, mlShop);
-          if (hdItems.length > 0)     assignFromPool(hdItems, hdPool);
-        }
-      } catch { /* skip enrichment */ }
-    }
-  }
-
   return { items };
+}
+
+/**
+ * Enriquece imágenes de TODOS los items con UNA sola llamada a Serper /shopping.
+ * Se llama UNA VEZ después de que todas las búsquedas orgánicas terminan en paralelo.
+ * Así evitamos rate-limiting por tener múltiples llamadas /shopping concurrentes.
+ * Muta los items in-place asignando pagemap con la imagen encontrada.
+ */
+async function enrichImagesWithShopping(rawQuery: string, allItems: GoogleItem[]): Promise<void> {
+  const apiKey = process.env.SERPER_API_KEY || "";
+  if (!apiKey || allItems.length === 0) return;
+
+  const getHostname = (url: string) => { try { return new URL(url).hostname; } catch { return ""; } };
+  const isAmazon       = (url: string) => getHostname(url).includes("amazon");
+  const isMercadoLibre = (url: string) => getHostname(url).includes("mercadolibre");
+  const isHomeDepot    = (url: string) => getHostname(url).includes("homedepot");
+
+  // Only process items that don't already have an image
+  const needsImage = allItems.filter((it) => !it.pagemap);
+  if (needsImage.length === 0) return;
+
+  const amazonItems = needsImage.filter((it) => isAmazon(it.link || ""));
+  const mlItems     = needsImage.filter((it) => isMercadoLibre(it.link || ""));
+  const hdItems     = needsImage.filter((it) => isHomeDepot(it.link || ""));
+
+  if (amazonItems.length === 0 && mlItems.length === 0 && hdItems.length === 0) return;
+
+  try {
+    const shopRes = await fetch("https://google.serper.dev/shopping", {
+      method: "POST",
+      headers: { "X-API-KEY": apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ q: rawQuery, gl: "mx", hl: "es", num: 20 }),
+    });
+    if (!shopRes.ok) return;
+
+    const shopData = await shopRes.json().catch(() => ({}));
+    const allShop: Array<{ title?: string; imageUrl?: string; thumbnailUrl?: string; link?: string; source?: string }> =
+      Array.isArray(shopData?.shopping) ? shopData.shopping : [];
+
+    /** Assign images from a filtered pool to a set of items, no duplicates. */
+    const assignFromPool = (targetItems: GoogleItem[], pool: typeof allShop) => {
+      const imgPool = pool
+        .filter((s) => s.imageUrl || s.thumbnailUrl)
+        .map((s) => ({ title: s.title ?? "", link: s.link ?? "", url: (s.imageUrl || s.thumbnailUrl)! }));
+
+      const usedUrls = new Set<string>();
+      for (const item of targetItems) {
+        // 1. Exact URL match
+        let pick = imgPool.find((s) => s.link === item.link);
+        // 2. Title similarity (first 20 chars)
+        if (!pick) {
+          const t1 = (item.title || "").toLowerCase().slice(0, 20);
+          if (t1.length > 5) {
+            pick = imgPool.find((s) => {
+              const t2 = s.title.toLowerCase();
+              return t2.includes(t1) || t1.includes(t2.slice(0, 20));
+            });
+          }
+        }
+        // 3. Next unused image from pool (general fallback)
+        if (!pick) pick = imgPool.find((s) => !usedUrls.has(s.url));
+
+        if (pick?.url) {
+          usedUrls.add(pick.url);
+          item.pagemap = {
+            metatags: [{ "og:image": pick.url }],
+            cse_image: [{ src: pick.url }],
+            cse_thumbnail: [{ src: pick.url }],
+          };
+        }
+      }
+    };
+
+    const amazonShop = allShop.filter((s) =>
+      (s.source ?? "").toLowerCase().includes("amazon") ||
+      (s.link ?? "").includes("amazon.com")
+    );
+    const mlShop = allShop.filter((s) =>
+      (s.source ?? "").toLowerCase().includes("mercado") ||
+      (s.link ?? "").includes("mercadolibre")
+    );
+    const hdShop = allShop.filter((s) =>
+      (s.source ?? "").toLowerCase().includes("home depot") ||
+      (s.source ?? "").toLowerCase().includes("homedepot") ||
+      (s.link ?? "").includes("homedepot")
+    );
+    // For HD: if no store-specific shopping results, use the full pool (same product, any store image)
+    const hdPool = hdShop.length > 0 ? hdShop : allShop;
+
+    if (amazonItems.length > 0) assignFromPool(amazonItems, amazonShop);
+    if (mlItems.length > 0)     assignFromPool(mlItems, mlShop);
+    if (hdItems.length > 0)     assignFromPool(hdItems, hdPool);
+
+    console.log(`[shopping] Enriched images: Amazon=${amazonItems.filter(i => i.pagemap).length}, ML=${mlItems.filter(i => i.pagemap).length}, HD=${hdItems.filter(i => i.pagemap).length}`);
+  } catch (err: any) {
+    console.warn("[shopping] Image enrichment failed:", err?.message);
+  }
 }
 
 /** Extract MercadoLibre item ID (e.g. MLM3166849376) from a product URL. */
@@ -1253,8 +1263,8 @@ export const GET = requestMiddleware(
 
       const errors: Array<{ storeId?: string; message: string }> = [];
 
-      // Step 1: Search all stores IN PARALLEL — major performance improvement
-      const storeResults = await Promise.all(
+      // Phase 1: Organic search for all stores IN PARALLEL (no shopping yet)
+      const storeSearchResults = await Promise.all(
         selectedStores.map(async (store) => {
           const primarySite = store.sites[0] || store.storeId;
 
@@ -1279,8 +1289,30 @@ export const GET = requestMiddleware(
               storeId: store.storeId,
               rawQuery: query,
             });
+            return { store, primarySite, finalQuery, merged, error: null };
+          } catch (e: any) {
+            return {
+              store,
+              primarySite,
+              finalQuery,
+              merged: [] as GoogleItem[],
+              error: typeof e?.message === "string" ? e.message : "Store search failed",
+            };
+          }
+        })
+      );
 
-            const ranked = postFilterAndRank({
+      // Phase 2: Enrich images with a SINGLE Serper /shopping call for ALL stores combined.
+      // This avoids rate-limiting that happens when each googleCseSearch() makes its own
+      // /shopping call in parallel (~9 concurrent calls → Serper 429s → no images).
+      const allMergedItems = storeSearchResults.flatMap((r) => r.merged);
+      await enrichImagesWithShopping(query, allMergedItems);
+
+      // Phase 3: Post-filter + rank each store using the now image-enriched items
+      const storeResults = storeSearchResults.map(({ store, primarySite, finalQuery, merged, error }) => {
+        const items = error
+          ? []
+          : postFilterAndRank({
               primarySite,
               items: merged,
               plan: assistantPlan,
@@ -1288,31 +1320,11 @@ export const GET = requestMiddleware(
               limit: 10,
               rawQuery: query,
             });
-
-            return {
-              result: {
-                storeId: store.storeId,
-                storeName: store.storeName,
-                site: primarySite,
-                finalQuery,
-                items: ranked,
-              } as StoreResult,
-              error: null,
-            };
-          } catch (e: any) {
-            return {
-              result: {
-                storeId: store.storeId,
-                storeName: store.storeName,
-                site: primarySite,
-                finalQuery,
-                items: [],
-              } as StoreResult,
-              error: typeof e?.message === "string" ? e.message : "Store search failed",
-            };
-          }
-        })
-      );
+        return {
+          result: { storeId: store.storeId, storeName: store.storeName, site: primarySite, finalQuery, items } as StoreResult,
+          error,
+        };
+      });
 
       const stores: StoreResult[] = storeResults.map((r) => {
         if (r.error) errors.push({ storeId: r.result.storeId, message: r.error });
