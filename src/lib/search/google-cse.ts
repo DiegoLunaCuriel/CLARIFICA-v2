@@ -36,6 +36,7 @@ type SerperImageResult = {
   thumbnailUrl?: string;
   link?: string;
   domain?: string;
+  source?: string; // Serper uses "source" instead of "domain" in image results
 };
 
 /**
@@ -198,8 +199,8 @@ async function enrichImages(
 }
 
 /**
- * Use Serper /images endpoint to get images for Amazon items.
- * Does ONE search call (1 credit) and matches images to items by URL or title.
+ * Use Serper /shopping endpoint to get images for Amazon items.
+ * Shopping results include imageUrl directly — no cross-matching needed.
  */
 async function enrichAmazonImages(
   amazonItems: CseItem[],
@@ -209,74 +210,50 @@ async function enrichAmazonImages(
   const apiKey = process.env.SERPER_API_KEY;
   if (!apiKey) return;
 
-  // Build image search query — use original query + amazon.com.mx
   const site = siteSearch || "amazon.com.mx";
   const q = `${query} site:${site}`;
 
   try {
-    const res = await fetch("https://google.serper.dev/images", {
+    const res = await fetch("https://google.serper.dev/shopping", {
       method: "POST",
-      headers: {
-        "X-API-KEY": apiKey,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        q,
-        gl: "mx",
-        hl: "es",
-        num: Math.min(amazonItems.length * 3, 20), // Get extra images for better matching
-      }),
+      headers: { "X-API-KEY": apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ q, gl: "mx", hl: "es", num: Math.min(amazonItems.length * 4, 20) }),
     });
 
     if (!res.ok) {
-      console.warn(`[search] Serper images error ${res.status}`);
+      console.warn(`[search] Serper shopping error ${res.status}`);
       return;
     }
 
     const data = await res.json().catch(() => ({}));
-    const images: SerperImageResult[] = Array.isArray(data?.images) ? data.images : [];
+    const shopping: Array<{ title?: string; imageUrl?: string; thumbnailUrl?: string; link?: string; source?: string }> =
+      Array.isArray(data?.shopping) ? data.shopping : [];
 
-    if (images.length === 0) return;
+    const amazonShop = shopping.filter((s) =>
+      (s.source ?? "").toLowerCase().includes("amazon") ||
+      (s.link ?? "").includes("amazon.com")
+    );
 
-    // Match images to Amazon items by URL or title similarity
+    if (amazonShop.length === 0) return;
+
     for (const item of amazonItems) {
       if (hasImage(item)) continue;
 
-      // Try exact URL match first
-      const exactMatch = images.find((img) => img.link === item.link);
-      if (exactMatch?.imageUrl) {
-        setImage(item, exactMatch.imageUrl);
-        continue;
-      }
+      const match = amazonShop.find((s) => s.link === item.link) ||
+        amazonShop.find((s) => {
+          const t1 = (item.title || "").toLowerCase().slice(0, 30);
+          const t2 = (s.title || "").toLowerCase();
+          return t1.length > 5 && (t2.includes(t1) || t1.includes(t2.slice(0, 30)));
+        }) ||
+        amazonShop.find((s) => s.imageUrl || s.thumbnailUrl);
 
-      // Try matching by title similarity (first 30 chars to handle truncation)
-      const itemTitleLower = (item.title || "").toLowerCase().slice(0, 30);
-      if (itemTitleLower.length > 5) {
-        const titleMatch = images.find((img) => {
-          const imgTitle = (img.title || "").toLowerCase();
-          return imgTitle.includes(itemTitleLower) || itemTitleLower.includes(imgTitle.slice(0, 30));
-        });
-        if (titleMatch?.imageUrl) {
-          setImage(item, titleMatch.imageUrl);
-          continue;
-        }
-      }
-
-      // Fallback: use first available image from same domain
-      const domainMatch = images.find((img) =>
-        img.domain?.includes("amazon") && img.imageUrl && !amazonItems.some(
-          (other) => other !== item && hasImage(other) &&
-          other.pagemap?.metatags?.[0]?.["og:image"] === img.imageUrl
-        )
-      );
-      if (domainMatch?.imageUrl) {
-        setImage(item, domainMatch.imageUrl);
-      }
+      const imgUrl = match?.imageUrl || match?.thumbnailUrl;
+      if (imgUrl) setImage(item, imgUrl);
     }
 
-    console.log(`[search] Amazon images matched: ${amazonItems.filter(hasImage).length}/${amazonItems.length}`);
+    console.log(`[search] Amazon shopping images matched: ${amazonItems.filter(hasImage).length}/${amazonItems.length}`);
   } catch (err: any) {
-    console.warn("[search] Serper images fetch error:", err?.message);
+    console.warn("[search] Serper shopping fetch error:", err?.message);
   }
 }
 

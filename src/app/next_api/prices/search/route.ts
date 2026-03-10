@@ -413,28 +413,25 @@ async function googleCseSearch(params: {
     };
   });
 
-  // Enrich images: og:image for non-Amazon, Serper /images for Amazon
+  // Enrich images via ONE Serper /shopping call (covers Amazon + MercadoLibre).
+  // For other stores (Home Depot) that Serper organic already returns images for,
+  // we fall back to og:image scraping.
   const needsImage = items.filter((it) => !it.pagemap);
   if (needsImage.length > 0) {
-    const isAmazon = (url: string) => { try { return new URL(url).hostname.includes("amazon"); } catch { return false; } };
-    const amazonItems = needsImage.filter((it) => isAmazon(it.link || ""));
-    const otherItems = needsImage.filter((it) => !isAmazon(it.link || ""));
+    const getHostname = (url: string) => { try { return new URL(url).hostname; } catch { return ""; } };
+    const isAmazon = (url: string) => getHostname(url).includes("amazon");
+    const isMercadoLibre = (url: string) => getHostname(url).includes("mercadolibre");
 
-    // Non-Amazon: MercadoLibre API (reliable) or og:image scrape (other stores)
+    const amazonItems = needsImage.filter((it) => isAmazon(it.link || ""));
+    const mlItems     = needsImage.filter((it) => isMercadoLibre(it.link || ""));
+    const otherItems  = needsImage.filter((it) => !isAmazon(it.link || "") && !isMercadoLibre(it.link || ""));
+
+    // Other stores (e.g. Home Depot): scrape og:image from page HTML
     if (otherItems.length > 0) {
       await Promise.all(
         otherItems.map(async (item) => {
           try {
-            let img: string | null = null;
-            // MercadoLibre: use public API — Cloudflare blocks direct page fetches
-            const mlId = extractMercadoLibreItemId(item.link || "");
-            if (mlId) {
-              img = await fetchMercadoLibreImage(mlId);
-            }
-            // Other stores (e.g. Home Depot): scrape og:image from page HTML
-            if (!img) {
-              img = await fetchOgImageFromPage(item.link || "");
-            }
+            const img = await fetchOgImageFromPage(item.link || "");
             if (img) {
               item.pagemap = {
                 metatags: [{ "og:image": img }],
@@ -447,40 +444,70 @@ async function googleCseSearch(params: {
       );
     }
 
-    // Amazon: use Serper /images endpoint (1 credit per batch)
-    if (amazonItems.length > 0) {
+    // Amazon + MercadoLibre: ONE Serper /shopping call, filter by source
+    if (amazonItems.length > 0 || mlItems.length > 0) {
       try {
-        const imgRes = await fetch("https://google.serper.dev/images", {
+        const shopRes = await fetch("https://google.serper.dev/shopping", {
           method: "POST",
           headers: { "X-API-KEY": apiKey, "Content-Type": "application/json" },
-          body: JSON.stringify({ q, gl: "mx", hl: "es", num: amazonItems.length * 3 }),
+          // Shopping doesn't support site: — use base query, filter by source afterwards
+          body: JSON.stringify({ q: params.q, gl: "mx", hl: "es", num: 20 }),
         });
-        if (imgRes.ok) {
-          const imgData = await imgRes.json().catch(() => ({}));
-          const images: Array<{ title?: string; imageUrl?: string; link?: string; domain?: string }> =
-            Array.isArray(imgData?.images) ? imgData.images : [];
+        if (shopRes.ok) {
+          const shopData = await shopRes.json().catch(() => ({}));
+          const allShop: Array<{ title?: string; imageUrl?: string; thumbnailUrl?: string; link?: string; source?: string }> =
+            Array.isArray(shopData?.shopping) ? shopData.shopping : [];
 
-          for (const item of amazonItems) {
-            // Match by URL
-            const match = images.find((img) => img.link === item.link) ||
-              // Match by title
-              images.find((img) => {
-                const t1 = (item.title || "").toLowerCase().slice(0, 30);
-                const t2 = (img.title || "").toLowerCase();
-                return t1.length > 5 && (t2.includes(t1) || t1.includes(t2.slice(0, 30)));
-              }) ||
-              // Any Amazon image not yet used
-              images.find((img) => img.domain?.includes("amazon") && img.imageUrl);
-            if (match?.imageUrl) {
-              item.pagemap = {
-                metatags: [{ "og:image": match.imageUrl }],
-                cse_image: [{ src: match.imageUrl }],
-                cse_thumbnail: [{ src: match.imageUrl }],
-              };
+          /** Assign images from a filtered pool to a set of items, no duplicates. */
+          const assignFromPool = (
+            targetItems: GoogleItem[],
+            pool: typeof allShop
+          ) => {
+            const imgPool = pool
+              .filter((s) => s.imageUrl || s.thumbnailUrl)
+              .map((s) => ({ title: s.title ?? "", link: s.link ?? "", url: (s.imageUrl || s.thumbnailUrl)! }));
+
+            const usedUrls = new Set<string>();
+            for (const item of targetItems) {
+              // 1. Exact URL match
+              let pick = imgPool.find((s) => s.link === item.link);
+              // 2. Title similarity (first 20 chars)
+              if (!pick) {
+                const t1 = (item.title || "").toLowerCase().slice(0, 20);
+                if (t1.length > 5) {
+                  pick = imgPool.find((s) => {
+                    const t2 = s.title.toLowerCase();
+                    return t2.includes(t1) || t1.includes(t2.slice(0, 20));
+                  });
+                }
+              }
+              // 3. Next unused image from pool
+              if (!pick) pick = imgPool.find((s) => !usedUrls.has(s.url));
+
+              if (pick?.url) {
+                usedUrls.add(pick.url);
+                item.pagemap = {
+                  metatags: [{ "og:image": pick.url }],
+                  cse_image: [{ src: pick.url }],
+                  cse_thumbnail: [{ src: pick.url }],
+                };
+              }
             }
-          }
+          };
+
+          const amazonShop = allShop.filter((s) =>
+            (s.source ?? "").toLowerCase().includes("amazon") ||
+            (s.link ?? "").includes("amazon.com")
+          );
+          const mlShop = allShop.filter((s) =>
+            (s.source ?? "").toLowerCase().includes("mercado") ||
+            (s.link ?? "").includes("mercadolibre")
+          );
+
+          if (amazonItems.length > 0) assignFromPool(amazonItems, amazonShop);
+          if (mlItems.length > 0)     assignFromPool(mlItems, mlShop);
         }
-      } catch { /* skip Amazon images */ }
+      } catch { /* skip enrichment */ }
     }
   }
 
