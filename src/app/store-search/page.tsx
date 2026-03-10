@@ -256,6 +256,8 @@ function ProductCard({
 
 /* ──────────────────────── Store block ──────────────────────── */
 
+const STORE_VISIBLE_DEFAULT = 4;
+
 function StoreBlock({
   store,
   compareHref,
@@ -265,6 +267,9 @@ function StoreBlock({
 }) {
   const items = store.items || [];
   const theme = STORE_THEME[store.storeId as StoreThemeKey];
+  const [showAll, setShowAll] = React.useState(false);
+  const visibleItems = showAll ? items : items.slice(0, STORE_VISIBLE_DEFAULT);
+  const hiddenCount = items.length - STORE_VISIBLE_DEFAULT;
 
   return (
     <motion.div
@@ -320,16 +325,33 @@ function StoreBlock({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {items.map((item, idx) => (
-            <ProductCard
-              key={`${store.storeId}-${idx}`}
-              item={item}
-              storeId={store.storeId}
-              compareHref={compareHref(item.title)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {visibleItems.map((item, idx) => (
+              <ProductCard
+                key={`${store.storeId}-${idx}`}
+                item={item}
+                storeId={store.storeId}
+                compareHref={compareHref(item.title)}
+              />
+            ))}
+          </div>
+          {!showAll && hiddenCount > 0 && (
+            <button
+              onClick={() => setShowAll(true)}
+              className="w-full py-2 text-xs font-medium transition-all duration-150"
+              style={{
+                background: "var(--surface-1)",
+                border: "1px solid var(--border)",
+                borderRadius: "2px",
+                color: theme?.color || "var(--muted-foreground)",
+                fontFamily: "'DM Sans', sans-serif",
+              }}
+            >
+              Ver {hiddenCount} resultado{hiddenCount !== 1 ? "s" : ""} más de {store.storeName} ↓
+            </button>
+          )}
+        </>
       )}
     </motion.div>
   );

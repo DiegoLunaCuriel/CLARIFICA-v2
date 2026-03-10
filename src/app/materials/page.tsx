@@ -56,6 +56,8 @@ function MaterialSkeleton() {
   );
 }
 
+const PAGE_SIZE = 24;
+
 export default function MaterialsPage() {
   const { isLoading } = useAuth();
 
@@ -70,6 +72,7 @@ export default function MaterialsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatingIds, setGeneratingIds] = useState<Set<number>>(new Set());
   const thumbnailsQueued = useRef<Set<number>>(new Set());
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const formatLabel = (key: string) =>
     key
@@ -112,6 +115,7 @@ export default function MaterialsPage() {
 
     try {
       setLoadingMaterials(true);
+      setVisibleCount(PAGE_SIZE); // reset pagination on new search
 
       const params: any = { limit: '50', offset: '0' };
       if (selectedCategory !== 'all') params.category_id = selectedCategory;
@@ -345,9 +349,10 @@ export default function MaterialsPage() {
           </p>
         </div>
       ) : (
+        <>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {materials.map((material, idx) => (
-            <AnimateOnScroll key={material.id} delay={idx * 0.05}>
+          {materials.slice(0, visibleCount).map((material, idx) => (
+            <AnimateOnScroll key={material.id} delay={Math.min(idx * 0.05, 0.3)}>
               <Card
                 className="cursor-pointer group overflow-hidden transition-all duration-300 hover:-translate-y-1"
                 style={{
@@ -419,6 +424,20 @@ export default function MaterialsPage() {
             </AnimateOnScroll>
           ))}
         </div>
+
+        {/* Botón "Ver más" */}
+        {visibleCount < materials.length && (
+          <div className="flex justify-center pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+              className="px-8"
+            >
+              Ver más ({materials.length - visibleCount} restantes)
+            </Button>
+          </div>
+        )}
+        </>
       )}
 
       {/* Dialog de detalle */}

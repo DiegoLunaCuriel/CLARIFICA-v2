@@ -426,23 +426,8 @@ async function googleCseSearch(params: {
     const mlItems     = needsImage.filter((it) => isMercadoLibre(it.link || ""));
     const otherItems  = needsImage.filter((it) => !isAmazon(it.link || "") && !isMercadoLibre(it.link || ""));
 
-    // Other stores (e.g. Home Depot): scrape og:image from page HTML
-    if (otherItems.length > 0) {
-      await Promise.all(
-        otherItems.map(async (item) => {
-          try {
-            const img = await fetchOgImageFromPage(item.link || "");
-            if (img) {
-              item.pagemap = {
-                metatags: [{ "og:image": img }],
-                cse_image: [{ src: img }],
-                cse_thumbnail: [{ src: img }],
-              };
-            }
-          } catch { /* skip */ }
-        })
-      );
-    }
+    // Other stores (e.g. Home Depot): skip og:image scraping — too slow (4s per item).
+    // HD images usually come through Serper organic results directly.
 
     // Amazon + MercadoLibre: ONE Serper /shopping call, filter by source
     if (amazonItems.length > 0 || mlItems.length > 0) {
@@ -1207,31 +1192,24 @@ async function searchStoreAcrossSites(params: {
         }
       }
 
-      // Paso 1: búsqueda principal en articulo.mercadolibre (query principal ya se hizo arriba)
-      // Aquí probamos queries alternativas en articulo.
-      for (const q of queries) {
-        if (q === finalQuery) continue; // ya se buscó arriba
-        if (all.length >= limit * 2) break;
-        try {
-          const resp = await googleCseSearch({ q, num: want, siteSearch: mlProductSite });
-          addItems(resp.items || []);
-        } catch { /* ignore CSE errors for fallback queries */ }
-      }
+      // Paso 1: queries alternativas en articulo.mercadolibre — en paralelo
+      const altQueries = [...queries].filter((q) => q !== finalQuery).slice(0, 3);
+      const paso1Results = await Promise.all(
+        altQueries.map((q) =>
+          googleCseSearch({ q, num: want, siteSearch: mlProductSite }).catch(() => ({ items: [] }))
+        )
+      );
+      for (const r of paso1Results) addItems(r.items || []);
 
-      // Paso 2: búsqueda en dominio general (www.mercadolibre.com.mx)
-      // Solo usar queries enriquecidas — las genéricas devuelven listados
+      // Paso 2: dominio general (www.mercadolibre.com.mx) — en paralelo
       const enrichedOnly = rawQuery ? (ML_ENRICHED_QUERIES[rawQuery.trim().toLowerCase()] || []) : [];
-      const generalQueries = enrichedOnly.length > 0
-        ? enrichedOnly
-        : [finalQuery]; // fallback a la query original si no hay enriquecidas
-
-      for (const q of generalQueries) {
-        if (all.length >= limit * 3) break;
-        try {
-          const resp = await googleCseSearch({ q, num: want, siteSearch: mlGeneralSite });
-          addOnlyProducts(resp.items || []);
-        } catch { /* ignore CSE errors for fallback queries */ }
-      }
+      const generalQueries = enrichedOnly.length > 0 ? enrichedOnly : [finalQuery];
+      const paso2Results = await Promise.all(
+        generalQueries.slice(0, 3).map((q) =>
+          googleCseSearch({ q, num: want, siteSearch: mlGeneralSite }).catch(() => ({ items: [] }))
+        )
+      );
+      for (const r of paso2Results) addOnlyProducts(r.items || []);
     }
 
     if (all.length >= limit * 4) break;
@@ -1269,66 +1247,73 @@ export const GET = requestMiddleware(
         ? STORES.filter((s) => s.storeId === storeIdParam)
         : STORES;
 
-      const stores: StoreResult[] = [];
       const errors: Array<{ storeId?: string; message: string }> = [];
 
-      // Step 1: Search all stores and apply rule-based filtering
-      for (const store of selectedStores) {
-        const primarySite = store.sites[0] || store.storeId;
+      // Step 1: Search all stores IN PARALLEL — major performance improvement
+      const storeResults = await Promise.all(
+        selectedStores.map(async (store) => {
+          const primarySite = store.sites[0] || store.storeId;
 
-        const finalQuery = assistantPlan
-          ? buildFinalQuery({
-              normalized: assistantPlan.query_plan.normalized_query || normalizedQuery,
-              must: assistantPlan.query_plan.must_include || [],
-              should: assistantPlan.query_plan.should_include || [],
-              exclude: assistantPlan.query_plan.exclude || [],
-              ranking,
+          const finalQuery = assistantPlan
+            ? buildFinalQuery({
+                normalized: assistantPlan.query_plan.normalized_query || normalizedQuery,
+                must: assistantPlan.query_plan.must_include || [],
+                should: assistantPlan.query_plan.should_include || [],
+                exclude: assistantPlan.query_plan.exclude || [],
+                ranking,
+                primarySite,
+                siteOverrides: assistantPlan.query_plan.site_overrides || [],
+              })
+            : `${normalizedQuery} construccion ferreteria`;
+
+          try {
+            const merged = await searchStoreAcrossSites({
+              finalQuery,
+              sites: store.sites,
+              limit,
+              wide: liveRequested,
+              storeId: store.storeId,
+              rawQuery: query,
+            });
+
+            const ranked = postFilterAndRank({
               primarySite,
-              siteOverrides: assistantPlan.query_plan.site_overrides || [],
-            })
-          : `${normalizedQuery} construccion ferreteria`;
+              items: merged,
+              plan: assistantPlan,
+              ranking,
+              limit: 10,
+              rawQuery: query,
+            });
 
-        try {
-          const merged = await searchStoreAcrossSites({
-            finalQuery,
-            sites: store.sites,
-            limit,
-            wide: liveRequested,
-            storeId: store.storeId,
-            rawQuery: query,
-          });
+            return {
+              result: {
+                storeId: store.storeId,
+                storeName: store.storeName,
+                site: primarySite,
+                finalQuery,
+                items: ranked,
+              } as StoreResult,
+              error: null,
+            };
+          } catch (e: any) {
+            return {
+              result: {
+                storeId: store.storeId,
+                storeName: store.storeName,
+                site: primarySite,
+                finalQuery,
+                items: [],
+              } as StoreResult,
+              error: typeof e?.message === "string" ? e.message : "Store search failed",
+            };
+          }
+        })
+      );
 
-          const ranked = postFilterAndRank({
-            primarySite,
-            items: merged,
-            plan: assistantPlan,
-            ranking,
-            limit: 10, // Pass all through to AI filter — it handles the real filtering
-            rawQuery: query,
-          });
-
-          stores.push({
-            storeId: store.storeId,
-            storeName: store.storeName,
-            site: primarySite,
-            finalQuery,
-            items: ranked,
-          });
-        } catch (e: any) {
-          errors.push({
-            storeId: store.storeId,
-            message: typeof e?.message === "string" ? e.message : "Store search failed",
-          });
-
-          stores.push({
-            storeId: store.storeId,
-            storeName: store.storeName,
-            site: primarySite,
-            finalQuery,
-            items: [],
-          });
-        }
-      }
+      const stores: StoreResult[] = storeResults.map((r) => {
+        if (r.error) errors.push({ storeId: r.result.storeId, message: r.error });
+        return r.result;
+      });
 
       // Step 2: Relevance filtering
       // Strategy:
